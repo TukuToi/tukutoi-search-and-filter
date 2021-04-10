@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Provide a public-facing view for the plugin
+ * Provide a default template for the Loop ites 
  *
- * This file is used to markup the public-facing aspects of the plugin.
+ * Copy this file to the theme and call it within TukuToi Search & Filter Method to design the results loops
+ * 
+ * Use $this->post instead of $post global.
  *
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
@@ -14,19 +16,13 @@
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-
-		  <div class="testimonial">
-			<div class="testimonial-content">	
-              <div class="testimonial-icon">
-				<i class="fa fa-quote-left"></i>	
-              </div>
-              <div class="description">
-                <h3><?php echo the_title();?></h3>
-                <p class="starability-result" data-rating="<?php echo get_post_meta($this->post->ID, 'wpcf-rating-stars', true)?>"></p>
-                <?php echo get_post_meta($this->post->ID, 'wpcf-feedback', true)?>
-              </div>
-            </div>
-            <h3 class="title"><?php echo get_post_meta($this->post->ID, 'wpcf-name', true)?></h3>
-            <span class="post"><?php echo types_render_field("website", array("output" => "normal", "separator" => ", "))?></span>
-          </div>
+<div class="loop-item-wrapper">
+    <div class="loop-item-heading">
+        <h3><?php echo the_title();?></h3>
+    </div>
+    <div class="loop-item-content">	
+        <?php echo get_post_field('post_content', $this->post->ID); ?>
+        <?php echo get_post_meta('maybe-custom-field', $this->post->ID, true); ?>
+    </div>
+</div>
 		

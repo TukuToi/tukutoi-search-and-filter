@@ -14,7 +14,8 @@
  *
  * Defines all available arguments of the WP_Query
  * Populates those arguments according user settings
- * Passes the WP_Query results 
+ * Gets results from the WP_Query
+ * Builds the output and loads accurate templates
  *
  * @package    Tkt_search_filter
  * @subpackage Tkt_search_filter/public
@@ -64,8 +65,6 @@ class Tkt_Posts_Query {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( ) {
 
@@ -76,10 +75,26 @@ class Tkt_Posts_Query {
 
 	}
 
+	/**
+	 * The Unique Instance
+	 *
+	 * @since   1.0.0
+	 * @param 	$instance 	string 	The Unique instance of Search and Loop to "connect" them
+	 * @access  private
+	 */
 	private function set_instance( $instance ){
+
 		$this->instance = $instance;
+
 	}
 
+	/**
+	 * Set the Query Args
+	 *
+	 * @since    1.0.0
+	 * @param 	$default_query_args 	array 	Default Query args passed to the Loop Renderer.
+	 * @access   private
+	 */
 	private function set_query_args($default_query_args){
 		
 		$query_args = $default_query_args;
@@ -95,12 +110,25 @@ class Tkt_Posts_Query {
 
 	}
 
+	/**
+	 * Get the Query Args
+	 *
+	 * @since    1.0.0
+	 * @return 	$this->query_args 		array 	the merged query args
+	 * @access   private
+	 */
 	private function get_query_args(){
 
 		return $this->query_args;
 
 	}
 
+	/**
+	 * Get the Query Results
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
 	private function get_query_results(){
 		
 		$query_results = new WP_Query( $this->get_query_args() );
@@ -109,6 +137,14 @@ class Tkt_Posts_Query {
 
 	}
 
+	/**
+	 * Render Results or No results template
+	 *
+	 * @since   1.0.0
+	 * @param 	$template 	string 	Path to the Template to render the loop
+	 * @param 	$error 		string 	Path to the Template to render the No Results Found 
+	 * @access  private
+	 */
 	private function maybe_render_results($template, $error){
 
 		if ( $this->query_results->have_posts() ) {
@@ -131,6 +167,16 @@ class Tkt_Posts_Query {
 
 	}
 
+	/**
+	 * Bootstrap the Loop
+	 *
+	 * @since   1.0.0
+	 * @param 	$default_query_args 	array 	Default Query args passed to the Loop Renderer.
+	 * @param 	$instance 				string 	The Unique instance of Search and Loop to "connect" them
+	 * @param 	$template 				string 	Path to the Template to render the loop
+	 * @param 	$error 					string 	Path to the Template to render the No Results Found 
+	 * @access  public
+	 */
 	public function render_results($default_query_args, $instance, $template, $error){
 		
 		$this->set_instance( $instance );
@@ -143,6 +189,14 @@ class Tkt_Posts_Query {
 
 	}
 
+	/**
+	 * Bootstrap the Search
+	 *
+	 * @since   1.0.0
+	 * @param 	$instance 				string 	The Unique instance of Search and Loop to "connect" them
+	 * @param 	$template 				string 	Path to Template to render the Search inputs with
+	 * @access  public
+	 */
 	public function render_search($instance, $template){
 		
 		$this->set_instance( $instance );
