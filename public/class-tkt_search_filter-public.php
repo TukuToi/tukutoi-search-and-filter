@@ -56,12 +56,14 @@ class Tkt_search_filter_Public {
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $human_plugin_name ) {
 
 		$this->plugin_name = $plugin_name;
+		$this->human_plugin_name;
 		$this->version = $version;
 
 		$this->load_dependencies();
+
 	}
 
 	/**
@@ -72,13 +74,13 @@ class Tkt_search_filter_Public {
 	private function load_dependencies() {
 
 		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
+		 * Require the Posts Query Class
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt_posts_query.php';
 
-		$this->posts_query = new Tkt_Posts_Query($this->plugin_name, $this->version);
-
+		/**
+		 * Require the Public API Functions
+		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/functions-tkt_search_filter.php';		
 
 	}
