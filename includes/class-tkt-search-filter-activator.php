@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Fired during plugin activation
  *
@@ -20,7 +19,7 @@
  * @subpackage Tkt_search_filter/includes
  * @author     TukuToi <hello@tukutoi.com>
  */
-class Tkt_search_filter_Activator {
+class Tkt_Search_Filter_Activator {
 
 	/**
 	 * Short Description. (use period)

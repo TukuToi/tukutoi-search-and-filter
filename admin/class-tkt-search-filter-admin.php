@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -20,7 +19,7 @@
  * @subpackage Tkt_search_filter/admin
  * @author     TukuToi <hello@tukutoi.com>
  */
-class Tkt_search_filter_Admin {
+class Tkt_Search_Filter_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -44,8 +43,8 @@ class Tkt_search_filter_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name       The name of this plugin.
+	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
@@ -73,7 +72,7 @@ class Tkt_search_filter_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/tkt_search_filter-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/tkt-search-filter-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -96,7 +95,7 @@ class Tkt_search_filter_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/tkt_search_filter-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/tkt-search-filter-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 

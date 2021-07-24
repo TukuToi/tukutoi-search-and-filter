@@ -10,10 +10,11 @@
  * @package    Tkt_search_filter
  * @subpackage Tkt_search_filter/public/partials
  */
+
 ?>
 
 <form class="example" action="" type="GET">
 	<input type="text" placeholder="Search.." name="title">
-	<input type="hidden" value="<?php echo $this->instance ?>" name="instance">
+	<input type="hidden" value="<?php echo esc_attr( $this->instance ); ?>" name="instance">
 	<button type="submit"><i class="fa fa-search"></i></button>
 </form>
