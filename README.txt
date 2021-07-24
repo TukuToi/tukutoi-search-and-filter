@@ -60,3 +60,19 @@ This means you can set a *query filter* in the render method and then filter thr
 
 'your-unique-name' is simply a string or hash to uniquely identify and bind the search and results instances to each other.
 This way you can have more than one group of instances on each page.
+
+Using ShortCodes, the simples version is to use them like this in any page or post.
+```
+[tkt_search]
+[tkt_loop]
+```
+
+The ShortCodes currently provide the following attributes:
+`[tkt_search]`:
+`instance`	The Unique Instance name. 
+`template`	The Template path.
+`[tkt_loop]`
+`args`  	Currently hardcoded array of default query args.
+`instance`	The Unique Instance name. 
+`template`	The Template path.
+`error`		A path to a template to use for no results found.

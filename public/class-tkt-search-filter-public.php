@@ -84,6 +84,13 @@ class Tkt_Search_Filter_Public {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/functions-tkt-search-filter.php';
 
+		/**
+		 * Require the ShortCodes File
+		 * 
+		 * @since 1.1.1
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/shortcodes-tkt-search-filter.php';
+
 	}
 
 	/**
