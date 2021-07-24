@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -24,7 +23,7 @@
  * @subpackage Tkt_search_filter/includes
  * @author     TukuToi <hello@tukutoi.com>
  */
-class Tkt_search_filter_i18n {
+class Tkt_Search_Filter_I18n {
 
 
 	/**

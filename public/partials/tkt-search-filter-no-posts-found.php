@@ -10,6 +10,7 @@
  * @package    Tkt_search_filter
  * @subpackage Tkt_search_filter/public/partials
  */
+
 ?>
 
 <div>

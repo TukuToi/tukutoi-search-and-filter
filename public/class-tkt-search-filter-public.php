@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -20,7 +19,7 @@
  * @subpackage Tkt_search_filter/public
  * @author     TukuToi <hello@tukutoi.com>
  */
-class Tkt_search_filter_Public {
+class Tkt_Search_Filter_Public {
 
 	/**
 	 * The ID of this plugin.
@@ -53,8 +52,9 @@ class Tkt_search_filter_Public {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name       The name of the plugin.
+	 * @param      string $version    The version of this plugin.
+	 * @param      string $human_plugin_name    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version, $human_plugin_name ) {
 
@@ -68,6 +68,7 @@ class Tkt_search_filter_Public {
 
 	/**
 	 * Load the required dependencies for this plugin.
+	 *
 	 * @since    1.0.0
 	 * @access   private
 	 */
@@ -76,12 +77,12 @@ class Tkt_search_filter_Public {
 		/**
 		 * Require the Posts Query Class
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt_posts_query.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-posts-query.php';
 
 		/**
 		 * Require the Public API Functions
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/functions-tkt_search_filter.php';		
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/functions-tkt-search-filter.php';
 
 	}
 
@@ -92,7 +93,7 @@ class Tkt_search_filter_Public {
 	 */
 	public function enqueue_styles() {
 
-		wp_enqueue_style( $this->plugin_name .'-styles', plugin_dir_url( __FILE__ ) . 'css/tkt_search_filter-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name . '-styles', plugin_dir_url( __FILE__ ) . 'css/tkt_search_filter-public.css', array(), $this->version, 'all' );
 
 	}
 
@@ -103,10 +104,10 @@ class Tkt_search_filter_Public {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_script( $this->plugin_name .'-scripts', plugin_dir_url( __FILE__ ) . 'js/tkt_search_filter-public.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->plugin_name . '-scripts', plugin_dir_url( __FILE__ ) . 'js/tkt_search_filter-public.js', array( 'jquery' ), $this->version, true );
 
 	}
 
-	
+
 
 }
