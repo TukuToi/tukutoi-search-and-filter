@@ -20,9 +20,8 @@
 	<div class="loop-item-heading">
 		<h3><?php echo esc_html( the_title() ); ?></h3>
 	</div>
-	<div class="loop-item-content">	
-		<?php echo wp_kses( get_post_field( 'post_content', $this->post->ID ), 'post' ); ?>
-		<?php echo esc_html( get_post_meta( 'maybe-custom-field', $this->post->ID, true ) ); ?>
+	<div class="loop-item-content"> 
+		<?php echo wp_kses( get_post_field( 'post_content', get_the_ID() ), 'post' ); ?>
+		<?php echo esc_html( get_post_meta( 'maybe-custom-field', get_the_ID(), true ) ); ?>
 	</div>
 </div>
-		
