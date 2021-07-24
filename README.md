@@ -61,12 +61,20 @@ Using ShortCodes, the simples version is to use them like this in any page or po
 ```
 
 The ShortCodes currently provide the following attributes:
+
 `[tkt_search]`:
+
 `instance`	The Unique Instance name. 
+
 `template`	The Template path.
+
 `[tkt_loop]`
+
 `args`  	Currently hardcoded array of default query args.
+
 `instance`	The Unique Instance name. 
+
 `template`	The Template path.
+
 `error`		A path to a template to use for no results found.
 
