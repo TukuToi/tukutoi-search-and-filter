@@ -8,6 +8,9 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.10.0 =
+* [Added] Optional Select2 Support in Select Search Inputs on front end
+
 = 2.9.0 =
 * [Added] Full support for User, Taxonomy and Post Select Search Dropdowns
 * [Added] Full support for Select Dropdowns single and multiple type

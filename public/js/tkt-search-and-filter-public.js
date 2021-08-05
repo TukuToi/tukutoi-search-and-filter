@@ -29,4 +29,12 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
+	$( document ).ready( function() {
+
+	    $( '#' + tkt_select2.instance ).select2({
+			placeholder: tkt_select2.placeholder
+		});
+		
+	});
+
 })( jQuery );

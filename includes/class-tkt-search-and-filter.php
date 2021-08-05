@@ -257,6 +257,9 @@ class Tkt_Search_And_Filter {
 			$plugin_public = new Tkt_Search_And_Filter_Public( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version() );
 			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations );
 
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
 			// Register the ShortCodes of this plugin.
 			foreach ( $this->declarations->shortcodes as $shortcode => $array ) {
 

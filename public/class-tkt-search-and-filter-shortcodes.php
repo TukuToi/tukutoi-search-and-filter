@@ -426,7 +426,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 			case 'user':
 				$select_form = better_dropdown_users(
 					array(
-						'show_option_all'   => $atts['placeholder'],
+						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
 						'multi'             => $multiple_value,
 						'show'              => 'display_name_with_login',
 						'value_field'       => $value_field,
@@ -442,7 +442,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 			case 'taxonomy':
 				$select_form = better_dropdown_categories(
 					array(
-						'show_option_all'   => $atts['placeholder'],
+						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
 						'show_count'        => true,
 						'echo'              => false,
 						'hierarchical'      => true,
@@ -478,7 +478,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 				* @todo Add postmeta support.
 				* @since 2.0.0
 				*/
-				$options = '<option value="">' . $atts['placeholder'] . '</option>';
+				if ( empty( $multiple_value ) ) {
+					$options = '<option value="">' . $atts['placeholder'] . '</option>';
+				}
 				if ( ! is_null( $value_field )
 					&& (
 						( ! is_array( $atts['post_type'] )
@@ -516,6 +518,33 @@ class Tkt_Search_And_Filter_Shortcodes {
 				$select_form .= $options;
 				$select_form .= '</select>';
 				break;
+		}
+
+		/**
+		 * Select2 is not needed unless we are in a Select ShortCode and declared Select2 instances.
+		 *
+		 * Save the users some headaches, usually plugins just throw the scripts on all pages...
+		 *
+		 * Here we:
+		 * 1. Enqueue Select2 CSS if needed.
+		 * 2. Enqueue Select2 JS if needed.
+		 * 3. Enqueue TukuToi JS if needed.
+		 * 4. Localise TukuToi JS if needed.
+		 *
+		 * @since 2.10.0
+		 */
+		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'tkt-script' );
+			wp_localize_script(
+				'tkt-script',
+				'tkt_select2',
+				array(
+					'placeholder'   => $atts['placeholder'],
+					'instance'      => $atts['customid'],
+				)
+			);
 		}
 
 		// Return Select Form.
