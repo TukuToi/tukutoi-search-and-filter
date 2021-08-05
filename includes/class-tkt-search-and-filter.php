@@ -117,6 +117,16 @@ class Tkt_Search_And_Filter {
 	private function load_dependencies() {
 
 		/**
+		 * WordPress / ClassicPress are great toolset but something is wrong about them. This file provides
+		 * fixes for those wrongdoings.
+		 * `worcpress` stands for `WORd- and ClassicPRESSS`
+		 *
+		 * @todo move this to actual core.
+		 * @since 2.0.0
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/tkt-search-and-filter-fix-worcpress.php';
+
+		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -200,6 +210,7 @@ class Tkt_Search_And_Filter {
 
 			$plugin_admin = new Tkt_Search_And_Filter_Admin( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version(), $this->declarations );
 
+			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			// Add ShortCode Types to the TukuToi ShortCodes GUI.
 			$this->loader->add_filter( 'tkt_scs_register_shortcode_type', $this->declarations, 'declare_shortcodes_types_add_filter' );
 
@@ -245,6 +256,9 @@ class Tkt_Search_And_Filter {
 
 			$plugin_public = new Tkt_Search_And_Filter_Public( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version() );
 			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations );
+
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 			// Register the ShortCodes of this plugin.
 			foreach ( $this->declarations->shortcodes as $shortcode => $array ) {

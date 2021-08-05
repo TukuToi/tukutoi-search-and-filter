@@ -69,7 +69,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 * Outputs the Search Form.</br>
 	 * Mandatory to use when adding Search ShortCodes.
-	 * Group: `internal`.
 	 *
 	 * Example usage:
 	 * ```
@@ -147,7 +146,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 * Outputs the Search Results and loops over each item found.</br>
 	 * Mandatory to use when adding Search Results.
-	 * Group: `internal`.
 	 *
 	 * Example usage:
 	 * ```
@@ -162,8 +160,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $instance       The Instance used to bind this Loop section to a Search Form Section. Default: ''. Accepts: '', any valid string or number. Must match corresponding Search Form instance.
-	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
-	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 *      @type string    $type           For what type the query results are for. Default: 'post'. Accepts: valid post type, valid taxonomy type, valid user role.
 	 *      @type string    $error          The no results found message: Default ''. Accepts: valid string or HTML.
 	 * }
@@ -175,8 +171,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'instance'      => 'my_instance',
-				'customid'      => '',
-				'customclasses' => '',
 				'type'          => 'post',
 				'error'         => 'No Results Found',
 			),
@@ -231,7 +225,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 *
 		 * @since 2.0.0
 		 */
-		$results = $this->query->render_results( $query_args, $atts['instance'] );
+		$results = $this->query->results( $query_args, $atts['instance'] );
 
 		/**
 		 * Loop over the results and build the output.
@@ -284,8 +278,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $placeholder    The Search Input Placeholder. Default: 'Search...'. Accepts: valid string.
-	 *      @type string    $url_param      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
-	 *      @type string    $search_by      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
+	 *      @type string    $urlparam      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
+	 *      @type string    $searchby      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -297,8 +291,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'url_param'     => '_s',
-				'search_by'     => 's',
+				'urlparam'     => '_s',
+				'searchby'     => 's',
 				'customid'      => '',
 				'customclasses' => '',
 			),
@@ -319,11 +313,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-		$tkt_src_fltr['search_by'][ $atts['url_param'] ] = $atts['search_by'];
+		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['url_param'] . '">';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -337,7 +331,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * Can only be used inside a `[searchtemplate][/searchtemplate]` ShortCode.
 	 *
 	 * Example usage:
-	 * `[selectsearch placeholder="Search..." url_param="_s" search_by="title" type="s2multi" customid="my_id" customclasses="class_one classtwo"]`</br>
+	 * `[selectsearch placeholder="Search..." urlparam="_s" searchby="title" type="multiples2" customid="my_id" customclasses="class_one classtwo"]`</br>
 	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
 	 *
 	 * @since    2.0.0
@@ -345,9 +339,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $placeholder    The Search Input Placeholder. Default: 'Search...'. Accepts: valid string.
-	 *      @type string    $url_param      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
-	 *      @type string    $search_by      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
-	 *      @type string    $type           Type of Select. Default: 'simple'. Accepts: 'simple', 'multi', 's2simple', 's2multi'.
+	 *      @type string    $urlparam       URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
+	 *      @type string    $searchby       Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
+	 *      @type string    $type           Type of Select. Default: 'single'. Accepts: 'single', 'multiple', 'singleS2', 'multipleS2'.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -359,9 +353,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'url_param'     => '_s',
-				'search_by'     => 's',
-				'type'          => 'simple', // Simple, MultiSelect, and/or S2.
+				'urlparam'      => '_s',
+				'searchby'      => 's',
+				'type'          => 'single',
+				'post_type'     => 'post',
 				'customid'      => '',
 				'customclasses' => '',
 			),
@@ -371,9 +366,19 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Sanitize the User input atts.
 		foreach ( $atts as $key => $value ) {
-			$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+			if ( 'post_type' === $key ) {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+				if ( strpos( $atts['post_type'], ',' ) !== false ) {
+					$atts['post_type'] = explode( ',', $atts['type'] );
+				}
+			} else {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+			}
 		}
 
+		// The select Type - if multiple - needs a `[]` appended to name.
+		$multiple_name  = 'multiple' === $atts['type'] || 'multipleS2' === $atts['type'] ? '[]' : '';
+		$multiple_value = 'multiple' === $atts['type'] || 'multipleS2' === $atts['type'] ? 'multiple' : '';
 		/**
 		 * Global used to tag the current instance and map search URL parameters to search Query parameters.
 		 *
@@ -382,41 +387,168 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-		$tkt_src_fltr['search_by'][ $atts['url_param'] ] = $atts['search_by'];
+		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		/**
-		 * This currently is hardcoded. Provide a dynamic method to populate these.
+		 * Build a Select Input with either User, Term or Post Data.
 		 *
+		 * Use better_dropdown_users() for Users.
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_users/
+		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 *
+		 * Use better_dropdown_categories() for all Taxonomies.
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_categories/
+		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 *
+		 * Use get_posts for Posts (because it is faster than WP_Query for non-paginated lists).
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/get_posts/
 		 * @see example https://www.smashingmagazine.com/2016/03/advanced-wordpress-search-with-wp_query/
+		 * @see performance details https://wordpress.stackexchange.com/questions/1753/when-should-you-use-wp-query-vs-query-posts-vs-get-posts
 		 * @since 2.0.0
 		 */
-		$options_arr = array(
-			'1'     => 'hello-world',
-			'340'   => 'fsddas',
-		);
-
-		/**
-		 * Build our select input.
-		 *
-		 * @todo Currently this only supports a simple Select. Support multiple and as well S2.
-		 * @since 2.0.0
-		 */
-		$options = '<option value="">' . $atts['placeholder'] . '</option>';
-		foreach ( $options_arr as $value => $label ) {
-			$options .= '<option value="' . $value . '">' . $label . '</option>';
+		$post_query_vars = $this->declarations->data_map( 'post_query_vars' );
+		$value_field    = isset( $post_query_vars[ $atts['searchby'] ]['field'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['field'] )
+						: null;
+		$query_type     = isset( $post_query_vars[ $atts['searchby'] ]['type'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['type'] )
+						: null;
+		$callback       = isset( $post_query_vars[ $atts['searchby'] ]['cback'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['cback'] )
+						: null;
+		$values         = isset( $post_query_vars[ $atts['searchby'] ]['vals'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['vals'] )
+						: null;
+		switch ( $post_query_vars[ $atts['searchby'] ]['type'] ) {
+			case 'user':
+				$select_form = better_dropdown_users(
+					array(
+						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'multi'             => $multiple_value,
+						'show'              => 'display_name_with_login',
+						'value_field'       => $value_field,
+						'echo'              => false,
+						'name'              => $atts['urlparam'],
+						'id'                => $atts['customid'],
+						'class'             => $atts['customclasses'],
+					)
+				);
+				break;
+			case 'category':
+			case 'tag':
+			case 'taxonomy':
+				$select_form = better_dropdown_categories(
+					array(
+						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'show_count'        => true,
+						'echo'              => false,
+						'hierarchical'      => true,
+						'value_field'       => $value_field,
+						'taxonomy'          => $query_type,
+						'name'              => $atts['urlparam'],
+						'id'                => $atts['customid'],
+						'class'             => $atts['customclasses'],
+						'multi'             => $multiple_value,
+					)
+				);
+				break;
+			default:
+				/**
+				* Build our select input.
+				*
+				* This is a complicated beast.
+				* We cannot build this select with just hardcoded options, but also not by just dynamic Post Objet Options.
+				* For example, you may search by a dynamically populated post_types or post_statuses list, but those options
+				* exist only ONCE, not ONCE FOR EACH post. However, when we want to query say by pagename, then
+				* the select should offer options of each post, as each post will be distinct.
+				*
+				* Wether or not that is actually wise, is another question.
+				* This might be better removed in future in favour of a handpicked few options.
+				* For example, it makes poor sense to create a Select with pagenames, or IDs, or any other thing
+				* that is looped for each post.
+				* However, right now, it is up to the user how much sillyshness he/she/it wants to apply.
+				* The code is safe enough to handle it.
+				*
+				* The real power in these selects are Taxonomy, Author and Postmeta.
+				*
+				* @todo Currently this only supports a simple Select. Support multiple and as well S2.
+				* @todo Add postmeta support.
+				* @since 2.0.0
+				*/
+				if ( empty( $multiple_value ) ) {
+					$options = '<option value="">' . $atts['placeholder'] . '</option>';
+				}
+				if ( ! is_null( $value_field )
+					&& (
+						( ! is_array( $atts['post_type'] )
+							&& post_type_exists( $atts['post_type'] )
+						)
+						|| is_array( $atts['post_type'] )
+						&& (bool) array_product( array_map( 'post_type_exists', $atts['post_type'] ) ) === true
+					)
+				) {
+					// The Post Type or Post Types do exit but may not be an array if only one was passed.
+					if ( ! is_array( $atts['post_type'] ) ) {
+						$post_type = array( $atts['post_type'] );
+					}
+					$posts_data = get_posts(
+						array(
+							'numberposts'   => -1,
+							'post_type'     => $post_type,
+						)
+					);
+					foreach ( $posts_data as $key => $post_object ) {
+						$options .= '<option value="' . esc_attr( $post_object->post_status ) . '">' . esc_html( ucfirst( $post_object->post_status ) ) . '</option>';
+					}
+				} elseif ( ! is_null( $callback ) ) {
+					$callback_options = call_user_func( $callback );
+					foreach ( $callback_options as $option => $label ) {
+						$options .= '<option value="' . esc_attr( $option ) . '">' . esc_html( $label ) . '</option>';
+					}
+				} elseif ( ! is_null( $values ) ) {
+					foreach ( $values as $value => $label ) {
+						$options .= '<option value="' . esc_attr( $value ) . '">' . esc_html( $label ) . '</option>';
+					}
+				}
+				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . '>';
+				$select_form .= $options;
+				$select_form .= '</select>';
+				break;
 		}
-		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search .= '<select name="' . $atts['url_param'] . '" id="' . $atts['customid'] . '">';
-		$search .= $options;
-		$search .= '</select>';
 
 		/**
-		 * Return the search.
-		 * Currently all sanitized but when we will have dynamic options need to revisit sanitization.
+		 * Select2 is not needed unless we are in a Select ShortCode and declared Select2 instances.
 		 *
-		 * @todo check sanitization once dynamic options are added.
+		 * Save the users some headaches, usually plugins just throw the scripts on all pages...
+		 *
+		 * Here we:
+		 * 1. Enqueue Select2 CSS if needed.
+		 * 2. Enqueue Select2 JS if needed.
+		 * 3. Enqueue TukuToi JS if needed.
+		 * 4. Localise TukuToi JS if needed.
+		 *
+		 * @since 2.10.0
 		 */
-		return $search;
+		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
+			wp_enqueue_script( 'select2' );
+			wp_enqueue_style( 'select2' );
+			wp_enqueue_script( 'tkt-script' );
+			wp_localize_script(
+				'tkt-script',
+				'tkt_select2',
+				array(
+					'placeholder'   => $atts['placeholder'],
+					'instance'      => $atts['customid'],
+				)
+			);
+		}
+
+		// Return Select Form.
+		return $select_form;
 
 	}
 
