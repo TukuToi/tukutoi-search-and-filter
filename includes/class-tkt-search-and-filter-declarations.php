@@ -160,40 +160,187 @@ class Tkt_Search_And_Filter_Declarations {
 			'lte'   => esc_html__( 'Greater than or equal to', 'tkt-search-and-filter' ),
 		);
 
+		/**
+		 * The WP_Posts Query Variables
+		 *
+		 * @since 2.0.0
+		 * @return array {
+		 *      Multidimensional Array keyed by WP_Posts Query variables.
+		 *
+		 *      @type array $post_query_vars {
+		 *          Single WP_Posts Query option array, holding label and field to use.
+		 *
+		 *          @type string $label Label of WP_Query Variable as used in GUI.
+		 *          @type string $field The field to use when querying by this variable.
+		 *      }
+		 * }
+		 */
 		$post_query_vars = array(
-			'author'            => esc_html__( 'By Author ID', 'tkt-search-and-filter' ),
-			'author_name'       => esc_html__( 'By User NiceName', 'tkt-search-and-filter' ),
-			'author__in'        => esc_html__( 'By Authors in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'author__not_in'    => esc_html__( 'By Authors no in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'cat'               => esc_html__( 'By Category ID', 'tkt-search-and-filter' ),
-			'category_name'     => esc_html__( 'By Category Slug', 'tkt-search-and-filter' ),
-			'category__and'     => esc_html__( 'By Categories in all these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'category__in'      => esc_html__( 'By Categories in these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'category__not_in'  => esc_html__( 'By Categories not in any of these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'tag'               => esc_html__( 'By Tag Slug', 'tkt-search-and-filter' ),
-			'tag_id'            => esc_html__( 'By Tag ID', 'tkt-search-and-filter' ),
-			'tag__and'          => esc_html__( 'By Tags in all these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'tag__in'           => esc_html__( 'By Tags in these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'tag__not_in'       => esc_html__( 'By Tags not in any of these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'tag_slug__and'     => esc_html__( 'By Tags in all these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'tag_slug__in'      => esc_html__( 'By Tags in some of these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
-			's'                 => esc_html__( 'By Search keyword', 'tkt-search-and-filter' ),
-			'p'                 => esc_html__( 'By Post ID', 'tkt-search-and-filter' ),
-			'name'              => esc_html__( 'By Post Slug', 'tkt-search-and-filter' ),
-			'page_id'           => esc_html__( 'By Page ID', 'tkt-search-and-filter' ),
-			'pagename'          => esc_html__( 'By Page Slug', 'tkt-search-and-filter' ),
-			'post_parent'       => esc_html__( 'By Parent Page ID (If set to 0 returns all Parent Pages)', 'tkt-search-and-filter' ),
-			'post_parent__in'   => esc_html__( 'By Parent Page in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'post_parent__not_in'   => esc_html__( 'By Parent Page not in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
-			'post__in'          => esc_html__( 'By these IDs (Use "ignore_sticky_posts" to remove sticky posts)', 'tkt-search-and-filter' ),
-			'post__not_in'      => esc_html__( 'Not By these IDs', 'tkt-search-and-filter' ),
-			'post_name__in'     => esc_html__( 'By these Slugs', 'tkt-search-and-filter' ),
-			'has_password'      => esc_html__( 'By Password set or not (true for posts with passwords ; false for posts without passwords ; null for all posts with and without passwords)', 'tkt-search-and-filter' ),
-			'post_password'     => esc_html__( 'By Password', 'tkt-search-and-filter' ),
-			'post_type'         => esc_html__( 'By Post Type (For this to work you must include the post types in the loop)', 'tkt-search-and-filter' ),
-			'post_status'       => esc_html__( 'By Post Status', 'tkt-search-and-filter' ),
-			'comment_count'     => esc_html__( 'The amount of comments your CPT has to have ( Search operator will do a ‘=’ operation', 'tkt-search-and-filter' ),
-			'comment_count'     => esc_html__( 'By Comment Count', 'tkt-search-and-filter' ),
+			'author'            => array(
+				'label' => esc_html__( 'By Author ID', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'user',
+			),
+			'author_name'       => array(
+				'label' => esc_html__( 'By User NiceName', 'tkt-search-and-filter' ),
+				'field' => 'user_nicename',
+				'type'  => 'user',
+			),
+			'author__in'        => array(
+				'label' => esc_html__( 'By Authors in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'user',
+			),
+			'author__not_in'    => array(
+				'label' => esc_html__( 'By Authors no in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'user',
+			),
+			'cat'               => array(
+				'label' => esc_html__( 'By Category ID', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'category',
+			),
+			'category_name'     => array(
+				'label' => esc_html__( 'By Category Slug', 'tkt-search-and-filter' ),
+				'field' => 'slug',
+				'type'  => 'category',
+			),
+			'category__and'     => array(
+				'label' => esc_html__( 'By Categories in all these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'category',
+			),
+			'category__in'      => array(
+				'label' => esc_html__( 'By Categories in these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'category',
+			),
+			'category__not_in'  => array(
+				'label' => esc_html__( 'By Categories not in any of these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'category',
+			),
+			'tag'               => array(
+				'label' => esc_html__( 'By Tag Slug', 'tkt-search-and-filter' ),
+				'field' => 'term_slug',
+				'type'  => 'tag',
+			),
+			'tag_id'            => array(
+				'label' => esc_html__( 'By Tag ID', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'tag',
+			),
+			'tag__and'          => array(
+				'label' => esc_html__( 'By Tags in all these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'tag',
+			),
+			'tag__in'           => array(
+				'label' => esc_html__( 'By Tags in these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'tag',
+			),
+			'tag__not_in'       => array(
+				'label' => esc_html__( 'By Tags not in any of these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_id',
+				'type'  => 'tag',
+			),
+			'tag_slug__and'     => array(
+				'label' => esc_html__( 'By Tags in all these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_slug',
+				'type'  => 'tag',
+			),
+			'tag_slug__in'      => array(
+				'label' => esc_html__( 'By Tags in some of these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'term_slug',
+				'type'  => 'tag',
+			),
+			's'                 => array(
+				'label' => esc_html__( 'By Search keyword', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'p'                 => array(
+				'label' => esc_html__( 'By Post ID', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'name'              => array(
+				'label' => esc_html__( 'By Post Slug', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'page_id'           => array(
+				'label' => esc_html__( 'By Page ID', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'page',
+			),
+			'pagename'          => array(
+				'label' => esc_html__( 'By Page Slug', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'page',
+			),
+			'post_parent'       => array(
+				'label' => esc_html__( 'By Parent Page ID (If set to 0 returns all Parent Pages)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'post_parent__in'   => array(
+				'label' => esc_html__( 'By Parent Page in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'post_parent__not_in'   => array(
+				'label' => esc_html__( 'By Parent Page not in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'post__in'          => array(
+				'label' => esc_html__( 'By these IDs (Use "ignore_sticky_posts" to remove sticky posts)', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'post__not_in'      => array(
+				'label' => esc_html__( 'Not By these IDs', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'post_name__in'     => array(
+				'label' => esc_html__( 'By these Slugs', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
+			'has_password'      => array(
+				'label' => esc_html__( 'By Password set or not (true for posts with passwords ; false for posts without passwords ; null for all posts with and without passwords)', 'tkt-search-and-filter' ),
+				'vals' 	=> array( 'true' => 'Yes' , 'false' => 'No' ),
+				'type'  => 'post',
+			),
+			'post_password'     => array(
+				'label' => esc_html__( 'By Password', 'tkt-search-and-filter' ),
+				'field' => 'post_password',
+				'type'  => 'post',
+			),
+			'post_type'         => array(
+				'label' => esc_html__( 'By Post Type (For this to work you must include the post types in the loop)', 'tkt-search-and-filter' ),
+				'cback' => 'get_post_types',
+				'type'  => 'post',
+			),
+			'post_status'       => array(
+				'label' => esc_html__( 'By Post Status', 'tkt-search-and-filter' ),
+				'cback'	=> 'get_post_statuses',
+				'type'  => 'post',
+			),
+			'comment_count'     => array(
+				'label' => esc_html__( 'The amount of comments your CPT has to have ( Search operator will do a ‘=’ operation', 'tkt-search-and-filter' ),
+				'field' => 'comment_count',
+				'type'  => 'post',
+			),
+			'comment_count'     => array(
+				'label' => esc_html__( 'By Comment Count', 'tkt-search-and-filter' ),
+				'field' => 'ID',
+				'type'  => 'post',
+			),
 		);
 
 		$shortcode_types = array(

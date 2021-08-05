@@ -117,6 +117,16 @@ class Tkt_Search_And_Filter {
 	private function load_dependencies() {
 
 		/**
+		 * WordPress / ClassicPress are great toolset but something is wrong about them. This file provides
+		 * fixes for those wrongdoings.
+		 * `worcpress` stands for `WORd- and ClassicPRESSS`
+		 *
+		 * @todo move this to actual core.
+		 * @since 2.0.0
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/tkt-search-and-filter-fix-worcpress.php';
+
+		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */

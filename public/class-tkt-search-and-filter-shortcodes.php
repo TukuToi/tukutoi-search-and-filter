@@ -225,7 +225,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 *
 		 * @since 2.0.0
 		 */
-		$results = $this->query->render_results( $query_args, $atts['instance'] );
+		$results = $this->query->results( $query_args, $atts['instance'] );
 
 		/**
 		 * Loop over the results and build the output.
@@ -341,7 +341,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      @type string    $placeholder    The Search Input Placeholder. Default: 'Search...'. Accepts: valid string.
 	 *      @type string    $urlparam       URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
 	 *      @type string    $searchby       Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
-	 *      @type string    $type           Type of Select. Default: 'simple'. Accepts: 'single', 'multiple', 'singles2', 'multiples2'.
+	 *      @type string    $type           Type of Select. Default: 'single'. Accepts: 'single', 'multiple', 'singleS2', 'multipleS2'.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -353,9 +353,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'urlparam'     => '_s',
-				'searchby'     => 's',
-				'type'          => 'simple', // Simple, MultiSelect, and/or S2.
+				'urlparam'      => '_s',
+				'searchby'      => 's',
+				'type'          => 'single',
+				'post_type'     => 'post',
 				'customid'      => '',
 				'customclasses' => '',
 			),
@@ -365,9 +366,19 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Sanitize the User input atts.
 		foreach ( $atts as $key => $value ) {
-			$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+			if ( 'post_type' === $key ) {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+				if ( strpos( $atts['post_type'], ',' ) !== false ) {
+					$atts['post_type'] = explode( ',', $atts['type'] );
+				}
+			} else {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+			}
 		}
 
+		// The select Type - if multiple - needs a `[]` appended to name.
+		$multiple_name  = 'multiple' === $atts['type'] || 'multipleS2' === $atts['type'] ? '[]' : '';
+		$multiple_value = 'multiple' === $atts['type'] || 'multipleS2' === $atts['type'] ? 'multiple' : '';
 		/**
 		 * Global used to tag the current instance and map search URL parameters to search Query parameters.
 		 *
@@ -379,38 +390,136 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		/**
-		 * This currently is hardcoded. Provide a dynamic method to populate these.
+		 * Build a Select Input with either User, Term or Post Data.
 		 *
+		 * Use better_dropdown_users() for Users.
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_users/
+		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 *
+		 * Use better_dropdown_categories() for all Taxonomies.
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_categories/
+		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 *
+		 * Use get_posts for Posts (because it is faster than WP_Query for non-paginated lists).
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/get_posts/
 		 * @see example https://www.smashingmagazine.com/2016/03/advanced-wordpress-search-with-wp_query/
+		 * @see performance details https://wordpress.stackexchange.com/questions/1753/when-should-you-use-wp-query-vs-query-posts-vs-get-posts
 		 * @since 2.0.0
 		 */
-		$options_arr = array(
-			'1'     => 'hello-world',
-			'340'   => 'fsddas',
-		);
-
-		/**
-		 * Build our select input.
-		 *
-		 * @todo Currently this only supports a simple Select. Support multiple and as well S2.
-		 * @since 2.0.0
-		 */
-		$options = '<option value="">' . $atts['placeholder'] . '</option>';
-		foreach ( $options_arr as $value => $label ) {
-			$options .= '<option value="' . $value . '">' . $label . '</option>';
+		$post_query_vars = $this->declarations->data_map( 'post_query_vars' );
+		$value_field    = isset( $post_query_vars[ $atts['searchby'] ]['field'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['field'] )
+						: null;
+		$query_type     = isset( $post_query_vars[ $atts['searchby'] ]['type'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['type'] )
+						: null;
+		$callback       = isset( $post_query_vars[ $atts['searchby'] ]['cback'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['cback'] )
+						: null;
+		$values         = isset( $post_query_vars[ $atts['searchby'] ]['vals'] )
+						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['vals'] )
+						: null;
+		switch ( $post_query_vars[ $atts['searchby'] ]['type'] ) {
+			case 'user':
+				$select_form = better_dropdown_users(
+					array(
+						'show_option_all'   => $atts['placeholder'],
+						'multi'             => $multiple_value,
+						'show'              => 'display_name_with_login',
+						'value_field'       => $value_field,
+						'echo'              => false,
+						'name'              => $atts['urlparam'],
+						'id'                => $atts['customid'],
+						'class'             => $atts['customclasses'],
+					)
+				);
+				break;
+			case 'category':
+			case 'tag':
+			case 'taxonomy':
+				$select_form = better_dropdown_categories(
+					array(
+						'show_option_all'   => $atts['placeholder'],
+						'show_count'        => true,
+						'echo'              => false,
+						'hierarchical'      => true,
+						'value_field'       => $value_field,
+						'taxonomy'          => $query_type,
+						'name'              => $atts['urlparam'],
+						'id'                => $atts['customid'],
+						'class'             => $atts['customclasses'],
+						'multi'             => $multiple_value,
+					)
+				);
+				break;
+			default:
+				/**
+				* Build our select input.
+				*
+				* This is a complicated beast.
+				* We cannot build this select with just hardcoded options, but also not by just dynamic Post Objet Options.
+				* For example, you may search by a dynamically populated post_types or post_statuses list, but those options
+				* exist only ONCE, not ONCE FOR EACH post. However, when we want to query say by pagename, then
+				* the select should offer options of each post, as each post will be distinct.
+				*
+				* Wether or not that is actually wise, is another question.
+				* This might be better removed in future in favour of a handpicked few options.
+				* For example, it makes poor sense to create a Select with pagenames, or IDs, or any other thing
+				* that is looped for each post.
+				* However, right now, it is up to the user how much sillyshness he/she/it wants to apply.
+				* The code is safe enough to handle it.
+				*
+				* The real power in these selects are Taxonomy, Author and Postmeta.
+				*
+				* @todo Currently this only supports a simple Select. Support multiple and as well S2.
+				* @todo Add postmeta support.
+				* @since 2.0.0
+				*/
+				$options = '<option value="">' . $atts['placeholder'] . '</option>';
+				if ( ! is_null( $value_field )
+					&& (
+						( ! is_array( $atts['post_type'] )
+							&& post_type_exists( $atts['post_type'] )
+						)
+						|| is_array( $atts['post_type'] )
+						&& (bool) array_product( array_map( 'post_type_exists', $atts['post_type'] ) ) === true
+					)
+				) {
+					// The Post Type or Post Types do exit but may not be an array if only one was passed.
+					if ( ! is_array( $atts['post_type'] ) ) {
+						$post_type = array( $atts['post_type'] );
+					}
+					$posts_data = get_posts(
+						array(
+							'numberposts'   => -1,
+							'post_type'     => $post_type,
+						)
+					);
+					foreach ( $posts_data as $key => $post_object ) {
+						$options .= '<option value="' . esc_attr( $post_object->post_status ) . '">' . esc_html( ucfirst( $post_object->post_status ) ) . '</option>';
+					}
+				} elseif ( ! is_null( $callback ) ) {
+					$callback_options = call_user_func( $callback );
+					foreach ( $callback_options as $option => $label ) {
+						$options .= '<option value="' . esc_attr( $option ) . '">' . esc_html( $label ) . '</option>';
+					}
+				} elseif ( ! is_null( $values ) ) {
+					foreach ( $values as $value => $label ) {
+						$options .= '<option value="' . esc_attr( $value ) . '">' . esc_html( $label ) . '</option>';
+					}
+				}
+				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . '>';
+				$select_form .= $options;
+				$select_form .= '</select>';
+				break;
 		}
-		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search .= '<select name="' . $atts['urlparam'] . '" id="' . $atts['customid'] . '">';
-		$search .= $options;
-		$search .= '</select>';
 
-		/**
-		 * Return the search.
-		 * Currently all sanitized but when we will have dynamic options need to revisit sanitization.
-		 *
-		 * @todo check sanitization once dynamic options are added.
-		 */
-		return $search;
+		// Return Select Form.
+		return $select_form;
 
 	}
 

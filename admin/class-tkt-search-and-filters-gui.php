@@ -124,10 +124,10 @@ class Tkt_Search_And_Filters_Gui {
 
 		$query_vars = $this->declarations->data_map( 'post_query_vars' );
 
-		foreach ( $query_vars as $query_var => $label ) {
+		foreach ( $query_vars as $query_var => $array ) {
 
 			$selected = 's' === $query_var ? 'selected' : '';
-			printf( '<option value="%s" ' . esc_attr( $selected ) . '>%s</option>', esc_attr( $query_var ), esc_html( $label ) );
+			printf( '<option value="%s" ' . esc_attr( $selected ) . '>%s</option>', esc_attr( $query_var ), esc_html( $array['label'] ) );
 		}
 
 		add_filter(

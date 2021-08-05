@@ -64,19 +64,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
-	 * Set The Unique Instance.
-	 *
-	 * @since   2.0.0
-	 * @param   string $instance  The Unique instance of Search and Loop to "connect" them.
-	 * @access  private
-	 */
-	public function set_instance( $instance ) {
-
-		$this->instance = $instance;
-
-	}
-
-	/**
 	 * Bootstrap the Loop
 	 *
 	 * @since   1.0.0
@@ -84,15 +71,26 @@ class Tkt_Search_And_Filter_Posts_Query {
 	 * @param   string $instance                 The Unique instance of Search and Loop to "connect" them.
 	 * @access  public
 	 */
-	public function render_results( $default_query_args, $instance ) {
+	public function results( $default_query_args, $instance ) {
 
 		$this->set_instance( $instance );
 
 		$this->set_query_args( $default_query_args );
 
-		$this->set_query_results();
-
 		return $this->get_query_results();
+
+	}
+
+	/**
+	 * Set The Unique Instance.
+	 *
+	 * @since   2.0.0
+	 * @param   string $instance  The Unique instance of Search and Loop to "connect" them.
+	 * @access  private
+	 */
+	private function set_instance( $instance ) {
+
+		$this->instance = $instance;
 
 	}
 
@@ -118,6 +116,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.0.0\
 		 */
 		$query_args = $default_query_args;
+		$new_query  = array();
 		if ( isset( $this->instance )
 			&& isset( $_GET )
 			&& is_array( $_GET )
@@ -137,7 +136,14 @@ class Tkt_Search_And_Filter_Posts_Query {
 					 * @since 2.0.0
 					 */
 					$key = $this->sanitizer->sanitize( 'text_field', $key );
-					$value = $this->sanitizer->sanitize( 'text_field', $value );
+					if ( ! is_array( $value ) ) {
+						// If just one value was added to $key, like key=val.
+						$value = $this->sanitizer->sanitize( 'text_field', $value );
+					} elseif ( is_array( $value ) ) {
+						// If an array was passed, such as key[]=value_one,valuetwo.
+						$value = array_map( array( $this->sanitizer, 'sanitize' ), array( 'text_field' ), $value );
+					}
+
 					/**
 					 * Set the new URL Parms to query args.
 					 *
@@ -150,12 +156,17 @@ class Tkt_Search_And_Filter_Posts_Query {
 					 * @since 2.0.0
 					 */
 					if ( array_key_exists( $key, $tkt_src_fltr['searchby'] ) ) {
-						$new_query[ $tkt_src_fltr['searchby'][ $key ] ] = is_numeric( $value ) ? (int) $value : $value;
+						// null check.
+						$value = empty( $value ) || ! isset( $value ) ? null : $value;
+						// boolean check.
+						$value = 'true' === $value ? true : ( 'false' === $value ? false : $value );
+						// numeric check.
+						$value = is_numeric( $value ) ? (int) $value : $value;
+						$new_query[ $tkt_src_fltr['searchby'][ $key ] ] = $value;
 					}
 				}
-
 				// Merge URL query args into default Query Args.
-				$query_args = array_merge( $new_query, $default_query_args );
+				$query_args = array_merge( $default_query_args, $new_query );
 
 			}
 		}
@@ -178,23 +189,14 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
-	 * Set the Query Results
-	 *
-	 * @since    1.0.0
-	 */
-	private function set_query_results() {
-
-		$this->query_results = new WP_Query( $this->get_query_args() );
-
-	}
-
-	/**
 	 * Get the Query results.
 	 *
 	 * @since   1.0.0
 	 * @return  array $this->query_results   The Query Results.
 	 */
 	private function get_query_results() {
+
+		$this->query_results = new WP_Query( $this->get_query_args() );
 
 		return $this->query_results;
 

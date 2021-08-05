@@ -8,6 +8,12 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.9.0 =
+* [Added] Full support for User, Taxonomy and Post Select Search Dropdowns
+* [Added] Full support for Select Dropdowns single and multiple type
+* [Added] Fixed the two core functions for user and taxonomy dropdowns and added to a (hopefully temporary) plugin file
+* [Added] Added full support for all possible Post Query Vars
+
 = 2.5.1 =
 * [Fixed] Avoid PHP Notice when URL unknown URL param is passed
 * [Changed] Search Template ShortCode is not anymore internal and thus user can insert thru GUI
