@@ -77,6 +77,18 @@ class Tkt_Search_And_Filter_Admin {
 	}
 
 	/**
+	 * Register the stylesheets for the admin area.
+	 *
+	 * @since    1.0.0
+	 * @param string $hook_suffix The current admin page.
+	 */
+	public function enqueue_styles( $hook_suffix ) {
+
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/tkt-search-and-filter-admin.css', array(), $this->version, 'all' );
+
+	}
+
+	/**
 	 * Add ShortCodes to the GUI.
 	 *
 	 * This happens only if TukuToi ShortCodes is active.

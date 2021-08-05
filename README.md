@@ -8,6 +8,14 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.5.1 =
+* [Fixed] Avoid PHP Notice when URL unknown URL param is passed
+* [Changed] Search Template ShortCode is not anymore internal and thus user can insert thru GUI
+* [Added] Search Template ShortCode form has now nice notices about correct usage
+* [Added] Results Loop ShortCode form has now nice notices about correct usage and functioning GUI
+* [Added] Search ShortCodes "Search By" options for post query
+* [Added] Button ShortCodes options
+
 = 2.0.0 =
 * [Changed] Using new Plugin structure
 * [Changed] Removed templating system and added in-editor templating

@@ -1,0 +1,12 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+.tkt-notice-widgets{
+    margin: 10px 0px 10px 0px;
+}
+.tkt-highlight-widget,
+.tkt-error-widget {
+    padding: 0px 15px 0px 15px;
+}

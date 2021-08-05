@@ -138,7 +138,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 					 */
 					$key = $this->sanitizer->sanitize( 'text_field', $key );
 					$value = $this->sanitizer->sanitize( 'text_field', $value );
-
 					/**
 					 * Set the new URL Parms to query args.
 					 *
@@ -146,10 +145,13 @@ class Tkt_Search_And_Filter_Posts_Query {
 					 *
 					 * Additionally check for numbers and cast those.
 					 *
+					 * Only add if key (url param) exists.
+					 *
 					 * @since 2.0.0
 					 */
-					$new_query[ $tkt_src_fltr['search_by'][ $key ] ] = is_numeric( $value ) ? (int) $value : $value;
-
+					if ( array_key_exists( $key, $tkt_src_fltr['searchby'] ) ) {
+						$new_query[ $tkt_src_fltr['searchby'][ $key ] ] = is_numeric( $value ) ? (int) $value : $value;
+					}
 				}
 
 				// Merge URL query args into default Query Args.

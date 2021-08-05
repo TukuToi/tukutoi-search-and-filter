@@ -69,7 +69,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 * Outputs the Search Form.</br>
 	 * Mandatory to use when adding Search ShortCodes.
-	 * Group: `internal`.
 	 *
 	 * Example usage:
 	 * ```
@@ -147,7 +146,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 * Outputs the Search Results and loops over each item found.</br>
 	 * Mandatory to use when adding Search Results.
-	 * Group: `internal`.
 	 *
 	 * Example usage:
 	 * ```
@@ -162,8 +160,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $instance       The Instance used to bind this Loop section to a Search Form Section. Default: ''. Accepts: '', any valid string or number. Must match corresponding Search Form instance.
-	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
-	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 *      @type string    $type           For what type the query results are for. Default: 'post'. Accepts: valid post type, valid taxonomy type, valid user role.
 	 *      @type string    $error          The no results found message: Default ''. Accepts: valid string or HTML.
 	 * }
@@ -175,8 +171,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'instance'      => 'my_instance',
-				'customid'      => '',
-				'customclasses' => '',
 				'type'          => 'post',
 				'error'         => 'No Results Found',
 			),
@@ -284,8 +278,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $placeholder    The Search Input Placeholder. Default: 'Search...'. Accepts: valid string.
-	 *      @type string    $url_param      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
-	 *      @type string    $search_by      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
+	 *      @type string    $urlparam      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
+	 *      @type string    $searchby      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -297,8 +291,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'url_param'     => '_s',
-				'search_by'     => 's',
+				'urlparam'     => '_s',
+				'searchby'     => 's',
 				'customid'      => '',
 				'customclasses' => '',
 			),
@@ -319,11 +313,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-		$tkt_src_fltr['search_by'][ $atts['url_param'] ] = $atts['search_by'];
+		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['url_param'] . '">';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -337,7 +331,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * Can only be used inside a `[searchtemplate][/searchtemplate]` ShortCode.
 	 *
 	 * Example usage:
-	 * `[selectsearch placeholder="Search..." url_param="_s" search_by="title" type="s2multi" customid="my_id" customclasses="class_one classtwo"]`</br>
+	 * `[selectsearch placeholder="Search..." urlparam="_s" searchby="title" type="multiples2" customid="my_id" customclasses="class_one classtwo"]`</br>
 	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
 	 *
 	 * @since    2.0.0
@@ -345,9 +339,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $placeholder    The Search Input Placeholder. Default: 'Search...'. Accepts: valid string.
-	 *      @type string    $url_param      URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
-	 *      @type string    $search_by      Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
-	 *      @type string    $type           Type of Select. Default: 'simple'. Accepts: 'simple', 'multi', 's2simple', 's2multi'.
+	 *      @type string    $urlparam       URL parameter to use. Default: '_s'. Accepts: valid URL search parameter.
+	 *      @type string    $searchby       Query Parameter. Default: 's'. Accepts: valid WP Query Parmater.
+	 *      @type string    $type           Type of Select. Default: 'simple'. Accepts: 'single', 'multiple', 'singles2', 'multiples2'.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -359,8 +353,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'url_param'     => '_s',
-				'search_by'     => 's',
+				'urlparam'     => '_s',
+				'searchby'     => 's',
 				'type'          => 'simple', // Simple, MultiSelect, and/or S2.
 				'customid'      => '',
 				'customclasses' => '',
@@ -382,7 +376,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-		$tkt_src_fltr['search_by'][ $atts['url_param'] ] = $atts['search_by'];
+		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		/**
 		 * This currently is hardcoded. Provide a dynamic method to populate these.
@@ -406,7 +400,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 			$options .= '<option value="' . $value . '">' . $label . '</option>';
 		}
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search .= '<select name="' . $atts['url_param'] . '" id="' . $atts['customid'] . '">';
+		$search .= '<select name="' . $atts['urlparam'] . '" id="' . $atts['customid'] . '">';
 		$search .= $options;
 		$search .= '</select>';
 
