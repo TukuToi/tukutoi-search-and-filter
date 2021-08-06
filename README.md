@@ -8,6 +8,9 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.11.0 =
+* [Added] AJAX search support
+
 = 2.10.0 =
 * [Added] Optional Select2 Support in Select Search Inputs on front end
 

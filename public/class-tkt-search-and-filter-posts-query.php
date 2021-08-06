@@ -64,18 +64,140 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
+	 * Set the type of Query request
+	 *
+	 * @param string $type ajax|''.
+	 */
+	public function set_type( $type ) {
+
+		$this->type = $type;
+
+	}
+
+	/**
+	 * Get the type of Query request
+	 */
+	public function get_type() {
+
+		return $this->type;
+
+	}
+
+	/**
+	 * The Query Results (non ajax)
+	 *
+	 * @param mixed $content The ShortCode enclosing content.
+	 */
+	public function the_loop( $content ) {
+
+		$results = $this->results( $this->get_query_args() );
+		/**
+		 * Loop over the results and build the output.
+		 *
+		 * @since 2.0.0
+		 */
+		$out = '';
+		if ( $results->have_posts() ) {
+			while ( $results->have_posts() ) {
+				$results->the_post();
+				/**
+				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
+				 *
+				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
+				 * @since 2.0.0
+				 */
+				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
+				$processed_content = do_shortcode( $content, false );
+				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
+			}
+			wp_reset_postdata();
+		} else {
+			/**
+			 * No results found.
+			 *
+			 * This is already sanitized.
+			 *
+			 * @since 2.0.0
+			 */
+			$out = 'no results';
+		}
+
+		return $out;
+
+	}
+
+	/**
+	 * The Query Results (ajax)
+	 */
+	public function the_ajax_loop() {
+
+		if ( ! is_array( $_GET )
+			|| ! isset( $_GET['instance'] )
+			|| ! isset( $_GET['query_args'] )
+			|| ! isset( $_GET['content'] )
+		) {
+
+			echo json_encode( 'Request is malformed' );
+
+			die();
+
+		}
+		$instance = sanitize_text_field( wp_unslash( $_GET['instance'] ) );
+		$default_query_args = $_GET['query_args'];
+		$content = wp_kses_post( wp_unslash( $_GET['content'] ) );
+
+		$this->set_instance( $instance );
+		$this->set_query_args( $default_query_args );
+
+		$results = $this->results( $this->get_query_args() );
+
+		/**
+		 * Loop over the results and build the output.
+		 *
+		 * @since 2.0.0
+		 */
+		$out = '';
+		if ( $results->have_posts() ) {
+			while ( $results->have_posts() ) {
+				$results->the_post();
+				/**
+				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
+				 *
+				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
+				 * @since 2.0.0
+				 */
+				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
+				$processed_content = do_shortcode( $content, false );
+				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
+			}
+			wp_reset_postdata();
+		} else {
+			/**
+			 * No results found.
+			 *
+			 * This is already sanitized.
+			 *
+			 * @since 2.0.0
+			 */
+			$out = 'no results';
+		}
+
+		echo json_encode( $out );
+
+		die();
+
+	}
+
+	/**
 	 * Bootstrap the Loop
 	 *
 	 * @since   1.0.0
-	 * @param   array  $default_query_args        Default Query args passed to the Loop Renderer.
-	 * @param   string $instance                 The Unique instance of Search and Loop to "connect" them.
+	 * @param   array $query_args        Default Query args passed to the Loop Renderer.
 	 * @access  public
 	 */
-	public function results( $default_query_args, $instance ) {
+	private function results( $query_args ) {
 
-		$this->set_instance( $instance );
-
-		$this->set_query_args( $default_query_args );
+		$this->set_query_args( $query_args );
 
 		return $this->get_query_results();
 
@@ -88,7 +210,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 	 * @param   string $instance  The Unique instance of Search and Loop to "connect" them.
 	 * @access  private
 	 */
-	private function set_instance( $instance ) {
+	public function set_instance( $instance ) {
 
 		$this->instance = $instance;
 
@@ -101,7 +223,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 	 * @param   array $default_query_args   Default Query args passed to the Loop Renderer.
 	 * @access  private
 	 */
-	private function set_query_args( $default_query_args ) {
+	public function set_query_args( $default_query_args ) {
 
 		/**
 		 * Global used to tag the current instance and map search URL parameters to search Query parameters.
@@ -109,7 +231,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-
 		/**
 		 * Map our URL parameters to the default query args and build the final args to pass to WP Query.
 		 *
@@ -117,6 +238,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 */
 		$query_args = $default_query_args;
 		$new_query  = array();
+
 		if ( isset( $this->instance )
 			&& isset( $_GET )
 			&& is_array( $_GET )
@@ -155,7 +277,11 @@ class Tkt_Search_And_Filter_Posts_Query {
 					 *
 					 * @since 2.0.0
 					 */
-					if ( array_key_exists( $key, $tkt_src_fltr['searchby'] ) ) {
+					if ( ! is_null( $tkt_src_fltr )
+						&& ! empty( $tkt_src_fltr )
+						&& isset( $tkt_src_fltr['searchby'] )
+						&& array_key_exists( $key, $tkt_src_fltr['searchby'] )
+					) {
 						// null check.
 						$value = empty( $value ) || ! isset( $value ) ? null : $value;
 						// boolean check.
@@ -163,11 +289,11 @@ class Tkt_Search_And_Filter_Posts_Query {
 						// numeric check.
 						$value = is_numeric( $value ) ? (int) $value : $value;
 						$new_query[ $tkt_src_fltr['searchby'][ $key ] ] = $value;
+
 					}
 				}
 				// Merge URL query args into default Query Args.
 				$query_args = array_merge( $default_query_args, $new_query );
-
 			}
 		}
 
