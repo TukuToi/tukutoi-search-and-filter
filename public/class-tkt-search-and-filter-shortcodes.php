@@ -53,14 +53,14 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * @param      string $version          The version of this plugin.
 	 * @param      string $declarations    The Configuration object.
 	 */
-	public function __construct( $plugin_prefix, $version, $declarations ) {
+	public function __construct( $plugin_prefix, $version, $declarations, $query, $sanitizer ) {
 
 		$this->plugin_prefix    = $plugin_prefix;
 		$this->version          = $version;
 		$this->declarations     = $declarations;
 
-		$this->sanitizer        = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
-		$this->query            = new Tkt_Search_And_Filter_Posts_Query( $this->sanitizer );
+		$this->sanitizer        = $sanitizer;
+		$this->query            = $query;
 
 	}
 
@@ -94,6 +94,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'instance'          => 'my_instance',
+				'type'              => 'reload', // ajax or reload
 				'customid'          => '',
 				'customclasses'     => '',
 			),
@@ -110,14 +111,16 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * Global used to tag the current instance and map search URL parameters to search Query parameters.
 		 *
 		 * Set the current instance.
+		 * Set the search type (ajax or reload).
 		 *
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
+		$this->query->set_type( $atts['type'] );
 		$tkt_src_fltr['instance'] = $atts['instance'];
 
 		// Build the Form Start.
-		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET">';
+		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET" data-tkt-ajax-src-form="' . $atts['instance'] . '">';
 
 		/**
 		 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
@@ -218,44 +221,38 @@ class Tkt_Search_And_Filter_Shortcodes {
 		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
 		$query_args = array_merge( $default_query_args, $atts );
 
-		/**
-		 * Get all results of the Query.
-		 *
-		 * @todo This currently only works with Post Query, make it work with User and Term query.
-		 *
-		 * @since 2.0.0
-		 */
-		$results = $this->query->results( $query_args, $atts['instance'] );
-
-		/**
-		 * Loop over the results and build the output.
-		 *
-		 * @since 2.0.0
-		 */
-		$out = '';
-		if ( $results->have_posts() ) {
-			while ( $results->have_posts() ) {
-				$results->the_post();
-				/**
-				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
-				 *
-				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
-				 * @since 2.0.0
-				 */
-				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
-				$processed_content = do_shortcode( $content, false );
-				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
-			}
-			wp_reset_postdata();
-		} else {
+		// Get our loop.
+		$this->query->set_instance( $atts['instance'] );
+		$this->query->set_query_args( $query_args );
+		$out = $this->query->the_loop( $content, $atts['error'] );
+		// If it is an AJAX search.
+		if ( 'ajax' === $this->query->get_type() ) {
 			/**
-			 * No results found.
+			 * AJAX not needed unless we are in a AJAX Search.
 			 *
-			 * This is already sanitized.
+			 * Save the users some headaches, usually plugins just throw the scripts on all pages...
 			 *
-			 * @since 2.0.0
+			 * Here we:
+			 * 1. Enqueue TukuToi AJAX if needed.
+			 * 2. Localise TukuToi AJAX object if needed.
+			 *
+			 * @since 2.10.0
 			 */
-			$out = $atts['error'];
+			wp_enqueue_script( 'tkt-ajax-js' );
+			wp_localize_script(
+				'tkt-ajax-js',
+				'tkt_ajax_params',
+				array(
+					'is_doing_ajax' => true,
+					'ajax_url'  => admin_url( 'admin-ajax.php' ),
+					'content'   => $content,
+					'instance'  => $atts['instance'],
+					'query_args' => $query_args,
+					'error'     => $atts['error'],
+				)
+			);
+			// If it is an AJAX search we need some container to push data results to.
+			$out = '<div id="' . $atts['instance'] . '" data-tkt-ajax-src-loop="' . $atts['instance'] . '"></div>';
 		}
 
 		// Return our output. Already sanitized.
@@ -317,7 +314,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '">';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" data-tkt-ajax-src="' . $atts['searchby'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -434,6 +431,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 						'name'              => $atts['urlparam'],
 						'id'                => $atts['customid'],
 						'class'             => $atts['customclasses'],
+						'data_attr'			=> $atts['searchby'],
 					)
 				);
 				break;
@@ -452,6 +450,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 						'id'                => $atts['customid'],
 						'class'             => $atts['customclasses'],
 						'multi'             => $multiple_value,
+						'data_attr'			=> $atts['searchby'],
 					)
 				);
 				break;
@@ -514,7 +513,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 					}
 				}
 				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . '>';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' data-tkt-ajax-src="' . $atts['searchby'] . '">';
 				$select_form .= $options;
 				$select_form .= '</select>';
 				break;
@@ -536,7 +535,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'tkt-script' );
 			wp_localize_script(
 				'tkt-script',
 				'tkt_select2',
@@ -545,6 +543,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 					'instance'      => $atts['customid'],
 				)
 			);
+			wp_enqueue_script( 'tkt-script' );
 		}
 
 		// Return Select Form.
@@ -620,6 +619,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$button .= ! empty( $atts['name'] ) ? ' name="' . $atts['name'] . '"' : '';
 		$button .= ! empty( $atts['value'] ) ? ' value="' . $atts['value'] . '"' : '';
 		$button .= ! empty( $atts['formtarget'] ) ? 'formtarget="' . $atts['formtarget'] . '"' : '';
+		$button .= ! empty( $atts['customid'] ) ? 'id="' . $atts['customid'] . '"' : '';
+		$button .= ! empty( $atts['customclasses'] ) ? 'class="' . $atts['customclasses'] . '"' : '';
 		$button .= '>' . $atts['label'] . '</button>';
 
 		// Return our Button, all inputs are sanitized.
