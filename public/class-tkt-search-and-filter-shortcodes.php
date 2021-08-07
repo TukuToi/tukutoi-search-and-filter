@@ -224,7 +224,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		// Get our loop.
 		$this->query->set_instance( $atts['instance'] );
 		$this->query->set_query_args( $query_args );
-		$out = $this->query->the_loop( $content );
+		$out = $this->query->the_loop( $content, $atts['error'] );
 		// If it is an AJAX search.
 		if ( 'ajax' === $this->query->get_type() ) {
 			/**

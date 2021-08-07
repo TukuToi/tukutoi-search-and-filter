@@ -16,6 +16,10 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.12.0 =
+* [Added] AJAX search support for on the fly input
+* [Added] Sanitize $_GET call for AJAX query
+
 = 2.11.0 =
 * [Added] AJAX search support
 

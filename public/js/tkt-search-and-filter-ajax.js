@@ -30,23 +30,28 @@
 	    //     input.trigger("change");
 	    // });
 	 
-	    //If input is changed, load posts
-	    // $('#genre-filter input').live('change', function(){
-	    //     tkt_get_posts(); //Load Posts
-	    // });
+	    // If we change a select, update on the fly.
+	    $('form[data-tkt-ajax-src-form] select').each(function(){
+	    	$(this).live('change', function(){
+	    		get_form_search_values();
+		        tkt_get_posts(); //Load Posts
+		    });
+	    });
 	 
-	    //Fire ajax request when typing in search
-	    // $('#genre-search input.text-search').live('keyup', function(e){
-	    //     if( e.keyCode == 27 )
-	    //     {
-	    //         $(this).val(''); //If 'escape' was pressed, clear value
-	    //     }
-	 
-	    //     tkt_get_posts(); //Load Posts
-	    // });
+	    // If we type in an input, update on the fly.
+	    $('form[data-tkt-ajax-src-form] input').each(function(){
+	    	$(this).live('keyup', function(e){
+		        if( e.keyCode == 27 )
+		        {
+		            $(this).val(''); //If 'escape' was pressed, clear value
+		        }
+		 		get_form_search_values();
+		        tkt_get_posts(); //Load Posts
+		    });
+	    });
 	 
 	 	/**
-	 	 * When submitting the search
+	 	 * When submitting the search button.
 	 	 */
 	    $('#submit-search').live('click', function(e){
 
@@ -69,6 +74,7 @@
 			});
 
 		 }
+
 	    /**
 	     * Get all search values of each input by type.
 	     */
