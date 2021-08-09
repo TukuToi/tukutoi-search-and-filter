@@ -15,7 +15,7 @@
  * Plugin Name:       TukuToi Search and Filter
  * Plugin URI:        https://www.tukutoi.com/program/tukutoi-search-and-filter
  * Description:       Build Front End Search and Filters for ClassicPress Posts, Terms and Users.
- * Version:           2.12.0
+ * Version:           2.14.0
  * Author:            TukuToi
  * Author URI:        https://www.tukutoi.com//
  * License:           GPL-2.0+
@@ -34,7 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'TKT_SEARCH_AND_FILTER_VERSION', '2.12.0' );
+define( 'TKT_SEARCH_AND_FILTER_VERSION', '2.14.0' );
 
 /**
  * The code that runs during plugin activation.

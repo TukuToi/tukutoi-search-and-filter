@@ -113,6 +113,10 @@ class Tkt_Search_And_Filter_Declarations {
 				'label' => esc_html__( 'Buttons', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 			),
+			'pagination' => array(
+				'label' => esc_html__( 'Pagination', 'tkt-search-and-filter' ),
+				'type'  => 'queryable',
+			),
 		);
 
 		return $shortcodes;
@@ -313,7 +317,10 @@ class Tkt_Search_And_Filter_Declarations {
 			),
 			'has_password'      => array(
 				'label' => esc_html__( 'By Password set or not (true for posts with passwords ; false for posts without passwords ; null for all posts with and without passwords)', 'tkt-search-and-filter' ),
-				'vals' 	=> array( 'true' => 'Yes' , 'false' => 'No' ),
+				'vals'  => array(
+					'true' => 'Yes',
+					'false' => 'No',
+				),
 				'type'  => 'post',
 			),
 			'post_password'     => array(
@@ -328,7 +335,7 @@ class Tkt_Search_And_Filter_Declarations {
 			),
 			'post_status'       => array(
 				'label' => esc_html__( 'By Post Status', 'tkt-search-and-filter' ),
-				'cback'	=> 'get_post_statuses',
+				'cback' => 'get_post_statuses',
 				'type'  => 'post',
 			),
 			'comment_count'     => array(
@@ -462,8 +469,12 @@ class Tkt_Search_And_Filter_Declarations {
 				'callback'  => 'floatval',
 			),
 			'is_bool' => array(
-				'label'     => esc_html__( 'Boolean', 'tkt-search-and-filter' ),
+				'label'     => esc_html__( 'Is Boolean', 'tkt-search-and-filter' ),
 				'callback'  => 'is_bool',
+			),
+			'boolval' => array(
+				'label'     => esc_html__( 'Boolean Value', 'tkt-search-and-filter' ),
+				'callback'  => 'boolval',
 			),
 		);
 

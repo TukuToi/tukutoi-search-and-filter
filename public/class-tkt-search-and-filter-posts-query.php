@@ -102,6 +102,19 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
+	 * Set the custom Pagination arg.
+	 *
+	 * @since   1.0.0
+	 * @param string $pagarg The Custom pagination argument.
+	 * @return  void.
+	 */
+	public function set_custom_pagarg( $pagarg ) {
+
+		$this->custom_pagarg = $pagarg;
+
+	}
+
+	/**
 	 * Get the type of Query request.
 	 *
 	 * Only used to enqueue scripts conditionally.
@@ -115,6 +128,20 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
+	 * Get the Query results.
+	 *
+	 * @since   1.0.0
+	 * @return  array $this->query_results   The Query Results.
+	 */
+	public function get_query_results() {
+
+		$this->query_results = new WP_Query( $this->get_query_args() );
+
+		return $this->query_results;
+
+	}
+
+	/**
 	 * The Query Results (non ajax)
 	 *
 	 * @param mixed $content The ShortCode enclosing content.
@@ -123,7 +150,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 	public function the_loop( $content, $error ) {
 
 		// Get the Query Results.
-		$results = $this->results( $this->get_query_args() );
+		$results = $this->get_query_results();
 
 		/**
 		 * Loop over the results and build the output.
@@ -144,7 +171,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 				$processed_content = do_shortcode( $content, false );
 				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
 			}
-			wp_reset_postdata();
 		} else {
 			/**
 			 * No results found.
@@ -156,6 +182,11 @@ class Tkt_Search_And_Filter_Posts_Query {
 			$out = $error;
 		}
 
+		/**
+		 * Normally here we would reset post data.
+		 *
+		 * @todo check if this is needed, specially when no pagination is on site
+		 */
 		return $out;
 
 	}
@@ -193,11 +224,14 @@ class Tkt_Search_And_Filter_Posts_Query {
 			die();
 
 		}
-
 		$this->set_type( 'ajax' );
 		$this->set_instance( $instance );
-		foreach ( $_GET as $key => $value ) {
 
+		if ( isset( $_GET['paged'] ) && isset( $_GET['query_args']['posts_per_page'] ) ) {
+			$this->paged = absint( wp_unslash( $_GET['paged'] ) );
+			$this->posts_per_page = absint( wp_unslash( $_GET['query_args']['posts_per_page'] ) );
+		}
+		foreach ( $_GET as $key => $value ) {
 			if ( 'query_args' !== $key && 'instance' !== $key ) {
 				unset( $_GET[ $key ] );
 			}
@@ -205,7 +239,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 		$this->set_query_args( array() );
 
-		$results = $this->results( $this->get_query_args() );
+		$results = $this->get_query_results();
 
 		/**
 		 * Loop over the results and build the output.
@@ -279,7 +313,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 				unset( $_GET['instance'] );
 
 				if ( 'ajax' === $this->get_type() ) {
-
 					// In ajax requets, the Query is inside the $_GET['query_args'].
 					if ( array_key_exists( 'query_args', $_GET ) && is_array( $_GET['query_args'] ) ) {
 
@@ -366,21 +399,61 @@ class Tkt_Search_And_Filter_Posts_Query {
 			}
 		}
 
-		// Setup Instance WP Query args.
+		/**
+		 * We check if it is paginated.
+		 *
+		 * Remember that we only support location/?pagination_parameter=#
+		 * We do not support location/page/# or location/# because this requires using reserved WP/CP pagination terms
+		 * You can use those words but only if using as a URL parameter.
+		 *
+		 * In WordPress, there is a massive confusion about how pagination links and URLs work.
+		 * But as far I was able to dig out, you would use /?paged=# if using ugly permalinks.
+		 * This then gets rewritten to location/page/# if you use pretty permalinks with above format.
+		 *
+		 * Instead using ?page=# would produce location/#, but again this will produce unexpected issues.
+		 * The unexpected issues are because apart of the permalink difference, WP also uses those paramaters for actual
+		 * in page pagination. And it does all of that "automatically", which means it does just force the URL.
+		 *
+		 * For this reason, you can have all of above in ONE query on the same page, but as soon the same page features
+		 * more than one query with pagination, the mess starts. This is logicaly because location/page/# or similar are
+		 * rewritten by WP and affect the oen main query on a specific location, whereas an URL parameter can
+		 * pass MORE THAN ONE pagination arguments
+		 * I think this is pretty clear with this and justifies that due to the mess, desinformation
+		 * (in docs, trac and forums), we can safely say
+		 * "TukuToi Search & Filter will NEVER support any such pagination structure".
+		 *
+		 * @since 2.13.0
+		 */
+		if ( 'ajax' !== $this->get_type() ) {
+			$this->paged = isset( $_GET[ $this->custom_pagarg ] )
+									? absint( wp_unslash( $_GET[ $this->custom_pagarg ] ) )
+									: 1;
+		}
+		if ( isset( $this->paged )
+			&& ! empty( $this->paged )
+		) {
+			$query_args = wp_parse_args(
+				array(
+					'paged' => $this->paged,
+				),
+				$query_args
+			);
+		}
+
 		$this->query_args = $query_args;
 
 	}
 
 	/**
-	 * Bootstrap the Loop
+	 * Set the custom posts per page arg.
 	 *
 	 * @since   1.0.0
-	 * @param   array $query_args        Default Query args passed to the Loop Renderer.
-	 * @access  private
+	 * @param string $posts_per_page The Custom posts per page argument.
+	 * @return  void.
 	 */
-	private function results( $query_args ) {
+	private function set_posts_per_page( $posts_per_page ) {
 
-		return $this->get_query_results();
+		$this->posts_per_page = $posts_per_page;
 
 	}
 
@@ -393,20 +466,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 	private function get_query_args() {
 
 		return $this->query_args;
-
-	}
-
-	/**
-	 * Get the Query results.
-	 *
-	 * @since   1.0.0
-	 * @return  array $this->query_results   The Query Results.
-	 */
-	private function get_query_results() {
-
-		$this->query_results = new WP_Query( $this->get_query_args() );
-
-		return $this->query_results;
 
 	}
 
