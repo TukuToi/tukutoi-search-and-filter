@@ -4,7 +4,7 @@ Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 1.0.0
 Tested up to: 4.9.99
-Stable tag: 2.10.0
+Stable tag: 2.14.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,14 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.14.0 =
+* [Added] Added Full Pagination Support for several loops on same page
+
+= 2.13.0 =
+* [Added] Added Pagination Support both for reload and for ajax.
+* [Added] ShortCode attributes for loop to determine per-page and custom page var 
+* [Added] Support for custom and native pagination vars
 
 = 2.12.0 =
 * [Added] AJAX search support for on the fly input

@@ -97,20 +97,28 @@
 	     * 
 	     * @todo Not done.
 	     */
-	    $('.genre-filter-navigation a').live('click', function(e){
-	        e.preventDefault();
-	 		
-	        var url = $(this).attr('href'); //Grab the URL destination as a string
-	        var paged = url.split('&paged='); //Split the string at the occurance of &paged=
-	 
-	        tkt_get_posts(paged[1]); //Load Posts (feed in paged value)
-	    });
+	    $('.genre-filter-navigation a').each(function(){
+
+			$(this).live('click', function(e){
+		        e.preventDefault();
+
+		        var url = $(this).attr('href'); //Grab the URL destination as a string
+		        var paged = url.split( '?' + tkt_ajax_params.query_args.pag_arg + '=' ); //Split the string at the occurance of &paged=
+		        if( 'undefined' !== typeof paged[1] ){
+		        	var paged = paged[1].split( '&' ); //Split the string at the occurance of &paged=
+		        } else {
+		        	tkt_get_posts(1);
+		        }
+		        tkt_get_posts(paged[0]); //Load Posts (feed in paged value)
+	    	});
+
+		})
 	 
 	    /**
 	     * Get the posts with AJAX.
 	     */
 	    function tkt_get_posts(paged)
-	    {
+	    {	
 	        var paged_value = paged; //Store the paged value if it's being sent through when the function is called
 	        var ajax_url = tkt_ajax_params.ajax_url; //Get ajax url (added through wp_localize_script)
 	        var instance = tkt_ajax_params.instance
