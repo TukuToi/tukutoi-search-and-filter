@@ -83,11 +83,10 @@ class Tkt_Search_And_Filter_Public {
 	 */
 	public function enqueue_scripts() {
 
-		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.js', array(), '4.1.0-rc.0', true );
-		wp_register_script( 'tkt-script', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-public.js', array('select2'), '1.0.0', true );
+		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.js', array( 'jquery' ), '4.1.0-rc.0', true );
+		wp_register_script( 'tkt-script', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-public.js', array( 'select2' ), $this->version, true );
+		wp_register_script( 'tkt-ajax-js', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-ajax.js', array( 'jquery' ), $this->version, true );
 
 	}
-
-	// Whatever is public.
 
 }

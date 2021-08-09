@@ -255,10 +255,14 @@ class Tkt_Search_And_Filter {
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-posts-query.php';
 
 			$plugin_public = new Tkt_Search_And_Filter_Public( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version() );
-			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations );
+			$sanitizer = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
+			$query = new Tkt_Search_And_Filter_Posts_Query( $sanitizer );
+			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer );
 
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+			$this->loader->add_action( 'wp_ajax_the_ajax_loop', $query, 'the_ajax_loop' );
+			$this->loader->add_action( 'wp_ajax_nopriv_the_ajax_loop', $query, 'the_ajax_loop' );
 
 			// Register the ShortCodes of this plugin.
 			foreach ( $this->declarations->shortcodes as $shortcode => $array ) {

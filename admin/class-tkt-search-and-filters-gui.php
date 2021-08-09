@@ -190,4 +190,32 @@ class Tkt_Search_And_Filters_Gui {
 
 	}
 
+	/**
+	 * Create a Select Field set for the ShortCodes Forms Select Type Display Options.
+	 *
+	 * @since 1.4.0
+	 */
+	public function pagtype_options() {
+
+		$pagination_types = array(
+			'plain' => 'Plain',
+			'list' => 'List',
+		);
+
+		foreach ( $pagination_types as $pagination_type => $label ) {
+
+			$selected = 'plain' === $pagination_type ? 'selected' : '';
+			printf( '<option value="%s" ' . esc_attr( $selected ) . '>%s</option>', esc_attr( $pagination_type ), esc_html( $label ) );
+		}
+
+		add_filter(
+			'tkt_scs_shortcodes_fieldset_explanation',
+			function( $explanation ) {
+				$explanation = __( 'The Type of Pagination to output' );
+				return $explanation;
+			}
+		);
+
+	}
+
 }

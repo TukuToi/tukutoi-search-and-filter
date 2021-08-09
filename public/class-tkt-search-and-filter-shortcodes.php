@@ -52,15 +52,17 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * @param      string $plugin_prefix          The unique prefix of this plugin.
 	 * @param      string $version          The version of this plugin.
 	 * @param      string $declarations    The Configuration object.
+	 * @param      string $query    The Query object.
+	 * @param      string $sanitizer    The Sanitization object.
 	 */
-	public function __construct( $plugin_prefix, $version, $declarations ) {
+	public function __construct( $plugin_prefix, $version, $declarations, $query, $sanitizer ) {
 
 		$this->plugin_prefix    = $plugin_prefix;
 		$this->version          = $version;
 		$this->declarations     = $declarations;
 
-		$this->sanitizer        = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
-		$this->query            = new Tkt_Search_And_Filter_Posts_Query( $this->sanitizer );
+		$this->sanitizer        = $sanitizer;
+		$this->query            = $query;
 
 	}
 
@@ -94,6 +96,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'instance'          => 'my_instance',
+				'type'              => 'reload', // ajax or reload.
 				'customid'          => '',
 				'customclasses'     => '',
 			),
@@ -110,14 +113,16 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * Global used to tag the current instance and map search URL parameters to search Query parameters.
 		 *
 		 * Set the current instance.
+		 * Set the search type (ajax or reload).
 		 *
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
+		$this->query->set_type( $atts['type'] );
 		$tkt_src_fltr['instance'] = $atts['instance'];
 
 		// Build the Form Start.
-		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET">';
+		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET" data-tkt-ajax-src-form="' . $atts['instance'] . '">';
 
 		/**
 		 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
@@ -173,6 +178,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'instance'      => 'my_instance',
 				'type'          => 'post',
 				'error'         => 'No Results Found',
+				'pag_arg'       => '',
+				'posts_per_page' => '',
 			),
 			$atts,
 			$tag
@@ -182,6 +189,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		foreach ( $atts as $key => $value ) {
 			if ( 'error' === $key ) {
 				$atts['error'] = $this->sanitizer->sanitize( 'post_kses', $value );
+			} elseif ( 'posts_per_page' === $atts['type'] ) {
+				$atts['posts_per_page'] = $this->sanitizer->sanitize( 'intval', $value );
 			} elseif ( 'type' === $atts['type'] ) {
 				$atts['type'] = $this->sanitizer->sanitize( 'text_field', $value );
 				// If several types are passed to type.
@@ -205,57 +214,57 @@ class Tkt_Search_And_Filter_Shortcodes {
 			$default_query_args = array(
 				'post_type'              => $post_type,
 				'post_status'            => array( 'publish' ),
-				'posts_per_page'         => -1,
+				'posts_per_page'         => $atts['posts_per_page'],
 				'order'                  => 'DESC',
 				'orderby'                => 'date',
-				'cache_results'          => true,
-				'update_post_meta_cache' => true,
-				'update_post_term_cache' => true,
+				'cache_results'          => false,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
 			);
 
 		}
 
+		// Get our loop.
+		$this->query->set_instance( $atts['instance'] );
+		if ( ! empty( $atts['pag_arg'] ) ) {
+			$this->query->set_custom_pagarg( $atts['pag_arg'] );
+		}
+		if ( 'ajax' !== $this->query->get_type() ) {
+			unset( $atts['pag_arg'] );
+		}
+		unset( $atts['posts_per_page'] );
 		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
 		$query_args = array_merge( $default_query_args, $atts );
-
-		/**
-		 * Get all results of the Query.
-		 *
-		 * @todo This currently only works with Post Query, make it work with User and Term query.
-		 *
-		 * @since 2.0.0
-		 */
-		$results = $this->query->results( $query_args, $atts['instance'] );
-
-		/**
-		 * Loop over the results and build the output.
-		 *
-		 * @since 2.0.0
-		 */
-		$out = '';
-		if ( $results->have_posts() ) {
-			while ( $results->have_posts() ) {
-				$results->the_post();
-				/**
-				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
-				 *
-				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
-				 * @since 2.0.0
-				 */
-				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
-				$processed_content = do_shortcode( $content, false );
-				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
-			}
-			wp_reset_postdata();
-		} else {
+		$this->query->set_query_args( $query_args );
+		$out = $this->query->the_loop( $content, $atts['error'] );
+		// If it is an AJAX search.
+		if ( 'ajax' === $this->query->get_type() ) {
 			/**
-			 * No results found.
+			 * AJAX not needed unless we are in a AJAX Search.
 			 *
-			 * This is already sanitized.
+			 * Save the users some headaches, usually plugins just throw the scripts on all pages...
 			 *
-			 * @since 2.0.0
+			 * Here we:
+			 * 1. Enqueue TukuToi AJAX if needed.
+			 * 2. Localise TukuToi AJAX object if needed.
+			 *
+			 * @since 2.10.0
 			 */
-			$out = $atts['error'];
+			wp_enqueue_script( 'tkt-ajax-js' );
+			wp_localize_script(
+				'tkt-ajax-js',
+				'tkt_ajax_params',
+				array(
+					'is_doing_ajax' => true,
+					'ajax_url'  => admin_url( 'admin-ajax.php' ),
+					'content'   => $content,
+					'instance'  => $atts['instance'],
+					'query_args' => $query_args,
+					'error'     => $atts['error'],
+				)
+			);
+			// If it is an AJAX search we need some container to push data results to.
+			$out = '<div id="' . $atts['instance'] . '" data-tkt-ajax-src-loop="' . $atts['instance'] . '"></div>';
 		}
 
 		// Return our output. Already sanitized.
@@ -317,7 +326,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '">';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" data-tkt-ajax-src="' . $atts['searchby'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -434,6 +443,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 						'name'              => $atts['urlparam'],
 						'id'                => $atts['customid'],
 						'class'             => $atts['customclasses'],
+						'data_attr'         => $atts['searchby'],
 					)
 				);
 				break;
@@ -452,6 +462,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 						'id'                => $atts['customid'],
 						'class'             => $atts['customclasses'],
 						'multi'             => $multiple_value,
+						'data_attr'         => $atts['searchby'],
 					)
 				);
 				break;
@@ -514,7 +525,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 					}
 				}
 				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . '>';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' data-tkt-ajax-src="' . $atts['searchby'] . '">';
 				$select_form .= $options;
 				$select_form .= '</select>';
 				break;
@@ -536,7 +547,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'tkt-script' );
 			wp_localize_script(
 				'tkt-script',
 				'tkt_select2',
@@ -545,6 +555,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 					'instance'      => $atts['customid'],
 				)
 			);
+			wp_enqueue_script( 'tkt-script' );
 		}
 
 		// Return Select Form.
@@ -620,10 +631,163 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$button .= ! empty( $atts['name'] ) ? ' name="' . $atts['name'] . '"' : '';
 		$button .= ! empty( $atts['value'] ) ? ' value="' . $atts['value'] . '"' : '';
 		$button .= ! empty( $atts['formtarget'] ) ? 'formtarget="' . $atts['formtarget'] . '"' : '';
+		$button .= ! empty( $atts['customid'] ) ? 'id="' . $atts['customid'] . '"' : '';
+		$button .= ! empty( $atts['customclasses'] ) ? 'class="' . $atts['customclasses'] . '"' : '';
 		$button .= '>' . $atts['label'] . '</button>';
 
 		// Return our Button, all inputs are sanitized.
 		return $button;
+
+	}
+
+	/**
+	 * TukuToi `[pagination]` ShortCode.
+	 *
+	 * Outputs the pagination Buttons.</br>
+	 *
+	 * Example usage:
+	 * `[pagination label_prev="Previous" label_next="Next" urlparam="_page" customclasses="class classone"]`</br>
+	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
+	 *
+	 * @since    2.0.0
+	 * @param array  $atts {
+	 *      The ShortCode Attributes.
+	 *
+	 *      @type string    $aria_current       The value for the aria-current attribute. Default: page. Accepts: valid string.
+	 *      @type bool      $show_all           Whether to show all pages. Default: false. Accepts: boolean true|false.
+	 *      @type int       $end_size           How many numbers on either the start and the end list edges. Default 1. Accepts: numeric value.
+	 *      @type string    $mid_size           How many numbers to either side of the current page. Default: 2. Accepts: numeric value.
+	 *      @type string    $prev_next          Whether to include the previous and next links. Default: true. Accepts: bool true|false.
+	 *      @type string    $prev_text          The previous page text. Default: 'Pre'. Accepts: valid string.
+	 *      @type string    $next_text          The next page text. Default: 'Next'. Accepts: valid string.
+	 *      @type string    $type               Controls format of the returned value. Default: plain. Accepts: plain, list.
+	 *      @type string    $add_args           Query arguments to append to the URL. Default: ''. Accepts: URL arguments formatted like so: 'url_param:value,another_param:another-value'.
+	 *      @type string    $add_fragment       A string to append to each URL (link) at the end. Default: ''. Accepts: valid string or urlparam.
+	 *      @type string    $before_page_number A string to appear before the page number. Default: ''. Accepts: valid string.
+	 *      @type string    $after_page_number  A string to appear after the page number. Default: ''. Accepts: valid string.
+	 *      @type string    $instance           The unique instance of search and loop this pagination has to control. Default: ''. Accepts: valid instance (must match  Search template and Loop instance).
+	 *      @type string    $customclasses      CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
+	 *      @type string    $pag_arg            The URL parameter to use for this pagination. Default: item. Accepts: valid string but NOT 'page' or 'paged'.
+	 * }
+	 * @param mixed  $content   ShortCode enclosed content. Not applicable for this ShortCode.
+	 * @param string $tag       The Shortcode tag. Value: 'pagination'.
+	 */
+	public function pagination( $atts, $content = null, $tag ) {
+
+		$atts = shortcode_atts(
+			array(
+				'aria_current'          => 'page',
+				'show_all'              => false,
+				'end_size'              => 1,
+				'mid_size'              => 2,
+				'prev_next'             => true,
+				'prev_text'             => 'Pre',
+				'next_text'             => 'Next',
+				'type'                  => 'plain',
+				'add_args'              => '',
+				'add_fragment'          => '',
+				'before_page_number'    => '',
+				'after_page_number'     => '',
+				'instance'              => '',
+				'customclasses'         => '',
+				'pag_arg'               => 'item',
+			),
+			$atts,
+			$tag
+		);
+
+		// Sanitize the User input atts.
+		foreach ( $atts as $key => $value ) {
+			if ( 'show_all' === $key || 'prev_next' === $key ) {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'boolval', $value );
+			} elseif ( 'end_size' === $key || 'mid_size' === $key ) {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'intval', $value );
+			} elseif ( 'add_args' === $key ) {
+				$value = $this->sanitizer->sanitize( 'text_field', $value );
+				$add_args = array();
+				if ( ! empty( $value ) ) {
+					// If several args are passed.
+					if ( strpos( $value, ',' ) !== false ) {
+						$args_pre = explode( ',', $value );
+						foreach ( $args_pre as $key => $arrval ) {
+							list( $k, $v ) = explode( ':', $arrval );
+							$add_args[ $k ] = $v;
+						}
+					} else {
+						list( $k, $v ) = explode( ':', $value );
+						$add_args[ $k ] = $v;
+					}
+				}
+			} else {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+			}
+		}
+
+		/**
+		 * By what parameter we paginate.
+		 *
+		 * Note: this must be set both in Loop and pagination.
+		 * Note: append .$instance to $paged value, to avoid pagination parameters to break.
+		 * It will then be able to use ?page.instance=#.
+		 * By default, this plugin does NOT ALLOW usage of 'page', or 'paged' URL parameters.
+		 *
+		 * @since 2.13.0
+		 */
+		$paged = $atts['pag_arg'];
+		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;
+
+		// Get the query results this pagination should paginate.
+		$query_results = $this->query->get_query_results();
+
+		/**
+		 * Build the pagination parameters
+		 *
+		 * Note: Do NOT use the 'base' argument.
+		 * Note: Do NOT pass a url_parameter related to pagination.
+		 * Note: Do NOT attempt to use reserved words such as 'page' or 'paged'.
+		 */
+		$pargs = array(
+			'format'                => '?' . $paged . '=%#%',
+			'total'                 => $query_results->max_num_pages,
+			'current'               => $page,
+			'aria_current'          => $atts['aria_current'],
+			'show_all'              => $atts['show_all'],
+			'end_size'              => $atts['end_size'],
+			'mid_size'              => $atts['mid_size'],
+			'prev_next'             => $atts['prev_next'],
+			'prev_text'             => $atts['prev_text'],
+			'next_text'             => $atts['next_text'],
+			'type'                  => $atts['type'],
+			'add_args'              => $add_args, // $atts['add_args'],
+			'add_fragment'          => $atts['add_fragment'],
+			'before_page_number'    => $atts['before_page_number'],
+			'after_page_number'     => $atts['after_page_number'],
+		);
+
+		/**
+		 * Add some wrapper for pagination.
+		 * This is required for AJAX pagination.
+		 * Without this, we have no target to listen to.
+		 *
+		 * @todo Let the user customize this class and perhaps even add an ID instead.
+		 * @since 2.13.0
+		 */
+		$pag = '<div class="genre-filter-navigation">';
+		$pag .= paginate_links( $pargs );
+		$pag .= '</div>';
+
+		/**
+		 * When there are multiple loops in a page you must reset postdata.
+		 * The loop did not yet reset, as we needed its data for pagination.
+		 * Thus reset now, before the next loop initiates.
+		 *
+		 * @todo Check if this is enough or if we need to reset in the_loop as well.
+		 * @since 2.13.0
+		 */
+		wp_reset_postdata();
+
+		// Return our Pagination, all inputs are sanitized.
+		return $pag;
 
 	}
 

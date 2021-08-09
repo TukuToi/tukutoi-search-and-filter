@@ -8,6 +8,21 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.14.0 =
+* [Added] Added Full Pagination Support for several loops on same page
+
+= 2.13.0 =
+* [Added] Added Pagination Support both for reload and for ajax.
+* [Added] ShortCode attributes for loop to determine per-page and custom page var 
+* [Added] Support for custom and native pagination vars
+
+= 2.12.0 =
+* [Added] AJAX search support for on the fly input
+* [Added] Sanitize `$_GET` call for AJAX query
+
+= 2.11.0 =
+* [Added] AJAX search support
+
 = 2.10.0 =
 * [Added] Optional Select2 Support in Select Search Inputs on front end
 
