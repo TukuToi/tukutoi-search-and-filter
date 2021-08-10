@@ -160,7 +160,7 @@ class Tkt_Search_And_Filter {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-public.php';
 
 		$this->loader = new Tkt_Search_And_Filter_Loader();
-		$this->declarations = new Tkt_Search_And_Filter_Declarations( $this->plugin_prefix, $this->version );
+		$this->declarations = new Tkt_Search_And_Filter_Declarations();
 
 		/**
 		 * Added the ShortCodes of this plugin to TukuToi ShortCodes library.

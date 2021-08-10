@@ -8,6 +8,11 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.15.0 =
+* [Added] Added missing shortcode param in the GUI for loop
+* [Removed] Superfluos files
+* [Changed] Definitions class constructor requirements
+
 = 2.14.0 =
 * [Added] Added Full Pagination Support for several loops on same page
 

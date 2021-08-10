@@ -24,24 +24,6 @@
 class Tkt_Search_And_Filters_Gui {
 
 	/**
-	 * The unique prefix of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_prefix    The string used to uniquely prefix technical functions of this plugin.
-	 */
-	private $plugin_prefix;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	private $version;
-
-	/**
 	 * The Configuration object.
 	 *
 	 * @since    1.0.0
@@ -58,16 +40,10 @@ class Tkt_Search_And_Filters_Gui {
 	 * the public-facing side of the site.
 	 *
 	 * @since   1.0.0
-	 * @param   string $plugin_prefix   The unique prefix of this plugin.
-	 * @param   string $version         The version of this plugin.
-	 * @param   string $shortcode       The ShortCode requested.
-	 * @param   array  $declarations    The Configuration object.
+	 * @param   array $declarations    The Configuration object.
 	 */
-	public function __construct( $plugin_prefix, $version, $shortcode, $declarations ) {
+	public function __construct( $declarations ) {
 
-		$this->plugin_prefix = $plugin_prefix;
-		$this->plugin_version = $version;
-		$this->shortcode = $shortcode;
 		$this->declarations = $declarations;
 
 	}
