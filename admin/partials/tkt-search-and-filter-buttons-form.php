@@ -19,7 +19,7 @@
  * @since 2.0.0
  */
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-tkt-search-and-filters-gui.php';
-$additional_options = new Tkt_Search_And_Filters_Gui( '$plugin_prefix', '$version', '$shortcode', new Tkt_Search_And_Filter_Declarations( '', '' ) );
+$additional_options = new Tkt_Search_And_Filters_Gui( new Tkt_Search_And_Filter_Declarations() );
 ?>
 <form class="tkt-shortcode-form">
 	<?php

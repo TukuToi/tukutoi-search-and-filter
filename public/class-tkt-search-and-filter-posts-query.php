@@ -70,7 +70,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		$this->query_args = array();
 		$this->sanitizer = $sanitizer;
 		$this->instance = '';
-		$this->instance = '';
+		$this->type = '';
 
 	}
 
@@ -219,7 +219,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 			|| ! isset( $is_ajax )
 		) {
 
-			echo json_encode( 'Request is malformed' );
+			echo json_encode( 'Is not an AJAX request of this plugin.' );
 
 			die();
 
@@ -293,6 +293,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
+
 		/**
 		 * Map our URL parameters to the default query args and build the final args to pass to WP Query.
 		 *
@@ -441,19 +442,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 		}
 
 		$this->query_args = $query_args;
-
-	}
-
-	/**
-	 * Set the custom posts per page arg.
-	 *
-	 * @since   1.0.0
-	 * @param string $posts_per_page The Custom posts per page argument.
-	 * @return  void.
-	 */
-	private function set_posts_per_page( $posts_per_page ) {
-
-		$this->posts_per_page = $posts_per_page;
 
 	}
 

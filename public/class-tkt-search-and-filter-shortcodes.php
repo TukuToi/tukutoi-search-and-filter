@@ -85,6 +85,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $instance       The Instance used to bind this Search section to a Loop Results Section. Default: ''. Accepts: '', any valid string or number.
+	 *      @type string    $type           The Type of search (AJAX or full page reload). Default: reload. Accepts: '', 'ajax'.
 	 *      @type string    $customid     ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses   CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
@@ -166,7 +167,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 *      @type string    $instance       The Instance used to bind this Loop section to a Search Form Section. Default: ''. Accepts: '', any valid string or number. Must match corresponding Search Form instance.
 	 *      @type string    $type           For what type the query results are for. Default: 'post'. Accepts: valid post type, valid taxonomy type, valid user role.
-	 *      @type string    $error          The no results found message: Default ''. Accepts: valid string or HTML.
+	 *      @type string    $error          The no results found message. Default: ''. Accepts: valid string or HTML.
+	 *      @type string    $pag_arg        The pagination URL parameter. Default: ''. Accepts: valid URL parameter (must match pagination)
+	 *      @type string    $posts_per_page Amount of posts per page if paginated. Default: -1 (all). Accepts: valid integer.
 	 * }
 	 * @param mixed  $content   ShortCode enclosed content. TukuToi ShortCodes, ShortCodes and HTML. No TukuToi Search ShortCodes.
 	 * @param string $tag       The Shortcode tag. Value: 'loop'.
@@ -688,7 +691,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'add_fragment'          => '',
 				'before_page_number'    => '',
 				'after_page_number'     => '',
-				'instance'              => '',
+				'instance'              => 'my_instance',
 				'customclasses'         => '',
 				'pag_arg'               => 'item',
 			),
