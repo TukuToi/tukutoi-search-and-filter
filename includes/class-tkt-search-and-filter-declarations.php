@@ -28,6 +28,24 @@
 class Tkt_Search_And_Filter_Declarations {
 
 	/**
+	 * The unique prefix of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_prefix    The string used to uniquely prefix technical functions of this plugin.
+	 */
+	private $plugin_prefix;
+
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
 	 * The ShortCodes of this plugin.
 	 *
 	 * @since    1.0.0
@@ -49,6 +67,8 @@ class Tkt_Search_And_Filter_Declarations {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
+	 * @param      string $plugin_prefix          The unique prefix of this plugin.
+	 * @param      string $version          The version of this plugin.
 	 */
 	public function __construct() {
 

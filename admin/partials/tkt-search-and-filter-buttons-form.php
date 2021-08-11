@@ -36,3 +36,4 @@ $additional_options = new Tkt_Search_And_Filters_Gui( new Tkt_Search_And_Filter_
 	$this->checkbox_fieldset( 'quotes', 'Quotes', '"', 'What Quotes to use in ShortCodes (Useful when using ShortCodes in other ShortCodes attributes, or in HTML attributes', '' );
 	?>
 </form>
+

@@ -159,8 +159,16 @@ class Tkt_Search_And_Filter {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-public.php';
 
+		/**
+		 * The class responsible to load all common code
+		 */
+		if ( ! defined( 'TKT_COMMON_LOADED' ) ) {
+			require_once( plugin_dir_path( dirname( __FILE__ ) ) . '/common/class-tkt-common.php' );
+		}
+
+		$this->common = Tkt_Common::get_instance();
 		$this->loader = new Tkt_Search_And_Filter_Loader();
-		$this->declarations = new Tkt_Search_And_Filter_Declarations();
+		$this->declarations = new Tkt_Search_And_Filter_Declarations( $this->plugin_prefix, $this->version );
 
 		/**
 		 * Added the ShortCodes of this plugin to TukuToi ShortCodes library.
@@ -240,6 +248,7 @@ class Tkt_Search_And_Filter {
 				&& ! is_customize_preview()
 			)
 		) {
+			//require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-shortcodes-processor.php';
 
 			/**
 			 * The class responsible for processing ShortCodes in ShortCodes or attributes.
@@ -258,6 +267,11 @@ class Tkt_Search_And_Filter {
 			$sanitizer = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
 			$query = new Tkt_Search_And_Filter_Posts_Query( $sanitizer );
 			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer );
+
+			$processor = new Tkt_Shortcodes_Processor( $this->plugin_prefix, $this->version, $this->declarations );
+
+			$this->loader->add_filter( 'the_content', $processor, 'pre_process_shortcodes', 5 );
+			$this->loader->add_filter( 'tkt_pre_process_shortcodes', $processor, 'pre_process_shortcodes', 5 );
 
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
