@@ -8,6 +8,11 @@ With TukuToi Search & Filter you can build custom Queries and Front End filters,
 
 == Changelog ==
 
+= 2.16.1 =
+* [Fixed] ShortCodes where not preprocessed
+* [Added] Common Files and logic
+* [Changed] Filter name to preprocess ShortCodes
+
 = 2.15.0 =
 * [Added] Added missing shortcode param in the GUI for loop
 * [Removed] Superfluos files

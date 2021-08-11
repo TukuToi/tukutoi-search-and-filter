@@ -15,8 +15,7 @@
  * Plugin Name:       TukuToi Search and Filter
  * Plugin URI:        https://www.tukutoi.com/program/tukutoi-search-and-filter
  * Description:       Build Front End Search and Filters for ClassicPress Posts, Terms and Users.
- * Requires at least: 4.9
- * Version:           2.15.0
+ * Version:           2.14.0
  * Author:            TukuToi
  * Author URI:        https://www.tukutoi.com//
  * License:           GPL-2.0+

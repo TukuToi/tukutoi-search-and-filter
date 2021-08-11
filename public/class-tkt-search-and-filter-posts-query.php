@@ -70,7 +70,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		$this->query_args = array();
 		$this->sanitizer = $sanitizer;
 		$this->instance = '';
-		$this->type = '';
+		$this->instance = '';
 
 	}
 
@@ -167,9 +167,9 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
 				 * @since 2.0.0
 				 */
-				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
+				$processed_content = apply_filters( 'tkt_pre_process_shortcodes', $content );
 				$processed_content = do_shortcode( $content, false );
-				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
+				$out .= wp_unslash( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
 			/**
@@ -187,6 +187,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 *
 		 * @todo check if this is needed, specially when no pagination is on site
 		 */
+		wp_reset_postdata();
 		return $out;
 
 	}
@@ -219,7 +220,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 			|| ! isset( $is_ajax )
 		) {
 
-			echo json_encode( 'Is not an AJAX request of this plugin.' );
+			echo json_encode( 'Request is malformed' );
 
 			die();
 
@@ -256,7 +257,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
 				 * @since 2.0.0
 				 */
-				$processed_content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
+				$processed_content = apply_filters( 'tkt_pre_process_shortcodes', $content );
 				$processed_content = do_shortcode( $content, false );
 				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
 			}
@@ -293,7 +294,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.0.0
 		 */
 		global $tkt_src_fltr;
-
 		/**
 		 * Map our URL parameters to the default query args and build the final args to pass to WP Query.
 		 *
@@ -442,6 +442,19 @@ class Tkt_Search_And_Filter_Posts_Query {
 		}
 
 		$this->query_args = $query_args;
+
+	}
+
+	/**
+	 * Set the custom posts per page arg.
+	 *
+	 * @since   1.0.0
+	 * @param string $posts_per_page The Custom posts per page argument.
+	 * @return  void.
+	 */
+	private function set_posts_per_page( $posts_per_page ) {
+
+		$this->posts_per_page = $posts_per_page;
 
 	}
 

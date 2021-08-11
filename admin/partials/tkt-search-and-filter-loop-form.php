@@ -50,7 +50,6 @@
 				If you want pagination in you results you have to set this here. </br>
 				You should also set a pagination URL parameter, matching the same pagination URL parameter as you set in the Paginaton ShortCode</br>
 				Do not use the terms <code>page</code> or <code>paged</code>, those are reserved to WordPress queries.
-				
 			</p>
 		</div>
 	</div>
