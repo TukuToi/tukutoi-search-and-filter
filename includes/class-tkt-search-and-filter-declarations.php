@@ -67,13 +67,9 @@ class Tkt_Search_And_Filter_Declarations {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string $plugin_prefix          The unique prefix of this plugin.
-	 * @param      string $version          The version of this plugin.
 	 */
 	public function __construct() {
 
-		$this->plugin_prefix    = $plugin_prefix;
-		$this->version          = $version;
 		$this->shortcodes       = $this->declare_shortcodes();
 		$this->sanitization_options = $this->sanitize_options();
 

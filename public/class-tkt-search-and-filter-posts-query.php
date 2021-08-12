@@ -168,7 +168,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * @since 2.0.0
 				 */
 				$processed_content = apply_filters( 'tkt_pre_process_shortcodes', $content );
-				$processed_content = do_shortcode( $content, false );
+				$processed_content = do_shortcode( $processed_content, false );
 				$out .= wp_unslash( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
@@ -258,10 +258,9 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * @since 2.0.0
 				 */
 				$processed_content = apply_filters( 'tkt_pre_process_shortcodes', $content );
-				$processed_content = do_shortcode( $content, false );
-				$out .= $this->sanitizer->sanitize( 'post_kses', $processed_content );
+				$processed_content = do_shortcode( $processed_content, false );
+				$out .= wp_unslash( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
-			wp_reset_postdata();
 		} else {
 			/**
 			 * No results found.
@@ -272,6 +271,13 @@ class Tkt_Search_And_Filter_Posts_Query {
 			 */
 			$out = 'no results';
 		}
+
+		/**
+		 * Normally here we would reset post data.
+		 *
+		 * @todo check if this is needed, specially when no pagination is on site
+		 */
+		wp_reset_postdata();
 
 		echo json_encode( $out );
 
