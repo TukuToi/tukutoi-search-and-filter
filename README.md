@@ -9,6 +9,10 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.18.1
+* [Added] Support for Custom ShortCodes inside Attributes
+* [Fixed] Conditional was broken if only TukuToi ShortCode wihout Search and Filters was active
+
 ### 2.17.0
 * [Added] Support Conditionals in Loops, and ShortCodes in attributes in loops, while retaining query capability
 * [Changed] ShortCode declarations now support a `inner` key, declaring whether ShortCodes is allowed inside attributes

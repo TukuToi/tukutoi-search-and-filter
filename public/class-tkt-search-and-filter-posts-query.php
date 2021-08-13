@@ -270,7 +270,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 */
 				$processed_content = do_shortcode( $content, false );
 				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $processed_content );
-				$out .= wp_unslash( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
+				$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
 			/**

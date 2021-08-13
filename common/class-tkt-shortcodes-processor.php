@@ -127,7 +127,7 @@ class Tkt_Shortcodes_Processor {
 	 * @return   string $content The Post Content encoded and with first level of inner ShortCodes resolved.
 	 */
 	private function apply_encoder( $content ) {
-		
+
 		// Encode ShortCodes inside HTML attributes to use {¡{shortcode}¡} format.
 		$content = $this->encode_html_attribute_shortcodes( $content );
 		// Encode repeating content (loop) to base 64.
@@ -187,7 +187,9 @@ class Tkt_Shortcodes_Processor {
 
 				// Look for every valid shortcode inside the node, and expand it.
 				foreach ( $inner_expressions as $shortcode ) {
+
 					$counts = preg_match_all( $shortcode, $element, $matches );
+
 					if ( $counts > 0 ) {
 						foreach ( $matches[0] as $index => &$match ) {
 
@@ -195,7 +197,6 @@ class Tkt_Shortcodes_Processor {
 
 							$replacement = str_replace( '[', $this->shortcode_start, $match );
 							$replacement = str_replace( ']', $this->shortcode_end, $replacement );
-
 							$element = str_replace( $string_to_replace, $replacement, $element );
 
 						}
@@ -233,11 +234,9 @@ class Tkt_Shortcodes_Processor {
 			// Encode the data to stop WP from trying to fix or parse it.
 			// The iterator shortcode will manage this on render.
 			$match_encoded = str_replace( $matches[1][ $index ], $this->base64_prefix . base64_encode( $matches[1][ $index ] ), $match );
-			//$shortcode = do_shortcode( $match_encoded );
-				
 			$content = str_replace( $match, $match_encoded, $content );
 		}
-		
+
 		return $content;
 	}
 
@@ -269,6 +268,7 @@ class Tkt_Shortcodes_Processor {
 						if ( 0 < $inner_counts ) {
 
 							foreach ( $inner_shortcodes[0] as &$inner_shortcode ) {
+
 								$replacement = do_shortcode( $inner_shortcode );
 								$content = str_replace( $inner_shortcode, $replacement, $content );
 							}
@@ -387,12 +387,13 @@ class Tkt_Shortcodes_Processor {
 		$inner_expressions = array();
 
 		$native_shortcodes = $this->get_native_inner_shortcodes();
-
-		$inner_expressions['regex'] = '/\\[(' . implode( '|', $native_shortcodes ) . ').*?\\]/i';
+		if ( ! empty( $native_shortcodes ) ) {
+			$inner_expressions['regex'] = '/\\[(' . implode( '|', $native_shortcodes ) . ').*?\\]/i';
+		}
 
 		$custom_shortcodes = $this->get_custom_shortcodes();
 		if ( count( $custom_shortcodes ) > 0 ) {
-			$inner_expressions['regex'] = '/\\[(' . implode( '|', $custom_shortcodes ) . ').*?\\]/i';
+			$inner_expressions['regex'] = '/\\[(' . implode( '|', $custom_shortcodes ) . '|' . implode( '|', $native_shortcodes ) . ').*?\\]/i';
 		}
 
 		return $inner_expressions;
@@ -573,7 +574,7 @@ class Tkt_Shortcodes_Processor {
 		foreach ( $this->declarations->shortcodes as $shortcode => $array ) {
 
 			if ( true === $array['inner'] ) {
-				$native_shortcodes[] = $shortcode;
+				$native_shortcodes[] = 'tkt_scs_' . $shortcode;
 			}
 		}
 
