@@ -162,14 +162,24 @@ class Tkt_Search_And_Filter_Posts_Query {
 			while ( $results->have_posts() ) {
 				$results->the_post();
 				/**
-				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
+				 * Expand ShortCodes inside a Looop.
 				 *
-				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
+				 * All Loops are base64 encoded so WordPress does not mess with our content.
+				 * We decode this in Tkt_Shortcodes_Processor->post_process_shortcodes().
+				 * Once decoded, it will resolve the inner shortcodes (used as attributes to other ShortCodes)
+				 * using Tkt_Shortcodes_Processor->resolve_inner_shortcodes( $content )
+				 * Then, it resolves ShortCodes inside HTML attributes (which are at this points still using {{shortcode}})
+				 *
+				 * Since the content returned from there still has ShortCodes inside, which are normally expandable by WordPress
+				 * we pass the processed content thru do_shortcode.
+				 *
+				 * Only then the output of a loop is fully expanded and can be passed to the Loop shortcode to be returned.
+				 *
 				 * @since 2.0.0
 				 */
-				$processed_content = do_shortcode( $content, false );
-				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $processed_content );
-				$out .= wp_unslash( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
+				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $content );
+				$processed_content = do_shortcode( $processed_content, false );
+				$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
 			/**
@@ -188,6 +198,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @todo check if this is needed, specially when no pagination is on site
 		 */
 		wp_reset_postdata();
+
 		return $out;
 
 	}
@@ -354,7 +365,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 				} else {
 					// This is not an AJAX query.
 					foreach ( $_GET as $key => $value ) {
-
 						/**
 						 * Sanitize the URL GET Inputs.
 						 *

@@ -235,6 +235,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		unset( $atts['posts_per_page'] );
 		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
 		$query_args = array_merge( $default_query_args, $atts );
+
 		$this->query->set_query_args( $query_args );
 		$out = $this->query->the_loop( $content, $atts['error'] );
 		// If it is an AJAX search.

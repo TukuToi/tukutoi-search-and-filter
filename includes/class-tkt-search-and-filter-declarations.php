@@ -92,26 +92,32 @@ class Tkt_Search_And_Filter_Declarations {
 			'searchtemplate' => array(
 				'label' => esc_html__( 'Search Form', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 			'loop' => array(
 				'label' => esc_html__( 'Search Results', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 			'textsearch' => array(
 				'label' => esc_html__( 'Text Search', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 			'selectsearch' => array(
 				'label' => esc_html__( 'Select Search', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 			'buttons' => array(
 				'label' => esc_html__( 'Buttons', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 			'pagination' => array(
 				'label' => esc_html__( 'Pagination', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
+				'inner' => false,
 			),
 		);
 
