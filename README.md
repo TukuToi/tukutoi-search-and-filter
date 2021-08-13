@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.18.2
+* [Fixed] AJAX Search was broken due to sequence of filters changed
+
 ### 2.18.1
 * [Added] Support for Custom ShortCodes inside Attributes
 * [Fixed] Conditional was broken if only TukuToi ShortCode wihout Search and Filters was active

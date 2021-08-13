@@ -268,8 +268,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
 				 * @since 2.0.0
 				 */
-				$processed_content = do_shortcode( $content, false );
-				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $processed_content );
+				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $content );
+				$processed_content = do_shortcode( $processed_content, false );
 				$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
