@@ -248,7 +248,6 @@ class Tkt_Search_And_Filter {
 				&& ! is_customize_preview()
 			)
 		) {
-			//require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-shortcodes-processor.php';
 
 			/**
 			 * The class responsible for processing ShortCodes in ShortCodes or attributes.
@@ -268,8 +267,10 @@ class Tkt_Search_And_Filter {
 			$query = new Tkt_Search_And_Filter_Posts_Query( $sanitizer );
 			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer );
 
+			/**
+			 * The ShortCode Processor making nested and attribute ShortCodes work.
+			 */
 			$processor = new Tkt_Shortcodes_Processor( $this->plugin_prefix, $this->version, $this->declarations );
-
 			$this->loader->add_filter( 'the_content', $processor, 'pre_process_shortcodes', 5 );
 			$this->loader->add_filter( 'tkt_post_process_shortcodes', $processor, 'post_process_shortcodes' );
 

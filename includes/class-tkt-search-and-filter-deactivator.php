@@ -75,8 +75,8 @@ class Tkt_Search_And_Filter_Deactivator {
 		}
 
 		/**
-		 * The plugin is now safely activated.
-		 * Perform your activation actions here.
+		 * The plugin is now safely deactivated.
+		 * Perform your deactivation actions here.
 		 */
 
 	}

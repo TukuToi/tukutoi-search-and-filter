@@ -3,7 +3,7 @@ Contributors: TukuToi
 Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 4.9
-Stable tag: 2.17.0
+Stable tag: 2.18.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,10 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.18.1 =
+* [Added] Support for Custom ShortCodes inside Attributes
+* [Fixed] Conditional was broken if only TukuToi ShortCode wihout Search and Filters was active
 
 = 2.17.0 =
 * [Added] Support Conditionals in Loops, and ShortCodes in attributes in loops, while retaining query capability
