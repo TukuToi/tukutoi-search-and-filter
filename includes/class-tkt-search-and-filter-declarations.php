@@ -230,37 +230,37 @@ class Tkt_Search_And_Filter_Declarations {
 			'tag'               => array(
 				'label' => esc_html__( 'By Tag Slug', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag_id'            => array(
 				'label' => esc_html__( 'By Tag ID', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag__and'          => array(
 				'label' => esc_html__( 'By Tags in all these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag__in'           => array(
 				'label' => esc_html__( 'By Tags in these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag__not_in'       => array(
 				'label' => esc_html__( 'By Tags not in any of these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag_slug__and'     => array(
 				'label' => esc_html__( 'By Tags in all these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			'tag_slug__in'      => array(
 				'label' => esc_html__( 'By Tags in some of these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
-				'type'  => 'tag',
+				'type'  => 'post_tag',
 			),
 			's'                 => array(
 				'label' => esc_html__( 'By Search keyword', 'tkt-search-and-filter' ),

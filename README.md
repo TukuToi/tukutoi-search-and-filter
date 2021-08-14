@@ -9,6 +9,12 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.20.3
+* [Fixed] use $.on('event', selector, function()) instead of shorthand $.live('event', function())
+* [Added] Filter to filter the main query after Search and Filter settings are passed to it: tkt_src_fltr_query_args
+* [Fixed] Custom Category Selector for search inputs did not render custom classes even if passed to shortcode
+* [Fixed] Changed query type to be `post_tag` instead of (wrongly) using `tag`
+
 ### 2.19.0
 * [Added] Full AJAX Pagination support with dynamically updating pagination links
 * [Changed] Some code refactor and safety additions

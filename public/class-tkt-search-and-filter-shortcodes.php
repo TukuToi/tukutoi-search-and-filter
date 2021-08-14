@@ -346,7 +346,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" data-tkt-ajax-src="' . $atts['searchby'] . '">';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" data-tkt-ajax-src="' . $atts['searchby'] . '" class="' . $atts['customclasses'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -468,7 +468,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				);
 				break;
 			case 'category':
-			case 'tag':
+			case 'post_tag':
 			case 'taxonomy':
 				$select_form = better_dropdown_categories(
 					array(

@@ -135,7 +135,7 @@ function better_dropdown_users( $args = '' ) {
 		'role'                    => '',
 		'role__in'                => array(),
 		'role__not_in'            => array(),
-		'data_attr'				  => ''
+		'data_attr'               => '',
 	);
 
 	$defaults['selected'] = is_author() ? get_query_var( 'author' ) : 0;
@@ -333,7 +333,7 @@ function better_dropdown_categories( $args = '' ) {
 		'hierarchical'      => 0,
 		'name'              => 'cat',
 		'id'                => '',
-		'class'             => 'postform',
+		'class'             => '',
 		'depth'             => 0,
 		'tab_index'         => 0,
 		'taxonomy'          => 'category',
@@ -343,7 +343,7 @@ function better_dropdown_categories( $args = '' ) {
 		'required'          => false,
 		'multiple'          => '',
 		'allowed_html'      => array(),
-		'data_attr'			=> '',
+		'data_attr'         => '',
 	);
 
 	$defaults['selected'] = ( is_category() ) ? get_query_var( 'cat' ) : 0;
@@ -382,6 +382,7 @@ function better_dropdown_categories( $args = '' ) {
 
 	$name = esc_attr( $r['name'] );
 	$class = esc_attr( $r['class'] );
+
 	$id = $r['id'] ? esc_attr( $r['id'] ) : $name;
 	$required = $r['required'] ? 'required' : '';
 	$multiple = esc_attr( $r['multi'] );
