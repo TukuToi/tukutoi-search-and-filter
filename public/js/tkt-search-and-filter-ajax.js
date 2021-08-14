@@ -40,7 +40,7 @@
 	 	 * When changing a Select input, update results on the fly.
 	 	 */
 	    $('form[data-tkt-ajax-src-form] select').each(function() {
-	    	$(this).live('change', function() {
+	    	$(this).on('change', function() {
 	    		get_form_search_values();
 		        tkt_get_posts(); //Load Posts
 		    });
@@ -50,7 +50,7 @@
 	 	 * When typing in an input, update results on the fly.
 	 	 */
 	    $('form[data-tkt-ajax-src-form] input').each(function() {
-	    	$(this).live('keyup', function(e) {
+	    	$(this).on('keyup', function(e) {
 		        if( e.keyCode == 27 ) {
 		            $(this).val(''); //If 'escape' was pressed, clear value
 		        }
@@ -62,7 +62,7 @@
 	 	/**
 	 	 * When submitting the search button.
 	 	 */
-	    $('#submit-search').live('click', function(e) {
+	    $('#submit-search').on('click', function(e) {
 
 	        e.preventDefault();
 
@@ -107,7 +107,7 @@
 	    function tkt_paginate() {
 	    	$( '#' + tkt_ajax_params.instance + '_pagination' + ' a').each(function(){
 
-				$(this).live('click', function(e){
+				$(this).on('click', function(e){
 			        e.preventDefault();
 
 			        url = $(this).attr('href'); //Grab the URL destination as a string

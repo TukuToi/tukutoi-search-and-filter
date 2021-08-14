@@ -495,6 +495,19 @@ class Tkt_Search_And_Filter_Posts_Query {
 			);
 		}
 
+		/**
+		 * Allow this Query to be filterd.
+		 *
+		 * Other plugins or users might want to alter the Query programmatically.
+		 * For example, to exclude some posts in a Certain Category, you can use this filter.
+		 *
+		 * @since 2.20.3
+		 * @param array $query_args {
+		 *      The query arguments of the WP Query. Default: WP Query Args passed to the Search and Filter instance. Accepts: valid WP Query arguments.
+		 * }
+		 */
+		$query_args = apply_filters( 'tkt_src_fltr_query_args', $query_args );
+
 		$this->query_args = $query_args;
 
 	}

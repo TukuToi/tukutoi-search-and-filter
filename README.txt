@@ -3,7 +3,7 @@ Contributors: TukuToi
 Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 4.9
-Stable tag: 2.19.0
+Stable tag: 2.20.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,12 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.20.3 =
+* [Fixed] use $.on('event', selector, function()) instead of shorthand $.live('event', function())
+* [Added] Filter to filter the main query after Search and Filter settings are passed to it: tkt_src_fltr_query_args
+* [Fixed] Custom Category Selector for search inputs did not render custom classes even if passed to shortcode
+* [Fixed] Changed query type to be `post_tag` instead of (wrongly) using `tag`
 
 = 2.19.0 =
 * [Added] Full AJAX Pagination support with dynamically updating pagination links
