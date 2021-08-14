@@ -3,10 +3,16 @@
 
 	var inputs = {};
 	var selects = {};
+	var paged_value, paged, url, ajax_url, instance, content, query_args, error, is_doing_ajax, max;
+
 
 	$( document ).ready( function() {
-		//Load posts on document ready
+		
+		/**
+	 	 * On Document ready load posts, and pagination, if set.
+	 	 */
 	    tkt_get_posts();
+	    tkt_paginate();
 	 	
 	    //If list item is clicked, trigger input change and add css class
 	    // $('#genre-filter li').live('click', function(){
@@ -30,19 +36,22 @@
 	    //     input.trigger("change");
 	    // });
 	 
-	    // If we change a select, update on the fly.
-	    $('form[data-tkt-ajax-src-form] select').each(function(){
-	    	$(this).live('change', function(){
+	    /**
+	 	 * When changing a Select input, update results on the fly.
+	 	 */
+	    $('form[data-tkt-ajax-src-form] select').each(function() {
+	    	$(this).live('change', function() {
 	    		get_form_search_values();
 		        tkt_get_posts(); //Load Posts
 		    });
 	    });
 	 
-	    // If we type in an input, update on the fly.
-	    $('form[data-tkt-ajax-src-form] input').each(function(){
-	    	$(this).live('keyup', function(e){
-		        if( e.keyCode == 27 )
-		        {
+	    /**
+	 	 * When typing in an input, update results on the fly.
+	 	 */
+	    $('form[data-tkt-ajax-src-form] input').each(function() {
+	    	$(this).live('keyup', function(e) {
+		        if( e.keyCode == 27 ) {
 		            $(this).val(''); //If 'escape' was pressed, clear value
 		        }
 		 		get_form_search_values();
@@ -53,7 +62,7 @@
 	 	/**
 	 	 * When submitting the search button.
 	 	 */
-	    $('#submit-search').live('click', function(e){
+	    $('#submit-search').live('click', function(e) {
 
 	        e.preventDefault();
 
@@ -62,10 +71,11 @@
 	        tkt_get_posts(); //Load Posts
 	        
 	    });
+
 	    /**
 	     * Get all search values of each input of each form.
 	     */
-	 	function get_form_search_values(){
+	 	function get_form_search_values() {
 
 		 	$('form[data-tkt-ajax-src-form]').each(function(){
 
@@ -78,8 +88,7 @@
 	    /**
 	     * Get all search values of each input by type.
 	     */
-	    function get_search_values_by_type( form )
-	    {	
+	    function get_search_values_by_type( form ) {	
 	        $('form[data-tkt-ajax-src-form="' + form + '"] input').each(function(){
 
 			    inputs[ $(this).attr('data-tkt-ajax-src') ] = $(this).val();
@@ -94,67 +103,126 @@
 	 
 	    /**
 	     * Pagination
-	     * 
-	     * @todo Not done.
 	     */
-	    $('.genre-filter-navigation a').each(function(){
+	    function tkt_paginate() {
+	    	$( '#' + tkt_ajax_params.instance + '_pagination' + ' a').each(function(){
 
-			$(this).live('click', function(e){
-		        e.preventDefault();
+				$(this).live('click', function(e){
+			        e.preventDefault();
 
-		        var url = $(this).attr('href'); //Grab the URL destination as a string
-		        var paged = url.split( '?' + tkt_ajax_params.query_args.pag_arg + '=' ); //Split the string at the occurance of &paged=
-		        if( 'undefined' !== typeof paged[1] ){
-		        	var paged = paged[1].split( '&' ); //Split the string at the occurance of &paged=
-		        } else {
-		        	tkt_get_posts(1);
-		        }
-		        tkt_get_posts(paged[0]); //Load Posts (feed in paged value)
-	    	});
+			        url = $(this).attr('href'); //Grab the URL destination as a string
+			        paged = url.split( '?' + tkt_ajax_params.query_args.pag_arg + '=' ); //Split the string at the occurance of &paged=
+			        if( 'undefined' !== typeof paged[1] ){
+			        	paged = paged[1].split( '&' ); //Split the string at the occurance of &paged=
+			        } else {
+			        	paged = 1;
+			        	tkt_get_posts(paged);
+			        }
+			        tkt_get_posts(paged[0]); //Load Posts (feed in paged value)
+		    	});
 
-		})
-	 
+			});
+	    }
+	 	
 	    /**
 	     * Get the posts with AJAX.
+	     * 
+	     * We GET the requested results.
+	     * Then we POST the template so it can be expanded and sent back with each post data from GET.
+	     * Then we POST again in case of pagination, to refresh pagination section.
+	     * 
+	     * @since 2.19.0
+	     * @param int $paged The page to get.
 	     */
-	    function tkt_get_posts(paged)
-	    {	
-	        var paged_value = paged; //Store the paged value if it's being sent through when the function is called
-	        var ajax_url = tkt_ajax_params.ajax_url; //Get ajax url (added through wp_localize_script)
-	        var instance = tkt_ajax_params.instance
-	        var content = tkt_ajax_params.content
-	        var query_args = $.extend(tkt_ajax_params.query_args, selects, inputs)
-	        var error = tkt_ajax_params.error
-	        var is_doing_ajax = tkt_ajax_params.is_doing_ajax
+	    function tkt_get_posts( paged ) {	
+
+	        paged_value 	= paged; //Store the paged value if it's being sent through when the function is called
+	        ajax_url 		= tkt_ajax_params.ajax_url; //Get ajax url (added through wp_localize_script)
+	        instance 		= tkt_ajax_params.instance;
+	        content 		= tkt_ajax_params.content;
+	        query_args 		= $.extend(tkt_ajax_params.query_args, selects, inputs);
+	        error 			= tkt_ajax_params.error;
+	        is_doing_ajax 	= tkt_ajax_params.is_doing_ajax;
+	        if( 'undefined' === typeof paged_value ){
+	    		paged_value = 1;
+	    	}
 
 	        $.ajax({
 	            type: 'GET',
 	            url: ajax_url,
 	            data: {
-	            	action: 'the_ajax_loop',
+	            	action: 'tkt_ajax_query',
+	            	nonce: tkt_ajax_params.nonce,
 	            	is_doing_ajax: is_doing_ajax,
 	                paged: paged_value, //If paged value is being sent through with function call, store here
-	                content: content,
 	                instance: instance,
 	                query_args: query_args,
 	            },
-	            beforeSend: function ()
-	            {	
-	                //You could show a loader here
+	            beforeSend: function () {	
+	            	$('.tkt_ajax_loader').show();
 	            },
-	            success: function(data)
-	            {
-	                //Hide loader here
-	                $( '#' + instance ).html( JSON.parse(data) );
+	            success: function( results ) {
+	            	max = results.data.max_num_pages;
+
+	                $.ajax({
+	                	type: 'POST',
+	                	url: ajax_url,
+	                	data: {
+	                		action: 'tkt_ajax_loop',
+	                		nonce: tkt_ajax_params.nonce,
+	                		is_doing_ajax: is_doing_ajax,
+	                		template: content,
+	                		objects: results.data.ids,
+	                		instance: instance,
+	                		error: error,
+	                	},
+				        beforeSend: function () {	
+				        },
+				        success: function( layout ){
+				        	$('.tkt_ajax_loader').hide();
+				            $( '#' + instance ).html( layout.data );
+
+				            $.ajax({
+			                	type: 'POST',
+			                	url: ajax_url,
+			                	data: {
+			                		action: 'tkt_ajax_pagination',
+			                		is_doing_ajax: true,
+									ajax_url: tkt_ajax_pag_params.ajax_url,
+									nonce: tkt_ajax_pag_params.nonce,
+									instance: tkt_ajax_pag_params.instance,
+									atts: tkt_ajax_pag_params.atts,
+									page: paged_value,
+									paged: query_args.pag_arg,
+									add_args: tkt_ajax_pag_params.add_args,
+									max: max,
+			                	},
+						        beforeSend: function () {	
+						        	$('.tkt_ajax_loader').show();
+						        },
+						        success: function( pagination ){
+						        	$('.tkt_ajax_loader').hide();
+						            $(  '#' + instance + '_pagination' ).html(pagination.data);
+						            tkt_paginate();
+						        },
+						        error: function() {
+						        	$('.tkt_ajax_loader').hide();
+						        }
+						    }); 
+				        },
+				        error: function() {
+				            $('.tkt_ajax_loader').hide();
+				            $( '#' + instance ).html(error);
+				        }
+				    }); 
 	            },
-	            error: function()
-	            {
-					//If an ajax error has occured, do something here...
-	                $( '#' + instance ).html(error);
+	            error: function() {
+	            	$('.tkt_ajax_loader').hide();
+	            	$( '#' + instance ).html(error);
 	            }
 	        });
 	    }
-
+	    
 	});
 
 })( jQuery );

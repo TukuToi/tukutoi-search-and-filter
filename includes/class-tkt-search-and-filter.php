@@ -161,19 +161,31 @@ class Tkt_Search_And_Filter {
 
 		/**
 		 * The class responsible to load all common code
+		 *
+		 * NOTE: Loaded only once.
 		 */
 		if ( ! defined( 'TKT_COMMON_LOADED' ) ) {
 			require_once( plugin_dir_path( dirname( __FILE__ ) ) . '/common/class-tkt-common.php' );
 		}
-
 		$this->common = Tkt_Common::get_instance();
+
+		/**
+		 * The class responsible for orchestrating the actions and filters of the
+		 * core plugin.
+		 */
 		$this->loader = new Tkt_Search_And_Filter_Loader();
+
+		/**
+		 * The class responsible for maintaining a list of Declarations of this plugin.
+		 *
+		 * @see {/includes/class-tkt-search-and-filter-declarations.php}.
+		 */
 		$this->declarations = new Tkt_Search_And_Filter_Declarations( $this->plugin_prefix, $this->version );
 
 		/**
-		 * Added the ShortCodes of this plugin to TukuToi ShortCodes library.
+		 * Register ShortCodes with the TukuToi ShortCodes Plugin API.
 		 *
-		 * This hook is added both in admin and public area.
+		 * NOTE: ShortCodes are effectively ADDED only in the frontend, but we need their declaration in the backend as well.
 		 *
 		 * @since 2.0.0
 		 */
@@ -216,13 +228,32 @@ class Tkt_Search_And_Filter {
 			&& ! is_customize_preview()
 		) {
 
+			/**
+			 * The class responsible for orchestrating admin facing stuff.
+			 *
+			 * @since 1.0.0
+			 */
 			$plugin_admin = new Tkt_Search_And_Filter_Admin( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version(), $this->declarations );
 
+			/**
+			 * Enqueue Scripts and Styles.
+			 *
+			 * @since 1.0.0
+			 */
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-			// Add ShortCode Types to the TukuToi ShortCodes GUI.
+
+			/**
+			 * Register ShortCode Types with the TukuToi ShortCodes Plugin API.
+			 *
+			 * @since 1.0.0
+			 */
 			$this->loader->add_filter( 'tkt_scs_register_shortcode_type', $this->declarations, 'declare_shortcodes_types_add_filter' );
 
-			// Add the ShortCodes to the TukuToi ShortCodes GUI.
+			/**
+			 * Add ShortCodes to the TukuToi ShortCodes Plugin GUI.
+			 *
+			 * @since 1.0.0
+			 */
 			foreach ( $this->declarations->shortcodes as $shortcode => $array ) {
 
 				$this->loader->add_filter( "tkt_scs_{$shortcode}_shortcode_form_gui", $plugin_admin, 'add_shortcodes_to_gui', 10, 2 );
@@ -250,21 +281,33 @@ class Tkt_Search_And_Filter {
 		) {
 
 			/**
-			 * The class responsible for processing ShortCodes in ShortCodes or attributes.
+			 * The class responsible for orchestrating public facing stuff.
 			 *
-			 * @since 2.0.0
+			 * @since 1.0.0
 			 */
-			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-shortcodes.php';
+			$plugin_public = new Tkt_Search_And_Filter_Public( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version() );
+
+			/**
+			 * The class responsible for Sanitization.
+			 *
+			 * @since 1.0.0
+			 */
+			$sanitizer = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
+
 			/**
 			 * The class responsible for processing the queries.
 			 *
 			 * @since 2.0.0
 			 */
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-posts-query.php';
-
-			$plugin_public = new Tkt_Search_And_Filter_Public( $this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version() );
-			$sanitizer = new Tkt_Search_And_Filter_Sanitizer( $this->plugin_prefix, $this->version, $this->declarations );
 			$query = new Tkt_Search_And_Filter_Posts_Query( $sanitizer );
+
+			/**
+			 * The class responsible for processing ShortCodes in ShortCodes or attributes.
+			 *
+			 * @since 2.0.0
+			 */
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-shortcodes.php';
 			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer );
 
 			/**
@@ -274,12 +317,27 @@ class Tkt_Search_And_Filter {
 			$this->loader->add_filter( 'the_content', $processor, 'pre_process_shortcodes', 5 );
 			$this->loader->add_filter( 'tkt_post_process_shortcodes', $processor, 'post_process_shortcodes' );
 
+			/**
+			 * Enqueue Scripts and Styles.
+			 */
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-			$this->loader->add_action( 'wp_ajax_the_ajax_loop', $query, 'the_ajax_loop' );
-			$this->loader->add_action( 'wp_ajax_nopriv_the_ajax_loop', $query, 'the_ajax_loop' );
 
-			// Register the ShortCodes of this plugin.
+			/**
+			 * Register AJAX Callbacks.
+			 */
+			$this->loader->add_action( 'wp_ajax_tkt_ajax_loop', $query, 'tkt_ajax_loop' );
+			$this->loader->add_action( 'wp_ajax_nopriv_tkt_ajax_loop', $query, 'tkt_ajax_loop' );
+			$this->loader->add_action( 'wp_ajax_tkt_ajax_query', $query, 'tkt_ajax_query' );
+			$this->loader->add_action( 'wp_ajax_nopriv_tkt_ajax_query', $query, 'tkt_ajax_query' );
+			$this->loader->add_action( 'wp_ajax_tkt_ajax_pagination', $shortcodes, 'tkt_ajax_pagination' );
+			$this->loader->add_action( 'wp_ajax_nopriv_tkt_ajax_pagination', $shortcodes, 'tkt_ajax_pagination' );
+
+			/**
+			 * Register AJAX Callbacks.
+			 *
+			 * NOTE: They will be registered with tkt_scs_ prefixed handle (prefix of TukuToi ShortCodes Plugin).
+			 */
 			foreach ( $this->declarations->shortcodes as $shortcode => $array ) {
 
 				$callback = $shortcode;

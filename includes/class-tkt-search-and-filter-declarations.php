@@ -462,6 +462,10 @@ class Tkt_Search_And_Filter_Declarations {
 				'label'     => esc_html__( 'NoHTML KSES', 'tkt-search-and-filter' ),
 				'callback'  => 'wp_filter_nohtml_kses',
 			),
+			'absint' => array(
+				'label'     => esc_html__( 'Integer', 'tkt-search-and-filter' ),
+				'callback'  => 'absint',
+			),
 			'intval' => array(
 				'label'     => esc_html__( 'Integer', 'tkt-search-and-filter' ),
 				'callback'  => 'intval',
