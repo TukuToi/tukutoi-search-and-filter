@@ -9,8 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
-### 2.18.2
-* [Fixed] AJAX Search was broken due to sequence of filters changed
+### 2.19.0
+* [Added] Full AJAX Pagination support with dynamically updating pagination links
+* [Changed] Some code refactor and safety additions
 
 ### 2.18.1
 * [Added] Support for Custom ShortCodes inside Attributes

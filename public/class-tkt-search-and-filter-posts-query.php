@@ -70,7 +70,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		$this->query_args = array();
 		$this->sanitizer = $sanitizer;
 		$this->instance = '';
-		$this->instance = '';
+		$this->content = '';
 
 	}
 
@@ -204,95 +204,135 @@ class Tkt_Search_And_Filter_Posts_Query {
 	}
 
 	/**
+	 * Build the Loop Results in AJAX request.
+	 *
+	 * We use a POST request because we need to resolve the template.
+	 * The Template might hold ShortCodes (nested/attributes) and even be encoded.
+	 * Thus we cannot use a GET request because the Request URI might become too long very quickly.
+	 *
+	 * @since 2.19.0
+	 */
+	public function tkt_ajax_loop() {
+
+		if ( ! is_array( $_POST )
+			|| empty( $_POST )
+			|| ! isset( $_POST['action'] )
+			|| empty( $_POST['action'] )
+			|| ! isset( $_POST['nonce'] )
+			|| empty( $_POST['nonce'] )
+			|| ! isset( $_POST['is_doing_ajax'] )
+			|| empty( $_POST['is_doing_ajax'] )
+			|| ! isset( $_POST['instance'] )
+			|| empty( $_POST['instance'] )
+			|| ! isset( $_POST['error'] ) // Error might be empty.
+			|| ! isset( $_POST['template'] )
+			|| empty( $_POST['template'] )
+			|| ! isset( $_POST['objects'] ) // Objects might be empty if no results found.
+		) {
+
+			wp_send_json_error( 'Insufficient or Malformed Request', 400 );
+
+		}
+
+		$action     = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		$is_ajax    = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['is_doing_ajax'] ) ) );
+
+		if ( 'tkt_ajax_loop' !== $action
+			|| ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tkt_ajax_nonce' )
+			|| true !== $is_ajax
+		) {
+
+			wp_send_json_error( 'Unauthorized Request', 401 );
+
+		}
+
+		$instance   = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
+		$template   = wp_kses_post( wp_unslash( $_POST['template'] ) );
+		$objects    = array_map( 'absint', wp_unslash( $_POST['objects'] ) );
+
+		$out = '';
+		foreach ( $objects as $key => $post_id ) {
+
+			global $post;
+			// @codingStandardsIgnoreLine WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+			$post = get_post( $post_id );
+
+			setup_postdata( $post );
+			$processed_content = apply_filters( 'tkt_post_process_shortcodes', $template );
+			$processed_content = do_shortcode( $processed_content, false );
+			$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
+			wp_reset_postdata();
+
+		}
+
+		wp_send_json_success( $out );
+
+	}
+
+	/**
 	 * The Query Results (ajax)
 	 */
-	public function the_ajax_loop() {
+	public function tkt_ajax_query() {
 
 		if ( ! is_array( $_GET )
+			|| empty( $_GET )
 			|| ! isset( $_GET['action'] )
+			|| empty( $_GET['action'] )
+			|| ! isset( $_GET['nonce'] )
+			|| empty( $_GET['nonce'] )
 			|| ! isset( $_GET['is_doing_ajax'] )
-			|| ! isset( $_GET['content'] )
+			|| empty( $_GET['is_doing_ajax'] )
 			|| ! isset( $_GET['instance'] )
+			|| empty( $_GET['instance'] )
 			|| ! isset( $_GET['query_args'] )
+			|| empty( $_GET['query_args'] )
 		) {
 
-			echo json_encode( 'Request is malformed' );
-
-			die();
+			wp_send_json_error( 'Insufficient GET Request Data', 400 );
 
 		}
 
-		$action = sanitize_text_field( wp_unslash( $_GET['action'] ) );
-		$is_ajax = sanitize_text_field( wp_unslash( $_GET['is_doing_ajax'] ) );
-		$content = wp_kses_post( wp_unslash( $_GET['content'] ) );
-		$instance = sanitize_text_field( wp_unslash( $_GET['instance'] ) );
+		$action     = sanitize_text_field( wp_unslash( $_GET['action'] ) );
+		$is_ajax    = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_GET['is_doing_ajax'] ) ) );
 
-		if ( 'the_ajax_loop' !== $action
-			|| ! isset( $is_ajax )
+		if ( 'tkt_ajax_query' !== $action
+			|| ! wp_verify_nonce( sanitize_key( $_GET['nonce'] ), 'tkt_ajax_nonce' )
+			|| true !== $is_ajax
 		) {
 
-			echo json_encode( 'Request is malformed' );
-
-			die();
+			wp_send_json_error( 'Unauthorized Request', 401 );
 
 		}
+
+		$instance   = sanitize_text_field( wp_unslash( $_GET['instance'] ) );
+
 		$this->set_type( 'ajax' );
 		$this->set_instance( $instance );
 
 		if ( isset( $_GET['paged'] ) && isset( $_GET['query_args']['posts_per_page'] ) ) {
-			$this->paged = absint( wp_unslash( $_GET['paged'] ) );
-			$this->posts_per_page = absint( wp_unslash( $_GET['query_args']['posts_per_page'] ) );
+			$this->paged            = absint( wp_unslash( $_GET['paged'] ) );
+			$this->posts_per_page   = absint( wp_unslash( $_GET['query_args']['posts_per_page'] ) );
 		}
 		foreach ( $_GET as $key => $value ) {
 			if ( 'query_args' !== $key && 'instance' !== $key ) {
 				unset( $_GET[ $key ] );
 			}
 		}
-
 		$this->set_query_args( array() );
 
 		$results = $this->get_query_results();
 
 		/**
-		 * Loop over the results and build the output.
-		 *
-		 * @since 2.0.0
+		 * It would be quicker to just send fields => ids
+		 * however we need some additional data from WP Query in the AJAX object.
+		 * This might be useful as well in future to load found results, etc.
 		 */
-		$out = '';
-		if ( $results->have_posts() ) {
-			while ( $results->have_posts() ) {
-				$results->the_post();
-				/**
-				 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
-				 *
-				 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
-				 * @since 2.0.0
-				 */
-				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $content );
-				$processed_content = do_shortcode( $processed_content, false );
-				$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
-			}
-		} else {
-			/**
-			 * No results found.
-			 *
-			 * This is already sanitized.
-			 *
-			 * @since 2.0.0
-			 */
-			$out = 'no results';
-		}
-
-		/**
-		 * Normally here we would reset post data.
-		 *
-		 * @todo check if this is needed, specially when no pagination is on site
-		 */
-		wp_reset_postdata();
-
-		echo json_encode( $out );
-
-		die();
+		wp_send_json_success(
+			array(
+				'max_num_pages' => $results->max_num_pages,
+				'ids'           => wp_list_pluck( $results->posts, 'ID' ),
+			)
+		);
 
 	}
 
@@ -442,9 +482,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.13.0
 		 */
 		if ( 'ajax' !== $this->get_type() ) {
-			$this->paged = isset( $_GET[ $this->custom_pagarg ] )
-									? absint( wp_unslash( $_GET[ $this->custom_pagarg ] ) )
-									: 1;
+			$this->paged = isset( $_GET[ $this->custom_pagarg ] ) ? absint( wp_unslash( $_GET[ $this->custom_pagarg ] ) ) : 1;
 		}
 		if ( isset( $this->paged )
 			&& ! empty( $this->paged )

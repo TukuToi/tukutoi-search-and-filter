@@ -59,6 +59,7 @@
 	$this->text_fieldset( 'error', 'No Results Found', 'No Posts Found', 'What message to display for no results found (accepts HTML)' );
 	$this->text_fieldset( 'pag_arg', 'Pagination URL Parameter', '', 'What URL Parameter to use for Pagination. Accepts \'page\', \'paged\' and \'your_custom_value\'' );
 	$this->text_fieldset( 'posts_per_page', 'Posts Per Page', '', 'How many Results per page to display' );
-	$this->checkbox_fieldset( 'quotes', 'Quotes', '"', 'What Quotes to use in ShortCodes (Useful when using ShortCodes in other ShortCodes attributes, or in HTML attributes', '' );
+	$this->text_fieldset( 'container', 'Loop Container Type', '', 'The type of HTML container for the Loop. Mandatory if AJAX' );
+	$this->text_fieldset( 'customclasses', 'Loop Container Class', '', 'CSS classes to append to the Loop Wrapper, if set' );
 	?>
 </form>

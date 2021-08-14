@@ -130,7 +130,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @todo check if we can sanitize the $content here with $content = $this->sanitizer->sanitize( 'post_kses', $content );
 		 * @since 2.0.0
 		 */
-		$content = apply_filters( 'tkt_scs_pre_process_shortcodes', $content );
+		$content = apply_filters( 'tkt_post_process_shortcodes', $content );
 		$content = do_shortcode( $content, false );
 
 		// Add the Instance as hidden field so it is available after Form Submit in URL param.
@@ -180,6 +180,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'error'         => 'No Results Found',
 				'pag_arg'       => '',
 				'posts_per_page' => '',
+				'customclasses' => '',
+				'container'     => '',
 			),
 			$atts,
 			$tag
@@ -237,11 +239,12 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$query_args = array_merge( $default_query_args, $atts );
 
 		$this->query->set_query_args( $query_args );
-		$out = $this->query->the_loop( $content, $atts['error'] );
+		$loop = $this->query->the_loop( $content, $atts['error'] );
+
 		// If it is an AJAX search.
 		if ( 'ajax' === $this->query->get_type() ) {
 			/**
-			 * AJAX not needed unless we are in a AJAX Search.
+			 * AJAX not needed unless we are in a AJAX type of loop/search.
 			 *
 			 * Save the users some headaches, usually plugins just throw the scripts on all pages...
 			 *
@@ -257,18 +260,34 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'tkt_ajax_params',
 				array(
 					'is_doing_ajax' => true,
-					'ajax_url'  => admin_url( 'admin-ajax.php' ),
-					'content'   => $content,
-					'instance'  => $atts['instance'],
-					'query_args' => $query_args,
-					'error'     => $atts['error'],
+					'ajax_url'      => admin_url( 'admin-ajax.php' ),
+					'nonce'         => wp_create_nonce( 'tkt_ajax_nonce' ),
+					'content'       => $content,
+					'instance'      => $atts['instance'],
+					'query_args'    => $query_args,
+					'error'         => $atts['error'],
 				)
 			);
-			// If it is an AJAX search we need some container to push data results to.
-			$out = '<div id="' . $atts['instance'] . '" data-tkt-ajax-src-loop="' . $atts['instance'] . '"></div>';
 		}
 
-		// Return our output. Already sanitized.
+		/**
+		 * If AJAX, we need a container to populate with a data-tkt-ajax-src-loop and ID set.
+		 *
+		 * This container is also set if the user populates the container without AJAX method.
+		 * In that case, we do not need data-tkt-ajax-src-loop.
+		 *
+		 * If the user does not provide a container type, we assueme raw output and return only the loop.
+		 *
+		 * @since 2.19.0
+		 */
+		if ( ! empty( $atts['container'] ) && 'ajax' !== $this->query->get_type() ) {
+			$out = '<' . $atts['container'] . ' id="' . $atts['instance'] . '" class="' . $atts['customclasses'] . '">' . $loop . '</' . $atts['container'] . '>';
+		} elseif ( 'ajax' === $this->query->get_type() ) {
+			$out = '<' . $atts['container'] . ' id="' . $atts['instance'] . '" data-tkt-ajax-src-loop="' . $atts['instance'] . '" class="' . $atts['customclasses'] . '"></' . $atts['container'] . '>';
+		} else {
+			$out = $loop;
+		}
+
 		return $out;
 
 	}
@@ -667,8 +686,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      @type string    $before_page_number A string to appear before the page number. Default: ''. Accepts: valid string.
 	 *      @type string    $after_page_number  A string to appear after the page number. Default: ''. Accepts: valid string.
 	 *      @type string    $instance           The unique instance of search and loop this pagination has to control. Default: ''. Accepts: valid instance (must match  Search template and Loop instance).
-	 *      @type string    $customclasses      CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
+	 *      @type string    $customclasses      CSS Classes to use for the pagination links. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 *      @type string    $pag_arg            The URL parameter to use for this pagination. Default: item. Accepts: valid string but NOT 'page' or 'paged'.
+	 *      @type string    $container          Container Type to put the pagination into. Default: ''. Accepts: '', valid HTML Container type.
+	 *      @type string    $containerclasses   CSS Classes to use for the Pagination Container. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
 	 * }
 	 * @param mixed  $content   ShortCode enclosed content. Not applicable for this ShortCode.
 	 * @param string $tag       The Shortcode tag. Value: 'pagination'.
@@ -692,6 +713,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'instance'              => '',
 				'customclasses'         => '',
 				'pag_arg'               => 'item',
+				'container'             => '',
+				'containerclasses'      => '',
 			),
 			$atts,
 			$tag
@@ -725,9 +748,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 		}
 
 		/**
-		 * By what parameter we paginate.
+		 * Pagination Parameters.
 		 *
-		 * Note: this must be set both in Loop and pagination.
+		 * Note: pag_arg must be set both in Loop and Pagination.
 		 * Note: append .$instance to $paged value, to avoid pagination parameters to break.
 		 * It will then be able to use ?page.instance=#.
 		 * By default, this plugin does NOT ALLOW usage of 'page', or 'paged' URL parameters.
@@ -736,46 +759,33 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 */
 		$paged = $atts['pag_arg'];
 		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;
-
-		// Get the query results this pagination should paginate.
-		$query_results = $this->query->get_query_results();
-
-		/**
-		 * Build the pagination parameters
-		 *
-		 * Note: Do NOT use the 'base' argument.
-		 * Note: Do NOT pass a url_parameter related to pagination.
-		 * Note: Do NOT attempt to use reserved words such as 'page' or 'paged'.
-		 */
-		$pargs = array(
-			'format'                => '?' . $paged . '=%#%',
-			'total'                 => $query_results->max_num_pages,
-			'current'               => $page,
-			'aria_current'          => $atts['aria_current'],
-			'show_all'              => $atts['show_all'],
-			'end_size'              => $atts['end_size'],
-			'mid_size'              => $atts['mid_size'],
-			'prev_next'             => $atts['prev_next'],
-			'prev_text'             => $atts['prev_text'],
-			'next_text'             => $atts['next_text'],
-			'type'                  => $atts['type'],
-			'add_args'              => $add_args, // $atts['add_args'],
-			'add_fragment'          => $atts['add_fragment'],
-			'before_page_number'    => $atts['before_page_number'],
-			'after_page_number'     => $atts['after_page_number'],
-		);
+		$max = $this->query->get_query_results()->max_num_pages;
 
 		/**
 		 * Add some wrapper for pagination.
 		 * This is required for AJAX pagination.
 		 * Without this, we have no target to listen to.
 		 *
-		 * @todo Let the user customize this class and perhaps even add an ID instead.
 		 * @since 2.13.0
 		 */
-		$pag = '<div class="genre-filter-navigation">';
-		$pag .= paginate_links( $pargs );
-		$pag .= '</div>';
+		$pag = '<' . $atts['container'] . ' class="' . $atts['containerclasses'] . '" id="' . $atts['instance'] . '_pagination">';
+		$pag .= $this->paginate_helper( $atts, $page, $paged, $max, $add_args );
+		$pag .= '</' . $atts['container'] . '>';
+
+		if ( 'ajax' === $this->query->get_type() ) {
+			wp_localize_script(
+				'tkt-ajax-js',
+				'tkt_ajax_pag_params',
+				array(
+					'is_doing_ajax' => true,
+					'ajax_url'      => admin_url( 'admin-ajax.php' ),
+					'nonce'         => wp_create_nonce( 'tkt_ajax_nonce' ),
+					'instance'      => $atts['instance'],
+					'atts'          => $atts,
+					'page'          => $page,
+				)
+			);
+		}
 
 		/**
 		 * When there are multiple loops in a page you must reset postdata.
@@ -789,6 +799,155 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Return our Pagination, all inputs are sanitized.
 		return $pag;
+
+	}
+
+	/**
+	 * Paginate Links Builder for TukuToi `[pagination]` ShortCode.
+	 *
+	 * Builds the Pagination Links array/list/plain.</br>
+	 *
+	 * Internal Function to build pagination links. Not intended for external Usage.
+	 *
+	 * @since    2.0.0
+	 * @access private
+	 * @param array  $atts      The ShortCode Attributes, @see {/public/class-tkt-search-and-filter-shortcodes.php} > `pagination` ShortCode.
+	 * @param int    $page      The current page, populates $pargs['current']. Default: 1. Accepts: valid integer.
+	 * @param string $paged     The Pagination URL parameter, populates $pargs['format']. Default: ''. Accepts: valid URL parameter.
+	 * @param string $max       The Number Posts Found, populates $parg['total']. Default: ''. Accepts: valid integer.
+	 * @param string $add_args  Additional URL parameters, populates $pargs['add_args']. Default: array. Accepts: array of URL parameter => value.
+	 * @param string $base      The Pagination URL Base, populates $pargs['base']. Default: ''. Accepts: valid base URL.
+	 * @return mixed $pag       The Pagination Links, either in plain, list or array mode.
+	 */
+	private function paginate_helper( $atts, $page = 1, $paged = '', $max, $add_args = array(), $base = false ) {
+		/**
+		 * Build the pagination parameters
+		 *
+		 * Note: Do NOT pass a url_parameter related to pagination.
+		 * Note: Do NOT attempt to use reserved words such as 'page' or 'paged'.
+		 * Note: Technically all input is already sanitized in either the ShortCode or ajax_pagination(),
+		 * however for safeyt sake, since we move around the values outside the functions here, we sanitize again.
+		 *
+		 * @see https://docs.classicpress.net/reference/functions/paginate_links/
+		 * @since 2.19.0
+		 */
+		$pargs = array(
+			'format'                => '?' . $this->sanitizer->sanitize( 'key', $paged ) . '=%#%',
+			'total'                 => $this->sanitizer->sanitize( 'absint', $max ),
+			'current'               => $this->sanitizer->sanitize( 'absint', $page ),
+			'aria_current'          => $this->sanitizer->sanitize( 'key', $atts['aria_current'] ),
+			'show_all'              => $this->sanitizer->sanitize( 'boolval', $atts['show_all'] ),
+			'end_size'              => $this->sanitizer->sanitize( 'absint', $atts['end_size'] ),
+			'mid_size'              => $this->sanitizer->sanitize( 'absint', $atts['mid_size'] ),
+			'prev_next'             => $this->sanitizer->sanitize( 'boolval', $atts['prev_next'] ),
+			'prev_text'             => $this->sanitizer->sanitize( 'text_field', $atts['prev_text'] ),
+			'next_text'             => $this->sanitizer->sanitize( 'text_field', $atts['next_text'] ),
+			'type'                  => $this->sanitizer->sanitize( 'key', $atts['type'] ),
+			'add_args'              => array_map( 'sanitize_key', $add_args ),
+			'add_fragment'          => $this->sanitizer->sanitize( 'key', $atts['add_fragment'] ),
+			'before_page_number'    => $this->sanitizer->sanitize( 'text_field', $atts['before_page_number'] ),
+			'after_page_number'     => $this->sanitizer->sanitize( 'text_field', $atts['after_page_number'] ),
+		);
+		if ( false !== $base ) {
+			$pargs['base'] = $this->sanitizer->sanitize( 'esc_url_raw', $base ) . '%_%';
+		}
+
+		$pag = paginate_links( $pargs );
+
+		return $pag;
+
+	}
+
+	/**
+	 * Alias for TukuToi `[pagination]` ShortCode used when doing AJAX.
+	 *
+	 * @see {/public/class-tkt-search-and-filter-shortcodes.php} > `pagination` ShortCode.</br>
+	 *
+	 * Internal Function used as Alias to the Pagination ShortCode when doing ajax.
+	 * Public because AJAX requires public callback, but shouldn't be used. Use ShortCode instead.
+	 *
+	 * @since    2.19.0
+	 * @access public
+	 * @return void.
+	 */
+	public function tkt_ajax_pagination() {
+
+		if ( ! is_array( $_POST )
+			|| empty( $_POST )
+			|| ! isset( $_POST['is_doing_ajax'] )
+			|| empty( $_POST['is_doing_ajax'] )
+			|| ! isset( $_POST['action'] )
+			|| empty( $_POST['action'] )
+			|| ! isset( $_POST['nonce'] )
+			|| empty( $_POST['nonce'] )
+			|| ! isset( $_POST['instance'] )
+			|| empty( $_POST['instance'] )
+			|| ! isset( $_POST['atts'] )
+			|| empty( $_POST['atts'] )
+			|| ! is_array( $_POST['atts'] )
+		) {
+
+			wp_send_json_error( 'Insufficient or Malformed Request', 400 );
+
+		}
+
+		$action     = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		$is_ajax    = boolval( wp_unslash( $_POST['is_doing_ajax'] ) );
+
+		if ( 'tkt_ajax_pagination' !== $action
+			|| ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tkt_ajax_nonce' )
+			|| true !== $is_ajax
+		) {
+
+			wp_send_json_error( 'Unauthorized Request', 401 );
+
+		}
+
+		$instance   = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
+		foreach ( $_POST as $post_key => $post_value ) {
+			if ( 'atts' === $post_key ) {
+				foreach ( $post_value as $key => $value ) {
+
+					if ( 'show_all' === $key || 'prev_next' === $key ) {
+						$atts[ $key ] = $this->sanitizer->sanitize( 'boolval', $value );
+					} elseif ( 'end_size' === $key || 'mid_size' === $key ) {
+						$atts[ $key ] = $this->sanitizer->sanitize( 'intval', $value );
+					} elseif ( 'add_args' === $key ) {
+						$value = $this->sanitizer->sanitize( 'text_field', $value );
+						$add_args = array();
+						if ( ! empty( $value ) ) {
+							// If several args are passed.
+							if ( strpos( $value, ',' ) !== false ) {
+								$args_pre = explode( ',', $value );
+								foreach ( $args_pre as $key => $arrval ) {
+									list( $k, $v ) = explode( ':', $arrval );
+									$add_args[ $k ] = $v;
+								}
+							} else {
+								list( $k, $v ) = explode( ':', $value );
+								$add_args[ $k ] = $v;
+							}
+						}
+					} else {
+						$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+					}
+				}
+			}
+		}
+
+		$page       = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : 1;
+		$paged      = isset( $atts['pag_arg'] ) ? $atts['pag_arg'] : '';
+		$max        = isset( $_POST['max'] ) ? absint( wp_unslash( $_POST['max'] ) ) : -1;
+		$add_args   = isset( $atts['add_args'] ) ? $atts['add_args'] : array();
+		$base       = wp_doing_ajax() ? esc_url_raw( wp_get_referer() ) : '';
+
+		$pag        = $this->paginate_helper( $atts, $page, $paged, $max, $add_args, $base );
+
+		if ( empty( $pag ) ) {
+			$pag = '';
+		}
+
+		wp_send_json_success( $pag );
 
 	}
 
