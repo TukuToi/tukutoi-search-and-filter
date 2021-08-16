@@ -308,7 +308,7 @@ class Tkt_Search_And_Filter {
 			 * @since 2.0.0
 			 */
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-tkt-search-and-filter-shortcodes.php';
-			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer );
+			$shortcodes = new Tkt_Search_And_Filter_Shortcodes( $this->plugin_prefix, $this->version, $this->declarations, $query, $sanitizer, $plugin_public );
 
 			/**
 			 * The ShortCode Processor making nested and attribute ShortCodes work.

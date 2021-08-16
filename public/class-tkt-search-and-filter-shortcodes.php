@@ -49,13 +49,14 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string $plugin_prefix          The unique prefix of this plugin.
+	 * @param      string $plugin_prefix    The unique prefix of this plugin.
 	 * @param      string $version          The version of this plugin.
-	 * @param      string $declarations    The Configuration object.
-	 * @param      string $query    The Query object.
-	 * @param      string $sanitizer    The Sanitization object.
+	 * @param      object $declarations     The Configuration object.
+	 * @param      object $query            The Query object.
+	 * @param      object $sanitizer        The Sanitization object.
+	 * @param      object $plugin_public    The Public object of this plugin.
 	 */
-	public function __construct( $plugin_prefix, $version, $declarations, $query, $sanitizer ) {
+	public function __construct( $plugin_prefix, $version, $declarations, $query, $sanitizer, $plugin_public ) {
 
 		$this->plugin_prefix    = $plugin_prefix;
 		$this->version          = $version;
@@ -63,6 +64,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		$this->sanitizer        = $sanitizer;
 		$this->query            = $query;
+		$this->plugin_public    = $plugin_public;
 
 	}
 
@@ -170,6 +172,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * }
 	 * @param mixed  $content   ShortCode enclosed content. TukuToi ShortCodes, ShortCodes and HTML. No TukuToi Search ShortCodes.
 	 * @param string $tag       The Shortcode tag. Value: 'loop'.
+	 *
+	 * @todo This is messy, redo this query args.
 	 */
 	public function loop( $atts, $content = null, $tag ) {
 
@@ -193,7 +197,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				$atts['error'] = $this->sanitizer->sanitize( 'post_kses', $value );
 			} elseif ( 'posts_per_page' === $atts['type'] ) {
 				$atts['posts_per_page'] = $this->sanitizer->sanitize( 'intval', $value );
-			} elseif ( 'type' === $atts['type'] ) {
+			} elseif ( 'type' === $key ) {
 				$atts['type'] = $this->sanitizer->sanitize( 'text_field', $value );
 				// If several types are passed to type.
 				if ( strpos( $atts['type'], ',' ) !== false ) {
@@ -211,10 +215,12 @@ class Tkt_Search_And_Filter_Shortcodes {
 		) {
 			// The Post Type or Post Types do exit but may not be an array if only one was passed.
 			if ( ! is_array( $atts['type'] ) ) {
-				$post_type = array( $atts['type'] );
+				$post_types = array( $atts['type'] );
+			} else {
+				$post_types = $atts['type'];
 			}
 			$default_query_args = array(
-				'post_type'              => $post_type,
+				'post_type'              => $post_types,
 				'post_status'            => array( 'publish' ),
 				'posts_per_page'         => $atts['posts_per_page'],
 				'order'                  => 'DESC',
@@ -235,10 +241,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 			unset( $atts['pag_arg'] );
 		}
 		unset( $atts['posts_per_page'] );
-		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
-		$query_args = array_merge( $default_query_args, $atts );
 
-		$this->query->set_query_args( $query_args );
+		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
+		$default_query_args['pag_arg'] = $atts['pag_arg'];// array_merge( $default_query_args, $atts );.
+
+		$this->query->set_query_args( $default_query_args );
 		$loop = $this->query->the_loop( $content, $atts['error'] );
 
 		// If it is an AJAX search.
@@ -260,11 +267,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'tkt_ajax_params',
 				array(
 					'is_doing_ajax' => true,
-					'ajax_url'      => admin_url( 'admin-ajax.php' ),
+					'ajax_url'      => $this->sanitizer->sanitize( 'esc_url_raw', admin_url( 'admin-ajax.php' ) ),
 					'nonce'         => wp_create_nonce( 'tkt_ajax_nonce' ),
-					'content'       => $content,
+					'content'       => $this->sanitizer->sanitize( 'text_field', $content ),
 					'instance'      => $atts['instance'],
-					'query_args'    => $query_args,
+					'query_args'    => $default_query_args,
 					'error'         => $atts['error'],
 				)
 			);
@@ -558,24 +565,23 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 *
 		 * Here we:
 		 * 1. Enqueue Select2 CSS if needed.
-		 * 2. Enqueue Select2 JS if needed.
-		 * 3. Enqueue TukuToi JS if needed.
-		 * 4. Localise TukuToi JS if needed.
+		 * 3. Enqueue TukuToi Select2 JS if needed. Dependency: select2.
+		 * 4. Localise TukuToi Select2 JS if needed.
 		 *
 		 * @since 2.10.0
 		 */
+
 		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
-			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
-			wp_localize_script(
-				'tkt-script',
+			wp_enqueue_script( 'tkt-s2' );
+			$this->plugin_public->maybe_localize_script(
+				'tkt-s2',
 				'tkt_select2',
-				array(
+				$atts['customid'],
+				$value = array(
 					'placeholder'   => $atts['placeholder'],
-					'instance'      => $atts['customid'],
 				)
 			);
-			wp_enqueue_script( 'tkt-script' );
 		}
 
 		// Return Select Form.
@@ -661,6 +667,67 @@ class Tkt_Search_And_Filter_Shortcodes {
 	}
 
 	/**
+	 * TukuToi `[spinner]` ShortCode.
+	 *
+	 * Outputs the Spinners for Search and Paginations when using AJAX.</br>
+	 *
+	 * Example usage:
+	 * `[spinner url="/path/to/spinner.gif" container="div" customid="my_id" customclasses="class_one classtwo" value=""]`</br>
+	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
+	 *
+	 * @since    2.0.0
+	 * @param array  $atts {
+	 *      The ShortCode Attributes.
+	 *
+	 *      @type string    $url            Url to the Spinner asset. Default: ''. Accepts: valid URL to resource/asset.
+	 *      @type string    $container      HTML container to use for displaying the spinner. Default: 'span'. Accepts: valid HTML element.
+	 *      @type string    $value          Value to show instead of or together with URL asset. Default: ''. Accepts: valid string.
+	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
+	 *      @type string    $customclasses  Additional CSS Classes to use for the Search Form. Default: 'tkt_ajax_loader'. Mandatory 'tkt_ajax_loader'. Accepts: 'tkt_ajax_loader' + valid HTML CSS classes, space delimited.
+	 * }
+	 * @param mixed  $content   ShortCode enclosed content. Not applicable for this ShortCode.
+	 * @param string $tag       The Shortcode tag. Value: 'spinner'.
+	 */
+	public function spinner( $atts, $content = null, $tag ) {
+
+		$atts = shortcode_atts(
+			array(
+				'url'           => '', // Some label.
+				'container'     => 'span', // This is the 'name' in a button.
+				'value'         => '', // passe a =value to the URL ?name.
+				'customid'      => '',
+				'customclasses' => 'tkt_ajax_loader',
+			),
+			$atts,
+			$tag
+		);
+
+		// Sanitize the User input atts.
+		foreach ( $atts as $key => $value ) {
+			if ( 'url' === $key ) {
+				$atts[ $key ] = $this->sanitizer->sanitize( 'esc_url_raw', $value );
+			}
+			$atts[ $key ] = $this->sanitizer->sanitize( 'text_field', $value );
+		}
+
+		/**
+		 * Currently only submit button works/
+		 *
+		 * @todo this needs same process as a search input, as well as reset button logic.
+		 * @since 2.0.0
+		 */
+
+		$spinner = ! empty( $atts['container'] ) ? '<' . $atts['container'] . ' id="' . $atts['customid'] . '" class="tkt_ajax_loader ' . $atts['customclasses'] . '">' : '';
+		$spinner .= ! empty( $atts['url'] ) ? '<img src="' . $atts['url'] . '">' : '';
+		$spinner .= ! empty( $atts['value'] ) ? $atts['value'] : '';
+		$spinner .= ! empty( $atts['container'] ) ? '</' . $atts['container'] . '>' : '';
+
+		// Return our Button, all inputs are sanitized.
+		return $spinner;
+
+	}
+
+	/**
 	 * TukuToi `[pagination]` ShortCode.
 	 *
 	 * Outputs the pagination Buttons.</br>
@@ -711,10 +778,13 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'before_page_number'    => '',
 				'after_page_number'     => '',
 				'instance'              => '',
-				'customclasses'         => '',
 				'pag_arg'               => 'item',
 				'container'             => '',
 				'containerclasses'      => '',
+				'li_classes'            => '',
+				'ul_classes'            => '',
+				'a_classes'             => '',
+				'current_classes'       => '',
 			),
 			$atts,
 			$tag
@@ -778,7 +848,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'tkt_ajax_pag_params',
 				array(
 					'is_doing_ajax' => true,
-					'ajax_url'      => admin_url( 'admin-ajax.php' ),
+					'ajax_url'      => $this->sanitizer->sanitize( 'esc_url_raw', admin_url( 'admin-ajax.php' ) ),
 					'nonce'         => wp_create_nonce( 'tkt_ajax_nonce' ),
 					'instance'      => $atts['instance'],
 					'atts'          => $atts,
@@ -847,12 +917,16 @@ class Tkt_Search_And_Filter_Shortcodes {
 			'add_fragment'          => $this->sanitizer->sanitize( 'key', $atts['add_fragment'] ),
 			'before_page_number'    => $this->sanitizer->sanitize( 'text_field', $atts['before_page_number'] ),
 			'after_page_number'     => $this->sanitizer->sanitize( 'text_field', $atts['after_page_number'] ),
+			'li_classes'            => $this->sanitizer->sanitize( 'esc_attr', $atts['li_classes'] ),
+			'ul_classes'            => $this->sanitizer->sanitize( 'esc_attr', $atts['ul_classes'] ),
+			'a_classes'             => $this->sanitizer->sanitize( 'esc_attr', $atts['a_classes'] ),
+			'current_classes'       => $this->sanitizer->sanitize( 'esc_attr', $atts['current_classes'] ),
 		);
 		if ( false !== $base ) {
 			$pargs['base'] = $this->sanitizer->sanitize( 'esc_url_raw', $base ) . '%_%';
 		}
 
-		$pag = paginate_links( $pargs );
+		$pag = better_paginate_links( $pargs );
 
 		return $pag;
 

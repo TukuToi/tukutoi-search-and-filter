@@ -187,7 +187,35 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'The Type of Pagination to output' );
+				$explanation = __( 'The Type of Pagination to output (Plain or List)' );
+				return $explanation;
+			}
+		);
+
+	}
+
+	/**
+	 * Create a Select Field set for the ShortCodes Forms Select Type Display Options.
+	 *
+	 * @since 1.4.0
+	 */
+	public function filtertype_options() {
+
+		$filtertype_options = array(
+			'reload'    => 'Full Page Reload',
+			'ajax'      => 'AJAX refresh',
+		);
+
+		foreach ( $filtertype_options as $filtertype_option => $label ) {
+
+			$selected = 'reload' === $filtertype_option ? 'selected' : '';
+			printf( '<option value="%s" ' . esc_attr( $selected ) . '>%s</option>', esc_attr( $filtertype_option ), esc_html( $label ) );
+		}
+
+		add_filter(
+			'tkt_scs_shortcodes_fieldset_explanation',
+			function( $explanation ) {
+				$explanation = __( 'The Type of Search and Filter (AJAX or Full Page Reload)' );
 				return $explanation;
 			}
 		);

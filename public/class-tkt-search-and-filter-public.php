@@ -83,9 +83,60 @@ class Tkt_Search_And_Filter_Public {
 	 */
 	public function enqueue_scripts() {
 
+		/**
+		 * Script select2 and tkt-s2 are only needed when loading a Select2 type of search.
+		 * They are enqueued and localised in the selectsearch ShortCode on demand.
+		 *
+		 * Script tkt-ajax-js is only needed when the Search is of AJAX type.
+		 * It is enqueued and localised in the loop shortcode on demand.
+		 *
+		 * Main script $this->plugin_name is used everywhere in the front end, even if perhaps only needed when
+		 * a search or reset button is preset, but the script encompasess both AJAX and Reload functionality,
+		 * as well other eventual requirements that have a more global scope, thus we dont load this on demand
+		 * but just always and everywhere. The script is tiny, thus this should not be an issue.
+		 * If at some point it becomes and issue, we can always load it in the respective ShortCodes.
+		 */
 		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.js', array( 'jquery' ), '4.1.0-rc.0', true );
-		wp_register_script( 'tkt-script', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-public.js', array( 'select2' ), $this->version, true );
+		wp_register_script( 'tkt-s2', plugin_dir_url( __FILE__ ) . 'js/tkt-s2-scripts.js', array( 'select2' ), $this->version, true );
 		wp_register_script( 'tkt-ajax-js', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-ajax.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-public.js', array( 'jquery' ), $this->version, true );
+
+	}
+
+	/**
+	 * Maybe localise scripts on demand.
+	 *
+	 * @since    2.9.0
+	 * @param string $tag    The Script Tag to localise.
+	 * @param string $object The Object to localise.
+	 * @param string $item   The Localised Array Key to add.
+	 * @param array  $value  The values to add to $item.
+	 */
+	public function maybe_localize_script( $tag, $object, $item, $value = array() ) {
+
+		// Setup global scripts.
+		global $wp_scripts;
+
+		// Get localised script data from global scripts.
+		$data = $wp_scripts->get_data( $tag, 'data' );
+
+			// Localise first time if not yet localised.
+		if ( empty( $data ) ) {
+			wp_localize_script(
+				$tag,
+				$object,
+				array(
+					$item => $value,
+				)
+			);
+		} else {
+			if ( ! is_array( $data ) ) {
+				$data = json_decode( str_replace( 'var ' . $object . ' = ', '', substr( $data, 0, -1 ) ), true );
+			}
+			$data[ $item ] = $value;
+			$wp_scripts->add_data( $tag, 'data', '' );
+			wp_localize_script( $tag, $object, $data );
+		}
 
 	}
 

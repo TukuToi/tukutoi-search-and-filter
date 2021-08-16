@@ -119,6 +119,11 @@ class Tkt_Search_And_Filter_Declarations {
 				'type'  => 'queryable',
 				'inner' => false,
 			),
+			'spinner' => array(
+				'label' => esc_html__( 'Spinner', 'tkt-search-and-filter' ),
+				'type'  => 'queryable',
+				'inner' => false,
+			),
 		);
 
 		return $shortcodes;
@@ -360,8 +365,8 @@ class Tkt_Search_And_Filter_Declarations {
 		$select_types = array(
 			'single'        => esc_html__( 'Single Select Input', 'tkt-search-and-filter' ),
 			'multiple'      => esc_html__( 'Multiple Select Input', 'tkt-search-and-filter' ),
-			'single_s2'     => esc_html__( 'Single Select2 Input', 'tkt-search-and-filter' ),
-			'multiple_s2'   => esc_html__( 'Multiple Select2 Input', 'tkt-search-and-filter' ),
+			'singleS2'     => esc_html__( 'Single Select2 Input', 'tkt-search-and-filter' ),
+			'multipleS2'   => esc_html__( 'Multiple Select2 Input', 'tkt-search-and-filter' ),
 		);
 
 		$button_types = array(
