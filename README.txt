@@ -3,7 +3,7 @@ Contributors: TukuToi
 Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 4.9
-Stable tag: 2.20.3
+Stable tag: 2.25.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,16 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.25.2 =
+* [Added] Filter type (AJAX or Full page Reload) GUI Option
+* [Added] Custom paginate Links function with li_classes, ul_classes, a_classes, current_classes support
+* [Added] New ShortCode to display a Spinner or else value during AJAX operations
+* [Added] Reset functionality with native reset type button on both AJAX and Reload
+* [Fixed] Post Query Args post_type was not validated to array if comma separated, but instead just defaulted to text validation (and sanitization). **Teaching moment**: Luckily all TukuToi Plugins have a standard default fallback for sanitization (sanitize_text_field) or this would have been a securtiy issue, but just a bug
+* [Fixed] Several Select2 instances on same Searh Form are now working
+* [Changed] Several GUI improvements in form of hints and warnings
+* [Changed] Privided method to maybe localise scripts
 
 = 2.20.3 =
 * [Fixed] use $.on('event', selector, function()) instead of shorthand $.live('event', function())

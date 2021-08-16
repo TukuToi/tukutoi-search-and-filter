@@ -9,7 +9,7 @@
 	$( document ).ready( function() {
 		
 		/**
-	 	 * On Document ready load posts, and pagination, if set.
+	 	 * On Document ready load posts, pagination, reset if set.
 	 	 */
 	    tkt_get_posts();
 	    tkt_paginate();
@@ -83,13 +83,13 @@
 
 			});
 
-		 }
+		}
 
 	    /**
 	     * Get all search values of each input by type.
 	     */
 	    function get_search_values_by_type( form ) {	
-	        $('form[data-tkt-ajax-src-form="' + form + '"] input').each(function(){
+	        $('form[data-tkt-ajax-src-form="' + form + '"] input').not(':input[type=hidden]').each(function(){
 
 			    inputs[ $(this).attr('data-tkt-ajax-src') ] = $(this).val();
 

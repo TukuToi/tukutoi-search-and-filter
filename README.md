@@ -9,6 +9,16 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.25.2
+* [Added] Filter type (AJAX or Full page Reload) GUI Option
+* [Added] Custom paginate Links function with li_classes, ul_classes, a_classes, current_classes support
+* [Added] New ShortCode to display a Spinner or else value during AJAX operations
+* [Added] Reset functionality with native reset type button on both AJAX and Reload
+* [Fixed] Post Query Args post_type was not validated to array if comma separated, but instead just defaulted to text validation (and sanitization). **Teaching moment**: Luckily all TukuToi Plugins have a standard default fallback for sanitization (sanitize_text_field) or this would have been a securtiy issue, but just a bug
+* [Fixed] Several Select2 instances on same Searh Form are now working
+* [Changed] Several GUI improvements in form of hints and warnings
+* [Changed] Privided method to maybe localise scripts
+
 ### 2.20.3
 * [Fixed] use $.on('event', selector, function()) instead of shorthand $.live('event', function())
 * [Added] Filter to filter the main query after Search and Filter settings are passed to it: tkt_src_fltr_query_args

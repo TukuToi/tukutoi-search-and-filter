@@ -12,6 +12,15 @@
  */
 
 ?>
+<?php
+/**
+ * We need to add some data to the existing TukuToi ShortCode GUI Selector Options.
+ *
+ * @since 2.0.0
+ */
+ require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-tkt-search-and-filters-gui.php';
+ $additional_options = new Tkt_Search_And_Filters_Gui( new Tkt_Search_And_Filter_Declarations() );
+?>
 <form class="tkt-shortcode-form">
 	
 	<div class="ui-widget tkt-notice-widgets">
@@ -37,6 +46,7 @@
 	</div>
 
 	<?php
+	$this->select_fieldset( 'type', 'Filter Type', 'reload', array( $additional_options, 'filtertype_options' ) );
 	$this->text_fieldset( 'customid', 'Custom ID', '', 'Custom ID to use for the Search Input' );
 	$this->text_fieldset( 'customclasses', 'Custom Classes', '', 'Custom Classes to use for the Search Input' );
 	$this->text_fieldset( 'instance', 'Custom Instance', '', 'Custom instance to bind Filters to specific Loops' );
