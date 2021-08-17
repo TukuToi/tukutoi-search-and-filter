@@ -123,8 +123,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$this->query->set_type( $atts['type'] );
 		$tkt_src_fltr['instance'] = $atts['instance'];
 
+		$data_tkt = 'ajax' === $atts['type'] ? 'data-tkt-ajax-src-form="' . $atts['instance'] . '"' : '';
 		// Build the Form Start.
-		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET" data-tkt-ajax-src-form="' . $atts['instance'] . '">';
+		$src_form_start = '<form id="' . $atts['customid'] . '" class="' . $atts['customclasses'] . '" type="GET" ' . $data_tkt . '>';
 
 		/**
 		 * We need to run the content thru ShortCodes Processor, otherwise ShortCodes are not expanded.
@@ -261,10 +262,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 			 *
 			 * @since 2.10.0
 			 */
-			wp_enqueue_script( 'tkt-ajax-js' );
-			wp_localize_script(
-				'tkt-ajax-js',
-				'tkt_ajax_params',
+			wp_enqueue_script( $this->plugin_prefix . 'query' );
+			$this->plugin_public->maybe_localize_script(
+				$this->plugin_prefix . 'query',
+				'tkt_ajax_loop_object',
+				$atts['instance'],
 				array(
 					'is_doing_ajax' => true,
 					'ajax_url'      => $this->sanitizer->sanitize( 'esc_url_raw', admin_url( 'admin-ajax.php' ) ),
@@ -275,6 +277,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 					'error'         => $atts['error'],
 				)
 			);
+
 		}
 
 		/**
@@ -353,7 +356,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		// Build our Serach input.
 		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" data-tkt-ajax-src="' . $atts['searchby'] . '" class="' . $atts['customclasses'] . '">';
+		$src_type = $this->query->get_type();
+		$tkt_data = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
+		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" ' . $tkt_data . ' class="' . $atts['customclasses'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -552,7 +557,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 					}
 				}
 				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' data-tkt-ajax-src="' . $atts['searchby'] . '">';
+				$src_type = $this->query->get_type();
+				$tkt_data = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' ' . $tkt_data . '>';
 				$select_form .= $options;
 				$select_form .= '</select>';
 				break;
@@ -573,9 +580,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		if ( 'multipleS2' === $atts['type'] || 'singleS2' === $atts['type'] ) {
 			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'tkt-s2' );
+			wp_enqueue_script( $this->plugin_prefix . 'select2' );
 			$this->plugin_public->maybe_localize_script(
-				'tkt-s2',
+				$this->plugin_prefix . 'select2',
 				'tkt_select2',
 				$atts['customid'],
 				$value = array(
@@ -643,9 +650,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 		}
 
 		/**
-		 * Currently only submit button works/
+		 * Currently only Submit and Reset Buttons are tested.
 		 *
-		 * @todo this needs same process as a search input, as well as reset button logic.
+		 * @todo this needs same process as a search input.
 		 * @since 2.0.0
 		 */
 
@@ -661,6 +668,14 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$button .= ! empty( $atts['customclasses'] ) ? 'class="' . $atts['customclasses'] . '"' : '';
 		$button .= '>' . $atts['label'] . '</button>';
 
+		if ( 'reset' === $atts['type'] ) {
+			global $tkt_src_fltr;
+			wp_enqueue_script( $this->plugin_prefix . 'reset' );
+			if ( 'ajax' === $this->query->get_type() ) {
+
+				$this->plugin_public->maybe_localize_script( $this->plugin_prefix . 'reset', 'tkt_ajax_reset_object', $tkt_src_fltr['instance'], array( 'is_doing_ajax' => true ) );
+			}
+		}
 		// Return our Button, all inputs are sanitized.
 		return $button;
 
@@ -843,9 +858,11 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$pag .= '</' . $atts['container'] . '>';
 
 		if ( 'ajax' === $this->query->get_type() ) {
-			wp_localize_script(
-				'tkt-ajax-js',
+			wp_enqueue_script( $this->plugin_prefix . 'pagination' );
+			$this->plugin_public->maybe_localize_script(
+				$this->plugin_prefix . 'pagination',
 				'tkt_ajax_pag_params',
+				$atts['instance'],
 				array(
 					'is_doing_ajax' => true,
 					'ajax_url'      => $this->sanitizer->sanitize( 'esc_url_raw', admin_url( 'admin-ajax.php' ) ),
