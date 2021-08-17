@@ -84,11 +84,17 @@ class Tkt_Search_And_Filter_Public {
 	public function enqueue_scripts() {
 
 		/**
-		 * Script select2 and tkt-s2 are only needed when loading a Select2 type of search.
+		 * Script select2 and tkt_src_fltr_select2 are only needed when loading a Select2 type of search.
 		 * They are enqueued and localised in the selectsearch ShortCode on demand.
 		 *
-		 * Script tkt-ajax-js is only needed when the Search is of AJAX type.
+		 * Script tkt_src_fltr_query is only needed when the Search/Loop is of AJAX type.
 		 * It is enqueued and localised in the loop shortcode on demand.
+		 *
+		 * Script tkt_src_fltr_pagination is only needed when the Search/Loop is of AJAX type and has pagination.
+		 * It is enqueued and localised in the pagination shortcode on demand.
+		 *
+		 * Script tkt_src_fltr_reset is only needed when there is a Button of Type Reset.
+		 * It is enqueued and localised in the buttons shortcode on demand.
 		 *
 		 * Main script $this->plugin_name is used everywhere in the front end, even if perhaps only needed when
 		 * a search or reset button is preset, but the script encompasess both AJAX and Reload functionality,
@@ -97,9 +103,10 @@ class Tkt_Search_And_Filter_Public {
 		 * If at some point it becomes and issue, we can always load it in the respective ShortCodes.
 		 */
 		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.js', array( 'jquery' ), '4.1.0-rc.0', true );
-		wp_register_script( 'tkt-s2', plugin_dir_url( __FILE__ ) . 'js/tkt-s2-scripts.js', array( 'select2' ), $this->version, true );
-		wp_register_script( 'tkt-ajax-js', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-ajax.js', array( 'jquery' ), $this->version, true );
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-public.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( $this->plugin_prefix . 'select2', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-select2.js', array( 'select2' ), $this->version, true );
+		wp_register_script( $this->plugin_prefix . 'query', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-query-loop.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( $this->plugin_prefix . 'pagination', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-pagination.js', array( $this->plugin_prefix . 'query' ), $this->version, true );
+		wp_register_script( $this->plugin_prefix . 'reset', plugin_dir_url( __FILE__ ) . 'js/tkt-search-and-filter-reset.js', array( 'jquery' ), $this->version, true );
 
 	}
 
@@ -120,7 +127,7 @@ class Tkt_Search_And_Filter_Public {
 		// Get localised script data from global scripts.
 		$data = $wp_scripts->get_data( $tag, 'data' );
 
-			// Localise first time if not yet localised.
+		// Localise first time if not yet localised.
 		if ( empty( $data ) ) {
 			wp_localize_script(
 				$tag,
