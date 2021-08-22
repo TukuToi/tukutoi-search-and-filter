@@ -505,8 +505,9 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @param array $query_args {
 		 *      The query arguments of the WP Query. Default: WP Query Args passed to the Search and Filter instance. Accepts: valid WP Query arguments.
 		 * }
+		 * @param string $this->instance The current Instance.
 		 */
-		$query_args = apply_filters( 'tkt_src_fltr_query_args', $query_args );
+		$query_args = apply_filters( 'tkt_src_fltr_query_args', $query_args, $this->instance );
 
 		$this->query_args = $query_args;
 

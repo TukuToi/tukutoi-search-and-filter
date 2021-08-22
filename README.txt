@@ -3,7 +3,7 @@ Contributors: TukuToi
 Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 4.9
-Stable tag: 2.26.0
+Stable tag: 2.28.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,14 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.28.1 =
+* [Added] Merge ShortCode Types and declarations instead of overwriting filter argument
+
+= 2.28.0 =
+* [Added] Instance is now passed to the tkt_src_fltr_query_args filter so we can target specific loops
+* [Added] Filter `tkt_src_fltr_user_select_search_show` for the user Dropdowns "Show" value, since those do not have a GUI
+* [Changed] Remove WP Autup both from content and excerpt on priority 10 
 
 = 2.26.0 =
 * [Fixed] Search, Pagination Reset and Loop now all act on their own instances if several on same page

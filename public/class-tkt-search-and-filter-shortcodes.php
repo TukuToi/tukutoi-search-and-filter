@@ -463,13 +463,26 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$values         = isset( $post_query_vars[ $atts['searchby'] ]['vals'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['vals'] )
 						: null;
+		$usr_show_value = 'display_name';
+		/**
+		 * Filter `tkt_src_fltr_user_select_search_show` for the User Select Search "Show" Value.
+		 *
+		 * We do not have a GUI for this, as it is too many-versed.
+		 * Instead, we offer a Filter.
+		 *
+		 * @since 2.26.0
+		 * @param string $usr_show_value The value to show for the select dropdowns. Default: 'display_name'. Accepts: any user field, or 'display_name_with_login' to show the display name with user_login in parentheses.
+		 */
+		$usr_show_value = apply_filters( 'tkt_src_fltr_user_select_search_show', $usr_show_value );
+		$usr_show_value = $this->sanitizer->sanitize( 'key', $usr_show_value );
+
 		switch ( $post_query_vars[ $atts['searchby'] ]['type'] ) {
 			case 'user':
 				$select_form = better_dropdown_users(
 					array(
 						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
 						'multi'             => $multiple_value,
-						'show'              => 'display_name_with_login',
+						'show'              => $usr_show_value,
 						'value_field'       => $value_field,
 						'echo'              => false,
 						'name'              => $atts['urlparam'],
@@ -517,7 +530,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 				*
 				* The real power in these selects are Taxonomy, Author and Postmeta.
 				*
-				* @todo Currently this only supports a simple Select. Support multiple and as well S2.
 				* @todo Add postmeta support.
 				* @since 2.0.0
 				*/
@@ -533,7 +545,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 						&& (bool) array_product( array_map( 'post_type_exists', $atts['post_type'] ) ) === true
 					)
 				) {
-					// The Post Type or Post Types do exit but may not be an array if only one was passed.
+					// The Post Type or Post Types do exist but may not be an array if only one was passed.
 					if ( ! is_array( $atts['post_type'] ) ) {
 						$post_type = array( $atts['post_type'] );
 					}
