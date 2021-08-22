@@ -504,7 +504,7 @@ class Tkt_Search_And_Filter_Declarations {
 	 */
 	public function declare_shortcodes_add_filter( $external_shortcodes ) {
 
-		$external_shortcodes = $this->declare_shortcodes();
+		$external_shortcodes = array_merge( $external_shortcodes, $this->declare_shortcodes() );
 
 		return $external_shortcodes;
 
@@ -521,7 +521,7 @@ class Tkt_Search_And_Filter_Declarations {
 	 */
 	public function declare_shortcodes_types_add_filter( $external_shortcode_types ) {
 
-		$external_shortcode_types = $this->data_map( 'shortcode_types' );
+		$external_shortcode_types = array_merge( $external_shortcode_types, $this->data_map( 'shortcode_types' ) );
 
 		return $external_shortcode_types;
 

@@ -312,6 +312,8 @@ class Tkt_Search_And_Filter {
 
 			/**
 			 * The ShortCode Processor making nested and attribute ShortCodes work.
+			 *
+			 * Also removes WP Autop from content and excerpts.
 			 */
 			$processor = new Tkt_Shortcodes_Processor( $this->plugin_prefix, $this->version, $this->declarations );
 			$this->loader->add_filter( 'the_content', $processor, 'pre_process_shortcodes', 5 );

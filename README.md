@@ -9,6 +9,12 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.28.1
+* [Added] Merge ShortCode Types and declarations instead of overwriting filter argument
+
+### 2.28.0
+* [Added] Instance is now passed to the tkt_src_fltr_query_args filter so we can target specific loops
+
 ### 2.26.0
 * [Fixed] Search, Pagination Reset and Loop now all act on their own instances if several on same page
 * [Fixed] Mixing both types of search and loop (AJAX and reload) now works smooth with all search inputs and loops
