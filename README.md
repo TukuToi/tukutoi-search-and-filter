@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### = 2.28.2
+[Fixed] Template applied to Loop results got duplicated to other loop results when on ajax/same page
+
 ### 2.28.1
 * [Added] Merge ShortCode Types and declarations instead of overwriting filter argument
 

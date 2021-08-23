@@ -5,7 +5,7 @@ var TKT_GLOBAL_NAMESPACE = {};
 	var inputs = {};
 	var selects = {};
 	var form_inputs = {};
-	var paged_value, paged, ajax_url, instance, content, query_args, error, is_doing_ajax;
+	var paged_value, paged, ajax_url, instance, query_args, error, is_doing_ajax;
 
 	$( document ).ready( function() {
 
@@ -72,7 +72,6 @@ var TKT_GLOBAL_NAMESPACE = {};
 		        paged_value 	= paged; //Store the paged value if it's being sent through when the function is called
 		        ajax_url 		= tkt_ajax_params.ajax_url; //Get ajax url (added through wp_localize_script)
 		        instance 		= tkt_ajax_params.instance;
-		        content 		= tkt_ajax_params.content;
 		        query_args 		= $.extend(tkt_ajax_params.query_args, selects, inputs);
 		        error 			= tkt_ajax_params.error;
 		        is_doing_ajax 	= tkt_ajax_params.is_doing_ajax;
@@ -105,9 +104,9 @@ var TKT_GLOBAL_NAMESPACE = {};
 		                		action: 'tkt_ajax_loop',
 		                		nonce: tkt_ajax_params.nonce,
 		                		is_doing_ajax: is_doing_ajax,
-		                		template: content,
+		                		template: tkt_ajax_params.content,
 		                		objects: results.data.ids,
-		                		instance: instance,
+		                		instance: tkt_ajax_params.instance,
 		                		error: error,
 		                	},
 					        beforeSend: function () {	
