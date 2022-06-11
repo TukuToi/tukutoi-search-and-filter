@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.28.4
+[Fixed] Missing Text Domains and some Comments for CPCS Review.
+
 ### = 2.28.3
 [Fixed] Undefined pag_arg when search is not ajax.
 

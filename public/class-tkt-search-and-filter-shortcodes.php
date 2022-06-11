@@ -855,6 +855,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * By default, this plugin does NOT ALLOW usage of 'page', or 'paged' URL parameters.
 		 *
 		 * @since 2.13.0
+		 * @todo check nonce.
 		 */
 		$paged = $atts['pag_arg'];
 		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;

@@ -3,7 +3,7 @@ Contributors: TukuToi
 Donate link: https://www.tukutoi.com/
 Tags: search, filter, order, query, classicpress
 Requires at least: 4.9
-Stable tag: 2.28.3
+Stable tag: 2.28.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,9 @@ Build Searches and Filters for WordPress Posts, Terms and Users.
 With TukuToi Search & Filter you can build custom Queries and Front End filters, to search thru your Post, Terms or Users.
 
 == Changelog ==
+
+= 2.28.4 =
+[Fixed] Missing Text Domains and some Comments for CPCS Review.
 
 = 2.28.3 =
 [Fixed] Undefined pag_arg when search is not ajax
