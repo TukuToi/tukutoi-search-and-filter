@@ -854,11 +854,14 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * It will then be able to use ?page.instance=#.
 		 * By default, this plugin does NOT ALLOW usage of 'page', or 'paged' URL parameters.
 		 *
+		 * Reviewers:
+		 * It makes no sense to nonce this GET request, see comment in Tkt_Search_And_Filter_Posts_Query->set_query_args();
+		 *
 		 * @since 2.13.0
 		 * @todo check nonce.
 		 */
 		$paged = $atts['pag_arg'];
-		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;
+		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;// @codingStandardsIgnoreLine
 		$max = $this->query->get_query_results()->max_num_pages;
 
 		/**

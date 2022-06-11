@@ -359,33 +359,41 @@ class Tkt_Search_And_Filter_Posts_Query {
 		/**
 		 * Map our URL parameters to the default query args and build the final args to pass to WP Query.
 		 *
+		 * Reviewers:
+		 * It makes no sense to check a nonce on a front end Seearch Input form.
+		 * The user could copy paste an old URL with Query parameters, and if visited,
+		 * that search would have an invalid nonce at this point.
+		 * Also, we do not perform any CRUD action here, just a GET of data using WP Query.
+		 * All possible parameters are sanitized before passing to Query.
+		 * Also note that if the Query is performed with AJAX, the GET is actually nonced
+		 * (because there's no URL query parameters in this case).
+		 *
 		 * @since 2.0.0
-		 * @todo check nonce.
 		 */
 		$query_args = $default_query_args;
 		$new_query  = array();
 
 		if ( isset( $this->instance )
-			&& isset( $_GET )
-			&& is_array( $_GET )
-			&& ! empty( $_GET )
-			&& array_key_exists( 'instance', $_GET )
+			&& isset( $_GET )// @codingStandardsIgnoreLine
+			&& is_array( $_GET )// @codingStandardsIgnoreLine
+			&& ! empty( $_GET )// @codingStandardsIgnoreLine
+			&& array_key_exists( 'instance', $_GET )// @codingStandardsIgnoreLine
 		) {
 
-			if ( $this->instance === $_GET['instance'] ) {
+			if ( $this->instance === $_GET['instance'] ) {// @codingStandardsIgnoreLine
 
-				unset( $_GET['instance'] );
+				unset( $_GET['instance'] );// @codingStandardsIgnoreLine
 
 				if ( 'ajax' === $this->get_type() ) {
 					// In ajax requets, the Query is inside the $_GET['query_args'].
-					if ( array_key_exists( 'query_args', $_GET ) && is_array( $_GET['query_args'] ) ) {
+					if ( array_key_exists( 'query_args', $_GET ) && is_array( $_GET['query_args'] ) ) {// @codingStandardsIgnoreLine
 
 						/**
 						 * Sanitize all $_GET members.
 						 *
 						 * @since 2.0.0
 						 */
-						foreach ( $_GET as $get => $query_vars ) {
+						foreach ( $_GET as $get => $query_vars ) {// @codingStandardsIgnoreLine
 							foreach ( $query_vars as $query_var => $value ) {
 								$query_var = $this->sanitizer->sanitize( 'text_field', $query_var );
 								if ( ! is_array( $value ) ) {
@@ -410,7 +418,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 					}
 				} else {
 					// This is not an AJAX query.
-					foreach ( $_GET as $key => $value ) {
+					foreach ( $_GET as $key => $value ) {// @codingStandardsIgnoreLine
 						/**
 						 * Sanitize the URL GET Inputs.
 						 *
@@ -488,7 +496,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @since 2.13.0
 		 */
 		if ( 'ajax' !== $this->get_type() ) {
-			$this->paged = isset( $_GET[ $this->custom_pagarg ] ) ? absint( wp_unslash( $_GET[ $this->custom_pagarg ] ) ) : 1;
+			$this->paged = isset( $_GET[ $this->custom_pagarg ] ) ? absint( wp_unslash( $_GET[ $this->custom_pagarg ] ) ) : 1;// @codingStandardsIgnoreLine
 		}
 		if ( isset( $this->paged )
 			&& ! empty( $this->paged )
