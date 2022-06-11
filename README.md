@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### = 2.28.3
+[Fixed] Undefined pag_arg when search is not ajax.
+
 ### = 2.28.2
 [Fixed] Template applied to Loop results got duplicated to other loop results when on ajax/same page
 

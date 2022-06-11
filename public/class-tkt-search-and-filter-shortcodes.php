@@ -244,7 +244,9 @@ class Tkt_Search_And_Filter_Shortcodes {
 		unset( $atts['posts_per_page'] );
 
 		// Merge the default Query args into the User Args. Overwrite defaults with User Input.
-		$default_query_args['pag_arg'] = $atts['pag_arg'];// array_merge( $default_query_args, $atts );.
+		if ( isset( $atts['pag_arg'] ) ) {
+			$default_query_args['pag_arg'] = $atts['pag_arg'];// array_merge( $default_query_args, $atts );.
+		}
 
 		$this->query->set_query_args( $default_query_args );
 		$loop = $this->query->the_loop( $content, $atts['error'] );
