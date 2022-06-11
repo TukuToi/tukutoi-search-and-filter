@@ -84,7 +84,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'Show Search Results for this (Content or User) Type' );
+				$explanation = __( 'Show Search Results for this (Content or User) Type', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);
@@ -109,7 +109,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'Search by this variable' );
+				$explanation = __( 'Search by this variable', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);
@@ -134,7 +134,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'The Type of Select Input to use' );
+				$explanation = __( 'The Type of Select Input to use', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);
@@ -159,7 +159,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'The Type of Button to use' );
+				$explanation = __( 'The Type of Button to use', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);
@@ -187,7 +187,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'The Type of Pagination to output (Plain or List)' );
+				$explanation = __( 'The Type of Pagination to output (Plain or List)', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);
@@ -215,7 +215,7 @@ class Tkt_Search_And_Filters_Gui {
 		add_filter(
 			'tkt_scs_shortcodes_fieldset_explanation',
 			function( $explanation ) {
-				$explanation = __( 'The Type of Search and Filter (AJAX or Full Page Reload)' );
+				$explanation = __( 'The Type of Search and Filter (AJAX or Full Page Reload)', 'tkt-search-and-filter' );
 				return $explanation;
 			}
 		);

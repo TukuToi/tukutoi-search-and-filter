@@ -254,8 +254,13 @@ class Tkt_Search_And_Filter_Posts_Query {
 		foreach ( $objects as $key => $post_id ) {
 
 			global $post;
-			// @codingStandardsIgnoreLine WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-			$post = get_post( $post_id );
+			/**
+			 * Yes, we shouldn't override WP Globals...
+			 * Yet we have not much other choice, and we reset it a few lines after
+			 *
+			 * @todo check if we could do $custom_post = $post, then work with $custom_post instead.
+			 */
+			$post = get_post( $post_id );// @codingStandardsIgnoreLine
 
 			setup_postdata( $post );
 			$processed_content = apply_filters( 'tkt_post_process_shortcodes', $template );
@@ -354,7 +359,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 		/**
 		 * Map our URL parameters to the default query args and build the final args to pass to WP Query.
 		 *
-		 * @since 2.0.0\
+		 * @since 2.0.0
+		 * @todo check nonce.
 		 */
 		$query_args = $default_query_args;
 		$new_query  = array();
