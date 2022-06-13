@@ -13,11 +13,11 @@
  *
  * @wordpress-plugin
  * Plugin Name:       TukuToi Search and Filter
- * Plugin URI:        https://www.tukutoi.com/program/tukutoi-search-and-filter
+ * Plugin URI:        https://www.tukutoi.com/
  * Description:       Build Front End Search and Filters for ClassicPress Posts, Terms and Users.
  * Version:           2.28.4
  * Author:            TukuToi
- * Author URI:        https://www.tukutoi.com//
+ * Author URI:        https://www.tukutoi.com/
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       tkt-search-and-filter
