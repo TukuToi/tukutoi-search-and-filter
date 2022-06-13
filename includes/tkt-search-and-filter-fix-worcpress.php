@@ -11,6 +11,10 @@
  * has been prefixed.
  * All changes made to the functions are documented on top of each function.
  *
+ * Reviewers:
+ * The ignore statements in this file (localisation mostly) are here in order to
+ * silence CPCS. Note that the silenced code is verbatim copy from core code.
+ *
  * @todo This should really be ported all to CP. Forget WP, they dont care anyway.
  *
  * @since 2.0.0
@@ -222,10 +226,10 @@ function better_dropdown_users( $args = '' ) {
 		foreach ( (array) $users as $user ) {
 			if ( ! empty( $user->_invalid ) ) {
 				/* translators: user ID */
-				$display = sprintf( __( '(Invalid user: ID=%d)' ), $user->ID );
+				$display = sprintf( __( '(Invalid user: ID=%d)' ), $user->ID );// phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 			} elseif ( 'display_name_with_login' === $show ) {
 				/* translators: 1: display name, 2: user_login */
-				$display = sprintf( _x( '%1$s (%2$s)', 'user dropdown' ), $user->display_name, $user->user_login );
+				$display = sprintf( _x( '%1$s (%2$s)', 'user dropdown' ), $user->display_name, $user->user_login );// phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 			} elseif ( ! empty( $user->$show ) ) {
 				$display = $user->$show;
 			} else {
@@ -354,7 +358,7 @@ function better_dropdown_categories( $args = '' ) {
 			__FUNCTION__,
 			'WP-3.0.0',
 			/* translators: 1: "type => link", 2: "taxonomy => link_category" */
-			sprintf( wp_kses_post( __( '%1$s is deprecated. Use %2$s instead.' ) ), '<code>type => link</code>', '<code>taxonomy => link_category</code>' )
+			sprintf( wp_kses_post( __( '%1$s is deprecated. Use %2$s instead.' ) ), '<code>type => link</code>', '<code>taxonomy => link_category</code>' )// phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 		);
 		$args['taxonomy'] = 'link_category';
 	}
@@ -574,8 +578,8 @@ function better_paginate_links( $args = '' ) {
 		'aria_current'       => 'page',
 		'show_all'           => false,
 		'prev_next'          => true,
-		'prev_text'          => __( '&laquo; Previous' ),
-		'next_text'          => __( 'Next &raquo;' ),
+		'prev_text'          => __( '&laquo; Previous' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
+		'next_text'          => __( 'Next &raquo;' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 		'end_size'           => 1,
 		'mid_size'           => 2,
 		'type'               => 'plain',
@@ -666,7 +670,7 @@ function better_paginate_links( $args = '' ) {
 				$page_links[] = "<a class='page-numbers " . $args['a_classes'] . "' href='" . esc_url( apply_filters( 'paginate_links', $link ) ) . "'>" . $args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number'] . '</a>';
 				$dots = true;
 			elseif ( $dots && ! $args['show_all'] ) :
-				$page_links[] = '<span class="page-numbers dots">' . __( '&hellip;' ) . '</span>';
+				$page_links[] = '<span class="page-numbers dots">' . __( '&hellip;' ) . '</span>';// phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 				$dots = false;
 			endif;
 		endif;
