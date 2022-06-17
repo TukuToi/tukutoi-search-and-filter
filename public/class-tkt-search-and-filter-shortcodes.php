@@ -378,6 +378,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
 	 *
 	 * @since    2.0.0
+	 * @since    2.29.0 Added ShortCode attributes `custom_tax` and `tax_field`
+	 *
 	 * @param array  $atts {
 	 *      The ShortCode Attributes.
 	 *
@@ -387,6 +389,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      @type string    $type           Type of Select. Default: 'single'. Accepts: 'single', 'multiple', 'singleS2', 'multipleS2'.
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  CSS Classes to use for the Search Form. Default: ''. Accepts: '', valid HTML CSS classes, space delimited.
+	 *      @type string    $custom_tax     Custom Taxonomy Slug to query by. Default: ''. Accepts: valid custom taxonomy slug.
+	 *      @type string    $tax_field      Custom Taxonomy field to query by. Default: 'term_id'. Accepts: valid `tax_query` `field` values.
 	 * }
 	 * @param mixed  $content   ShortCode enclosed content. TukuToi Search and Filter Search ShortCodes, HTML.
 	 * @param string $tag       The Shortcode tag. Value: 'selectsearch'.
@@ -402,6 +406,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'post_type'     => 'post',
 				'customid'      => '',
 				'customclasses' => '',
+				'custom_tax'    => '',
+				'tax_field'     => 'term_id',
 			),
 			$atts,
 			$tag
@@ -427,10 +433,21 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 *
 		 * Map the URL param to the actual Query Param.
 		 *
+		 * For taxonomies, we must pass an array composed of taxonomy to query and the fields to query.
+		 * The relation for this is (not yet) set globally in the search shortcode.
+		 *
 		 * @since 2.0.0
+		 * @since 2.29.0 Added `tax_query`
 		 */
 		global $tkt_src_fltr;
 		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
+		if ( 'tax_query' === $atts['searchby'] ) {
+			$tkt_src_fltr['searchby']['tax_query'][] = array(
+				'url_param' => $atts['urlparam'],
+				'taxonomy' => $atts['custom_tax'],
+				'field' => $atts['tax_field'],
+			);
+		}
 
 		/**
 		 * Build a Select Input with either User, Term or Post Data.
@@ -450,12 +467,15 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @see https://docs.classicpress.net/reference/functions/get_posts/
 		 * @see example https://www.smashingmagazine.com/2016/03/advanced-wordpress-search-with-wp_query/
 		 * @see performance details https://wordpress.stackexchange.com/questions/1753/when-should-you-use-wp-query-vs-query-posts-vs-get-posts
+		 *
 		 * @since 2.0.0
+		 * @since 2.29.0 Added $value_field for tax_query
 		 */
 		$post_query_vars = $this->declarations->data_map( 'post_query_vars' );
 		$value_field    = isset( $post_query_vars[ $atts['searchby'] ]['field'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['field'] )
 						: null;
+		$value_field    = 'tax_query' === $atts['searchby'] ? $atts['tax_field'] : $value_field;
 		$query_type     = isset( $post_query_vars[ $atts['searchby'] ]['type'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['type'] )
 						: null;
@@ -473,11 +493,12 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * Instead, we offer a Filter.
 		 *
 		 * @since 2.26.0
+		 * @since 2.29.0 Added `taxonomy` drop down case, `custom_attr` key.
+		 *
 		 * @param string $usr_show_value The value to show for the select dropdowns. Default: 'display_name'. Accepts: any user field, or 'display_name_with_login' to show the display name with user_login in parentheses.
 		 */
 		$usr_show_value = apply_filters( 'tkt_src_fltr_user_select_search_show', $usr_show_value );
 		$usr_show_value = $this->sanitizer->sanitize( 'key', $usr_show_value );
-
 		switch ( $post_query_vars[ $atts['searchby'] ]['type'] ) {
 			case 'user':
 				$select_form = better_dropdown_users(
@@ -496,7 +517,6 @@ class Tkt_Search_And_Filter_Shortcodes {
 				break;
 			case 'category':
 			case 'post_tag':
-			case 'taxonomy':
 				$select_form = better_dropdown_categories(
 					array(
 						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
@@ -510,6 +530,24 @@ class Tkt_Search_And_Filter_Shortcodes {
 						'class'             => $atts['customclasses'],
 						'multi'             => $multiple_value,
 						'data_attr'         => $atts['searchby'],
+					)
+				);
+				break;
+			case 'taxonomy':
+				$select_form = better_dropdown_categories(
+					array(
+						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'show_count'        => true,
+						'echo'              => false,
+						'hierarchical'      => true,
+						'value_field'       => $value_field,
+						'taxonomy'          => $atts['custom_tax'],
+						'name'              => $atts['urlparam'],
+						'id'                => $atts['customid'],
+						'class'             => $atts['customclasses'],
+						'multi'             => $multiple_value,
+						'data_attr'         => $atts['searchby'],
+						'custom_attr'       => $atts['custom_tax'],
 					)
 				);
 				break;
@@ -534,6 +572,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				*
 				* @todo Add postmeta support.
 				* @since 2.0.0
+				* @since 2.29.0 added data-tkt-ajax-custom attribute.
 				*/
 				if ( empty( $multiple_value ) ) {
 					$options = '<option value="">' . $atts['placeholder'] . '</option>';
@@ -573,7 +612,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
 				$src_type = $this->query->get_type();
 				$tkt_data = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
-				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' ' . $tkt_data . '>';
+				$tkt_custom = 'ajax' === $src_type ? 'data-tkt-ajax-custom="' . $atts['custom_tax'] . '"' : '';
+				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' ' . $tkt_data . ' ' . $tkt_custom . '>';
 				$select_form .= $options;
 				$select_form .= '</select>';
 				break;

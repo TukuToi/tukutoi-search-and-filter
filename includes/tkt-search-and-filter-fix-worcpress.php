@@ -140,6 +140,7 @@ function better_dropdown_users( $args = '' ) {
 		'role__in'                => array(),
 		'role__not_in'            => array(),
 		'data_attr'               => '',
+		'custom_attr'               => '',
 	);
 
 	$defaults['selected'] = is_author() ? get_query_var( 'author' ) : 0;
@@ -147,6 +148,7 @@ function better_dropdown_users( $args = '' ) {
 	$r = wp_parse_args( $args, $defaults );
 
 	$data_attr = $r['data_attr'];
+	$custom_attr = $r['custom_attr'];
 
 	$query_args = wp_array_slice_assoc( $r, array( 'blog_id', 'include', 'exclude', 'orderby', 'order', 'who', 'role', 'role__in', 'role__not_in' ) );
 
@@ -187,7 +189,7 @@ function better_dropdown_users( $args = '' ) {
 		if ( ! empty( $r['multi'] ) ) {
 			$name = $name . '[]';
 		}
-		$output = "<select data-tkt-ajax-src='{$data_attr}' name='{$name}' {$id} class='" . $r['class'] . "' $multiple>\n";
+		$output = "<select data-tkt-ajax-src='{$data_attr}' data-tkt-ajax-custom='{$custom_attr}' name='{$name}' {$id} class='" . $r['class'] . "' $multiple>\n";
 
 		if ( $show_option_all ) {
 			$output .= "\t<option value='0'>$show_option_all</option>\n";
@@ -348,6 +350,7 @@ function better_dropdown_categories( $args = '' ) {
 		'multiple'          => '',
 		'allowed_html'      => array(),
 		'data_attr'         => '',
+		'custom_attr'       => '',
 	);
 
 	$defaults['selected'] = ( is_category() ) ? get_query_var( 'cat' ) : 0;
@@ -367,6 +370,7 @@ function better_dropdown_categories( $args = '' ) {
 	$option_none_value = $r['option_none_value'];
 
 	$data_attr = $r['data_attr'];
+	$custom_attr = $r['custom_attr'];
 
 	if ( ! isset( $r['pad_counts'] ) && $r['show_count'] && $r['hierarchical'] ) {
 		$r['pad_counts'] = true;
@@ -394,7 +398,7 @@ function better_dropdown_categories( $args = '' ) {
 		$name = $name . '[]';
 	}
 	if ( ! $r['hide_if_empty'] || ! empty( $categories ) ) {
-		$output = "<select data-tkt-ajax-src='$data_attr' $required name='$name' id='$id' class='$class' $tab_index_attribute $multiple>\n";
+		$output = "<select data-tkt-ajax-src='$data_attr' data-tkt-ajax-custom='$custom_attr' $required name='$name' id='$id' class='$class' $tab_index_attribute $multiple>\n";
 	} else {
 		$output = '';
 	}

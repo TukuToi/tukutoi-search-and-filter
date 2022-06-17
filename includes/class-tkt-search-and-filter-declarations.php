@@ -175,6 +175,8 @@ class Tkt_Search_And_Filter_Declarations {
 		 * The WP_Posts Query Variables
 		 *
 		 * @since 2.0.0
+		 * @since 2.29.0 Added `tax_query` case.
+		 *
 		 * @return array {
 		 *      Multidimensional Array keyed by WP_Posts Query variables.
 		 *
@@ -266,6 +268,11 @@ class Tkt_Search_And_Filter_Declarations {
 				'label' => esc_html__( 'By Tags in some of these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
 				'type'  => 'post_tag',
+			),
+			'tax_query'      => array(
+				'label' => esc_html__( 'By Custom Taxonomy', 'tkt-search-and-filter' ),
+				'field' => 'term_id', // This is changed in selectsearch ShortCode, if required.
+				'type'  => 'taxonomy',
 			),
 			's'                 => array(
 				'label' => esc_html__( 'By Search keyword', 'tkt-search-and-filter' ),
@@ -382,6 +389,7 @@ class Tkt_Search_And_Filter_Declarations {
 	 * All Sanitization Options.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return array {
 	 *      Multidimensional Array keyed by Sanitization options.
 	 *

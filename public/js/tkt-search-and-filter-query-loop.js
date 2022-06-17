@@ -29,20 +29,35 @@ var TKT_GLOBAL_NAMESPACE = {};
 	     * Get all search values of each input by type.
 	     * 
 	     * data-tkt-ajax-src-form (form) is === instance.
+	     * 
+	     * @since 2.29.0 Added tax_query case.
 	     */
 	    function get_search_values_by_type( form ) {
 
 	    	form_inputs[form] = { 'inputs':{}, 'selects':{} };
+	    	form_inputs[form]['selects']['tax_query'] = new Array();
 
+	    	/**
+	    	 * For all non-select, non-hidden inputs.
+	    	 */
 	        $('form[data-tkt-ajax-src-form="' + form + '"] input').not(':input[type=hidden]').each(function(){
 
 			    form_inputs[form]['inputs'][$(this).attr('data-tkt-ajax-src')] = $(this).val();
 
 			})
+			/**
+			 * For all select inputs.
+			 */
 			$('form[data-tkt-ajax-src-form="' + form + '"] select').each(function(){
 
-			    form_inputs[form]['selects'][$(this).attr('data-tkt-ajax-src')] = $(this).val();
-			    
+				// If not a tax-query input.
+				if( 'tax_query' !== $(this).attr('data-tkt-ajax-src') ) {
+				 	form_inputs[form]['selects'][$(this).attr('data-tkt-ajax-src')] = $(this).val();
+				}
+				// If a tax-query input.
+			    if( '' !== $(this).attr('data-tkt-ajax-custom') && $(this).attr('data-tkt-ajax-custom').length && null !== $(this).val() ) {
+			    	form_inputs[form]['selects']['tax_query'].push({ 'taxonomy': $(this).attr('data-tkt-ajax-custom'), 'fields': 'term_id', 'terms': $(this).val() })
+			    }
 			})
 	    }
 
@@ -50,7 +65,6 @@ var TKT_GLOBAL_NAMESPACE = {};
 	 	 * For each Loop Instance there is.
 	 	 */
 	 	$.each( tkt_ajax_loop_object, function( instance, tkt_ajax_params ) {
-
 
 	 		/**
 		     * Get the posts with AJAX.

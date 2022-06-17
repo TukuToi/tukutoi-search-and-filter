@@ -17,6 +17,7 @@
  * We need to add some data to the existing TukuToi ShortCode GUI Selector Options.
  *
  * @since 2.0.0
+ * @since 2.29.0 Added `custom_tax` input.
  */
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-tkt-search-and-filters-gui.php';
 $additional_options = new Tkt_Search_And_Filters_Gui( new Tkt_Search_And_Filter_Declarations() );
@@ -38,6 +39,7 @@ $additional_options = new Tkt_Search_And_Filters_Gui( new Tkt_Search_And_Filter_
 	</div>
 	<?php
 	$this->select_fieldset( 'searchby', 'Query By', '', array( $additional_options, 'queryvars_options' ) );
+	$this->text_fieldset( 'custom_tax', 'Custom Taxonomy', '', 'Custom Taxonomy Slug, if querying by Custom Taxonomy' );
 	$this->select_fieldset( 'type', 'Select Type', '', array( $additional_options, 'selecttype_options' ) );
 	?>
 	<div class="ui-widget tkt-notice-widgets">

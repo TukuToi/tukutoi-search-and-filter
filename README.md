@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.29.0
+[Added] Support for Custom Taxonomy Queries both in AJAX and Reload.
+
 ### 2.28.4
 [Fixed] Missing Text Domains and some Comments for CPCS Review.
 
