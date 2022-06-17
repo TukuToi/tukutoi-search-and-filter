@@ -401,9 +401,27 @@ class Tkt_Search_And_Filter_Posts_Query {
 								} else {
 									// If an array was passed, such as key[]=value_one,valuetwo.
 									foreach ( $value as $skey => $svalue ) {
-										$skey = $this->sanitizer->sanitize( 'text_field', $skey );
-										$svalue = $this->sanitizer->sanitize( 'text_field', $svalue );
-										$value[ $skey ] = $svalue;
+										if ( ! is_array( $svalue ) ) { // term queryes have arrays here.
+											$skey = $this->sanitizer->sanitize( 'text_field', $skey );
+											$svalue = $this->sanitizer->sanitize( 'text_field', $svalue );
+											$value[ $skey ] = $svalue;
+										} else { // this is a term query.
+											if ( ! empty( $svalue['terms'] ) ) {
+												foreach ( $svalue as $tax_q_key => $tax_q_value ) {
+													$tax_q_key = $this->sanitizer->sanitize( 'text_field', $tax_q_key );
+													if ( ! is_array( $tax_q_value ) ) { // the 'terms' value itself is another array.
+														$tax_q_value = $this->sanitizer->sanitize( 'text_field', $tax_q_value );
+													} else {
+														foreach ( $tax_q_value as $term_key => $term_value ) {
+															$term_value = $this->sanitizer->sanitize( 'text_field', $term_value );
+															$tax_q_value[ $term_key ] = $term_value;
+														}
+													}
+													$svalue[ $tax_q_key ] = $tax_q_value;
+												}
+												$value[ $skey ] = $svalue;
+											}
+										}
 									}
 								}
 								// null check.
@@ -412,6 +430,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 								$value = 'true' === $value ? true : ( 'false' === $value ? false : $value );
 								// numeric check.
 								$value = is_numeric( $value ) ? (int) $value : $value;
+
 								$new_query[ $query_var ] = $value;
 							}
 						}
@@ -459,14 +478,52 @@ class Tkt_Search_And_Filter_Posts_Query {
 							$value = 'true' === $value ? true : ( 'false' === $value ? false : $value );
 							// numeric check.
 							$value = is_numeric( $value ) ? (int) $value : $value;
+
+							/**
+							 * If a Custom Taxonomy Filter is added, we need to build an array.
+							 * We already have the taxonomy and the fields to query, not the terms.
+							 * We append those to the array fromt he GET.
+							 *
+							 * @since 2.29.0
+							 */
+							if ( array_key_exists( 'tax_query', $tkt_src_fltr['searchby'] ) ) {
+
+								foreach ( $tkt_src_fltr['searchby']['tax_query'] as $tax_k => $tax_arr ) {
+
+									if ( $key === $tax_arr['url_param'] ) {
+										$tax_arr['terms'] = $value;
+									}
+									$tkt_src_fltr['searchby']['tax_query'][ $tax_k ] = $tax_arr;
+
+								}
+
+								$keys_t = array_keys( $tkt_src_fltr['searchby'], 'tax_query' );
+
+								if ( in_array( $key, $keys_t ) ) {
+									$value = $tkt_src_fltr['searchby']['tax_query'];
+								}
+							}
+
 							$new_query[ $tkt_src_fltr['searchby'][ $key ] ] = $value;
 
 						}
 					}
 				}
-
 				// Merge URL query args into default Query Args.
 				$query_args = array_merge( $default_query_args, $new_query );
+
+				/**
+				 * Remove empty Taxonomy Query Parameters.
+				 * 
+				 * @since 2.29.0
+				 */
+				if ( isset( $query_args['tax_query'] ) ) {
+					foreach ( $query_args['tax_query'] as $key => $value ) {
+						if ( ! array_key_exists( 'terms', $value ) ) {
+							unset( $query_args['tax_query'][ $key ] );
+						}
+					}
+				}
 			}
 		}
 
@@ -522,7 +579,6 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * @param string $this->instance The current Instance.
 		 */
 		$query_args = apply_filters( 'tkt_src_fltr_query_args', $query_args, $this->instance );
-
 		$this->query_args = $query_args;
 
 	}
