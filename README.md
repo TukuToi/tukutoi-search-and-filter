@@ -9,6 +9,9 @@ The plugin should be used together with TukuToi ShortCodes, to ensure full libra
 
 ## Changelog 
 
+### 2.29.1
+[Fixed] Uninstall checked on wrong plugin slug
+
 ### 2.29.0
 [Added] Support for Custom Taxonomy Queries both in AJAX and Reload.
 
