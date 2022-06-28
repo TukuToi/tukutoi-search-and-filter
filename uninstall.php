@@ -40,7 +40,7 @@ function plugin_name_uninstall() {
 		|| empty( $_REQUEST )
 		|| ! isset( $_REQUEST['plugin'] )
 		|| ! isset( $_REQUEST['action'] )
-		|| 'tkt-search-and-filter/tkt-search-and-filter.php' !== $_REQUEST['plugin']
+		|| 'tukutoi-search-and-filter/tkt-search-and-filter.php' !== $_REQUEST['plugin']
 		|| 'delete-plugin' !== $_REQUEST['action']
 		|| ! check_ajax_referer( 'updates', '_ajax_nonce' )
 		|| ! current_user_can( 'activate_plugins' )
