@@ -737,14 +737,16 @@ class Tkt_Search_And_Filter_Shortcodes {
 	/**
 	 * TukuToi `[spinner]` ShortCode.
 	 *
-	 * Outputs the Spinners for Search and Paginations when using AJAX.</br>
+	 * Outputs the Spinners for Search and Paginations when using AJAX.
 	 *
 	 * Example usage:
-	 * `[spinner url="/path/to/spinner.gif" container="div" customid="my_id" customclasses="class_one classtwo" value=""]`</br>
+	 *
+	 * `[spinner url="/path/to/spinner.gif" container="div" customid="my_id" customclasses="class_one classtwo" value=""]`
+	 *
 	 * For possible attributes see the Parameters > $atts section below or use the TukuToi ShortCodes GUI.
 	 *
 	 * @since    2.0.0
-	 * @param array  $atts {
+	 * @param string[] $atts {
 	 *      The ShortCode Attributes.
 	 *
 	 *      @type string    $url            Url to the Spinner asset. Default: ''. Accepts: valid URL to resource/asset.
@@ -753,8 +755,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *      @type string    $customid       ID to use for the Search Form. Default: ''. Accepts: '', valid HTML ID.
 	 *      @type string    $customclasses  Additional CSS Classes to use for the Search Form. Default: 'tkt_ajax_loader'. Mandatory 'tkt_ajax_loader'. Accepts: 'tkt_ajax_loader' + valid HTML CSS classes, space delimited.
 	 * }
-	 * @param mixed  $content   ShortCode enclosed content. Not applicable for this ShortCode.
-	 * @param string $tag       The Shortcode tag. Value: 'spinner'.
+	 * @param mixed    $content ShortCode enclosed content. Not applicable for this ShortCode.
+	 * @param string   $tag     The Shortcode tag. Value: 'spinner'.
 	 */
 	public function spinner( $atts, $content = null, $tag ) {
 

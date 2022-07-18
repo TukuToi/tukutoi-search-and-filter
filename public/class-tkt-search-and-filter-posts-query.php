@@ -164,10 +164,10 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * Expand ShortCodes inside a Looop.
 				 *
 				 * All Loops are base64 encoded so WordPress does not mess with our content.
-				 * We decode this in Tkt_Shortcodes_Processor->post_process_shortcodes().
+				 * We decode this in {@see Tkt_Shortcodes_Processor::post_process_shortcodes()}.
 				 * Once decoded, it will resolve the inner shortcodes (used as attributes to other ShortCodes)
-				 * using Tkt_Shortcodes_Processor->resolve_inner_shortcodes( $content )
-				 * Then, it resolves ShortCodes inside HTML attributes (which are at this points still using {{shortcode}})
+				 * using {@see Tkt_Shortcodes_Processor::resolve_inner_shortcodes()}
+				 * Then, it resolves ShortCodes inside HTML attributes (which are at this points still using `{{shortcode}}`)
 				 *
 				 * Since the content returned from there still has ShortCodes inside, which are normally expandable by WordPress
 				 * we pass the processed content thru do_shortcode.
@@ -175,6 +175,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 * Only then the output of a loop is fully expanded and can be passed to the Loop shortcode to be returned.
 				 *
 				 * @since 2.0.0
+				 * @param mixed $content The Content to preprocess ShortCodes therein.
 				 */
 				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $content );
 				$processed_content = do_shortcode( $processed_content, false );
