@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
+ * @package    Plugins\SearchAndFilter\Public
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +16,8 @@
  * enqueue the public-facing stylesheet and JavaScript.
  * As you add hooks and methods, update this description.
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Public
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Public {
 
@@ -61,7 +60,7 @@ class Tkt_Search_And_Filter_Public {
 
 		$this->plugin_name   = $plugin_name;
 		$this->plugin_prefix = $plugin_prefix;
-		$this->version = $version;
+		$this->version       = $version;
 
 	}
 

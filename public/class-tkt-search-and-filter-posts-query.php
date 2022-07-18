@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
+ * @package    Plugins\SearchAndFilter\Public
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -17,9 +17,8 @@
  * Gets results from the WP_Query
  * Builds the output and loads accurate templates
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
- * @author     TukuToi <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Public
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Posts_Query {
 
@@ -68,9 +67,9 @@ class Tkt_Search_And_Filter_Posts_Query {
 	public function __construct( $sanitizer ) {
 
 		$this->query_args = array();
-		$this->sanitizer = $sanitizer;
-		$this->instance = '';
-		$this->content = '';
+		$this->sanitizer  = $sanitizer;
+		$this->instance   = '';
+		$this->content    = '';
 
 	}
 
@@ -106,7 +105,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 	 *
 	 * @since   1.0.0
 	 * @param string $pagarg The Custom pagination argument.
-	 * @return  void.
+	 * @return void
 	 */
 	public function set_custom_pagarg( $pagarg ) {
 
@@ -179,7 +178,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 				 */
 				$processed_content = apply_filters( 'tkt_post_process_shortcodes', $content );
 				$processed_content = do_shortcode( $processed_content, false );
-				$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
+				$out              .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			}
 		} else {
 			/**
@@ -234,8 +233,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 		}
 
-		$action     = sanitize_text_field( wp_unslash( $_POST['action'] ) );
-		$is_ajax    = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['is_doing_ajax'] ) ) );
+		$action  = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		$is_ajax = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['is_doing_ajax'] ) ) );
 
 		if ( 'tkt_ajax_loop' !== $action
 			|| ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tkt_ajax_nonce' )
@@ -246,9 +245,9 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 		}
 
-		$instance   = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
-		$template   = wp_kses_post( wp_unslash( $_POST['template'] ) );
-		$objects    = array_map( 'absint', wp_unslash( $_POST['objects'] ) );
+		$instance = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
+		$template = wp_kses_post( wp_unslash( $_POST['template'] ) );
+		$objects  = array_map( 'absint', wp_unslash( $_POST['objects'] ) );
 
 		$out = '';
 		foreach ( $objects as $key => $post_id ) {
@@ -265,7 +264,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 			setup_postdata( $post );
 			$processed_content = apply_filters( 'tkt_post_process_shortcodes', $template );
 			$processed_content = do_shortcode( $processed_content, false );
-			$out .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
+			$out              .= stripslashes_deep( $this->sanitizer->sanitize( 'post_kses', $processed_content ) );
 			wp_reset_postdata();
 
 		}
@@ -297,8 +296,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 		}
 
-		$action     = sanitize_text_field( wp_unslash( $_GET['action'] ) );
-		$is_ajax    = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_GET['is_doing_ajax'] ) ) );
+		$action  = sanitize_text_field( wp_unslash( $_GET['action'] ) );
+		$is_ajax = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_GET['is_doing_ajax'] ) ) );
 
 		if ( 'tkt_ajax_query' !== $action
 			|| ! wp_verify_nonce( sanitize_key( $_GET['nonce'] ), 'tkt_ajax_nonce' )
@@ -309,14 +308,14 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 		}
 
-		$instance   = sanitize_text_field( wp_unslash( $_GET['instance'] ) );
+		$instance = sanitize_text_field( wp_unslash( $_GET['instance'] ) );
 
 		$this->set_type( 'ajax' );
 		$this->set_instance( $instance );
 
 		if ( isset( $_GET['paged'] ) && isset( $_GET['query_args']['posts_per_page'] ) ) {
-			$this->paged            = absint( wp_unslash( $_GET['paged'] ) );
-			$this->posts_per_page   = absint( wp_unslash( $_GET['query_args']['posts_per_page'] ) );
+			$this->paged          = absint( wp_unslash( $_GET['paged'] ) );
+			$this->posts_per_page = absint( wp_unslash( $_GET['query_args']['posts_per_page'] ) );
 		}
 		foreach ( $_GET as $key => $value ) {
 			if ( 'query_args' !== $key && 'instance' !== $key ) {
@@ -402,8 +401,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 									// If an array was passed, such as key[]=value_one,valuetwo.
 									foreach ( $value as $skey => $svalue ) {
 										if ( ! is_array( $svalue ) ) { // term queryes have arrays here.
-											$skey = $this->sanitizer->sanitize( 'text_field', $skey );
-											$svalue = $this->sanitizer->sanitize( 'text_field', $svalue );
+											$skey           = $this->sanitizer->sanitize( 'text_field', $skey );
+											$svalue         = $this->sanitizer->sanitize( 'text_field', $svalue );
 											$value[ $skey ] = $svalue;
 										} else { // this is a term query.
 											if ( ! empty( $svalue['terms'] ) ) {
@@ -413,7 +412,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 														$tax_q_value = $this->sanitizer->sanitize( 'text_field', $tax_q_value );
 													} else {
 														foreach ( $tax_q_value as $term_key => $term_value ) {
-															$term_value = $this->sanitizer->sanitize( 'text_field', $term_value );
+															$term_value               = $this->sanitizer->sanitize( 'text_field', $term_value );
 															$tax_q_value[ $term_key ] = $term_value;
 														}
 													}
@@ -450,8 +449,8 @@ class Tkt_Search_And_Filter_Posts_Query {
 						} elseif ( is_array( $value ) ) {
 							// If an array was passed, such as key[]=value_one,valuetwo.
 							foreach ( $value as $skey => $svalue ) {
-								$skey = $this->sanitizer->sanitize( 'text_field', $skey );
-								$svalue = $this->sanitizer->sanitize( 'text_field', $svalue );
+								$skey           = $this->sanitizer->sanitize( 'text_field', $skey );
+								$svalue         = $this->sanitizer->sanitize( 'text_field', $svalue );
 								$value[ $skey ] = $svalue;
 							}
 						}
@@ -514,7 +513,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 
 				/**
 				 * Remove empty Taxonomy Query Parameters.
-				 * 
+				 *
 				 * @since 2.29.0
 				 */
 				if ( isset( $query_args['tax_query'] ) ) {
@@ -578,7 +577,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 		 * }
 		 * @param string $this->instance The current Instance.
 		 */
-		$query_args = apply_filters( 'tkt_src_fltr_query_args', $query_args, $this->instance );
+		$query_args       = apply_filters( 'tkt_src_fltr_query_args', $query_args, $this->instance );
 		$this->query_args = $query_args;
 
 	}
@@ -588,7 +587,7 @@ class Tkt_Search_And_Filter_Posts_Query {
 	 *
 	 * @since   1.0.0
 	 * @param string $posts_per_page The Custom posts per page argument.
-	 * @return  void.
+	 * @return  void
 	 */
 	private function set_posts_per_page( $posts_per_page ) {
 

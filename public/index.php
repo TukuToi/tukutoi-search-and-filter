@@ -4,6 +4,6 @@
  *
  * It exists to stop directory listings on poorly configured servers.
  *
- * @package     Tkt_Search_And_Filter
- * @subpackage  Tkt_Search_And_Filter/public
+ * @package    Plugins\SearchAndFilter\Public
+ * @author     Beda Schmid <beda@tukutoi.com>
  */

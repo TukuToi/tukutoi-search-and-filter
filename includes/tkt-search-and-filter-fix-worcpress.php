@@ -18,8 +18,8 @@
  * @todo This should really be ported all to CP. Forget WP, they dont care anyway.
  *
  * @since 2.0.0
- * @package Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -140,14 +140,14 @@ function better_dropdown_users( $args = '' ) {
 		'role__in'                => array(),
 		'role__not_in'            => array(),
 		'data_attr'               => '',
-		'custom_attr'               => '',
+		'custom_attr'             => '',
 	);
 
 	$defaults['selected'] = is_author() ? get_query_var( 'author' ) : 0;
 
 	$r = wp_parse_args( $args, $defaults );
 
-	$data_attr = $r['data_attr'];
+	$data_attr   = $r['data_attr'];
 	$custom_attr = $r['custom_attr'];
 
 	$query_args = wp_array_slice_assoc( $r, array( 'blog_id', 'include', 'exclude', 'orderby', 'order', 'who', 'role', 'role__in', 'role__not_in' ) );
@@ -165,8 +165,8 @@ function better_dropdown_users( $args = '' ) {
 
 	$query_args['fields'] = $fields;
 
-	$show_option_all = $r['show_option_all'];
-	$show_option_none = $r['show_option_none'];
+	$show_option_all   = $r['show_option_all'];
+	$show_option_none  = $r['show_option_none'];
 	$option_none_value = $r['option_none_value'];
 
 	/**
@@ -183,9 +183,9 @@ function better_dropdown_users( $args = '' ) {
 
 	$output = '';
 	if ( ! empty( $users ) && ( empty( $r['hide_if_only_one_author'] ) || count( $users ) > 1 ) ) {
-		$name = esc_attr( $r['name'] );
+		$name     = esc_attr( $r['name'] );
 		$multiple = $r['multi'];
-		$id = $r['id'] ? " id='" . esc_attr( $r['id'] ) . "'" : " id='$name'";
+		$id       = $r['id'] ? " id='" . esc_attr( $r['id'] ) . "'" : " id='$name'";
 		if ( ! empty( $r['multi'] ) ) {
 			$name = $name . '[]';
 		}
@@ -197,12 +197,12 @@ function better_dropdown_users( $args = '' ) {
 
 		if ( $show_option_none ) {
 			$_selected = selected( $option_none_value, $r['selected'], false );
-			$output .= "\t<option value='" . esc_attr( $option_none_value ) . "'$_selected>$show_option_none</option>\n";
+			$output   .= "\t<option value='" . esc_attr( $option_none_value ) . "'$_selected>$show_option_none</option>\n";
 		}
 
 		if ( $r['include_selected'] && ( $r['selected'] > 0 ) ) {
 			$found_selected = false;
-			$r['selected'] = (int) $r['selected'];
+			$r['selected']  = (int) $r['selected'];
 			foreach ( (array) $users as $user ) {
 				$user->ID = (int) $user->ID;
 
@@ -239,11 +239,11 @@ function better_dropdown_users( $args = '' ) {
 			}
 			if ( 'ID' === $r['value_field'] ) {
 				$_selected = selected( $user->ID, $r['selected'], false );
-				$output .= '<option value="' . esc_attr( $user->ID ) . '" ' . $_selected . '>' . esc_html( $display ) . '</option>"';
+				$output   .= '<option value="' . esc_attr( $user->ID ) . '" ' . $_selected . '>' . esc_html( $display ) . '</option>"';
 			} else {
 				$user_object = get_userdata( $user->ID );
-				$_selected = selected( $user_object->$value_field, $r['selected'], false );
-				$output .= '<option value="' . esc_attr( $user_object->$value_field ) . '" ' . $_selected . '>' . esc_html( $display ) . '</option>"';
+				$_selected   = selected( $user_object->$value_field, $r['selected'], false );
+				$output     .= '<option value="' . esc_attr( $user_object->$value_field ) . '" ' . $_selected . '>' . esc_html( $display ) . '</option>"';
 			}
 		}
 
@@ -366,10 +366,10 @@ function better_dropdown_categories( $args = '' ) {
 		$args['taxonomy'] = 'link_category';
 	}
 
-	$r = wp_parse_args( $args, $defaults );
+	$r                 = wp_parse_args( $args, $defaults );
 	$option_none_value = $r['option_none_value'];
 
-	$data_attr = $r['data_attr'];
+	$data_attr   = $r['data_attr'];
 	$custom_attr = $r['custom_attr'];
 
 	if ( ! isset( $r['pad_counts'] ) && $r['show_count'] && $r['hierarchical'] ) {
@@ -388,10 +388,10 @@ function better_dropdown_categories( $args = '' ) {
 	unset( $get_terms_args['name'] );
 	$categories = get_terms( $r['taxonomy'], $get_terms_args );
 
-	$name = esc_attr( $r['name'] );
+	$name  = esc_attr( $r['name'] );
 	$class = esc_attr( $r['class'] );
 
-	$id = $r['id'] ? esc_attr( $r['id'] ) : $name;
+	$id       = $r['id'] ? esc_attr( $r['id'] ) : $name;
 	$required = $r['required'] ? 'required' : '';
 	$multiple = esc_attr( $r['multi'] );
 	if ( 'multiple' === $multiple ) {
@@ -420,7 +420,7 @@ function better_dropdown_categories( $args = '' ) {
 		 * @param WP_Term|null $category The category object, or null if there's no corresponding category.
 		 */
 		$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
-		$output .= "\t<option value='" . esc_attr( $option_none_value ) . "' selected='selected'>$show_option_none</option>\n";
+		$output          .= "\t<option value='" . esc_attr( $option_none_value ) . "' selected='selected'>$show_option_none</option>\n";
 	}
 
 	if ( ! empty( $categories ) ) {
@@ -429,16 +429,16 @@ function better_dropdown_categories( $args = '' ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
 			$show_option_all = apply_filters( 'list_cats', $r['show_option_all'], null );
-			$selected = ( '0' === strval( $r['selected'] ) ) ? " selected='selected'" : '';
-			$output .= "\t<option value='0'$selected>$show_option_all</option>\n";
+			$selected        = ( '0' === strval( $r['selected'] ) ) ? " selected='selected'" : '';
+			$output         .= "\t<option value='0'$selected>$show_option_all</option>\n";
 		}
 
 		if ( $r['show_option_none'] ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
 			$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
-			$selected = selected( $option_none_value, $r['selected'], false );
-			$output .= "\t<option value='" . esc_attr( $option_none_value ) . "'$selected>$show_option_none</option>\n";
+			$selected         = selected( $option_none_value, $r['selected'], false );
+			$output          .= "\t<option value='" . esc_attr( $option_none_value ) . "'$selected>$show_option_none</option>\n";
 		}
 
 		if ( $r['hierarchical'] ) {
@@ -606,7 +606,7 @@ function better_paginate_links( $args = '' ) {
 	// Merge additional query vars found in the original URL into 'add_args' array.
 	if ( isset( $url_parts[1] ) ) {
 		// Find the format argument.
-		$format = explode( '?', str_replace( '%_%', $args['format'], $args['base'] ) );
+		$format       = explode( '?', str_replace( '%_%', $args['format'], $args['base'] ) );
 		$format_query = isset( $format[1] ) ? $format[1] : '';
 		wp_parse_str( $format_query, $format_args );
 
@@ -635,10 +635,10 @@ function better_paginate_links( $args = '' ) {
 	if ( $mid_size < 0 ) {
 		$mid_size = 2;
 	}
-	$add_args = $args['add_args'];
-	$r = '';
+	$add_args   = $args['add_args'];
+	$r          = '';
 	$page_links = array();
-	$dots = false;
+	$dots       = false;
 
 	if ( $args['prev_next'] && $current && 1 < $current ) :
 		$link = str_replace( '%_%', 2 == $current ? '' : $args['format'], $args['base'] );
@@ -660,7 +660,7 @@ function better_paginate_links( $args = '' ) {
 	for ( $n = 1; $n <= $total; $n++ ) :
 		if ( $n == $current ) :
 			$page_links[] = "<span aria-current='" . esc_attr( $args['aria_current'] ) . "' class='page-numbers current " . $args['current_classes'] . "'> " . $args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number'] . '</span>';
-			$dots = true;
+			$dots         = true;
 		else :
 			if ( $args['show_all'] || ( $n <= $end_size || ( $current && $n >= $current - $mid_size && $n <= $current + $mid_size ) || $n > $total - $end_size ) ) :
 				$link = str_replace( '%_%', 1 == $n ? '' : $args['format'], $args['base'] );
@@ -672,10 +672,10 @@ function better_paginate_links( $args = '' ) {
 
 				/** This filter is documented in wp-includes/general-template.php */
 				$page_links[] = "<a class='page-numbers " . $args['a_classes'] . "' href='" . esc_url( apply_filters( 'paginate_links', $link ) ) . "'>" . $args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number'] . '</a>';
-				$dots = true;
+				$dots         = true;
 			elseif ( $dots && ! $args['show_all'] ) :
 				$page_links[] = '<span class="page-numbers dots">' . __( '&hellip;' ) . '</span>';// phpcs:ignore WordPress.WP.I18n.MissingArgDomain
-				$dots = false;
+				$dots         = false;
 			endif;
 		endif;
 	endfor;

@@ -20,7 +20,8 @@
  *
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
+ * @package    Plugins\SearchAndFilter
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**

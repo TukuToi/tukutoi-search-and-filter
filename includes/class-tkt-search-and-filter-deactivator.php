@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +16,8 @@
  *
  * @todo This should probably be in one "Setup" Class together with Activator class.
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Deactivator {
 
@@ -108,7 +107,7 @@ class Tkt_Search_And_Filter_Deactivator {
 			} elseif ( isset( $_REQUEST['checked'] ) ) {
 				if ( false !== wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bulk-plugins' ) ) {
 
-					self::$request['action'] = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
+					self::$request['action']  = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
 					self::$request['plugins'] = array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['checked'] ) );
 
 					return self::$request;

@@ -9,8 +9,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -21,9 +21,8 @@
  * get it from the code (such as user object, which is a entangled mess, or get_bloginfo which is a case switcher).
  *
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     TukuToi <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Declarations {
 
@@ -70,7 +69,7 @@ class Tkt_Search_And_Filter_Declarations {
 	 */
 	public function __construct() {
 
-		$this->shortcodes       = $this->declare_shortcodes();
+		$this->shortcodes           = $this->declare_shortcodes();
 		$this->sanitization_options = $this->sanitize_options();
 
 	}
@@ -94,32 +93,32 @@ class Tkt_Search_And_Filter_Declarations {
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'loop' => array(
+			'loop'           => array(
 				'label' => esc_html__( 'Search Results', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'textsearch' => array(
+			'textsearch'     => array(
 				'label' => esc_html__( 'Text Search', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'selectsearch' => array(
+			'selectsearch'   => array(
 				'label' => esc_html__( 'Select Search', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'buttons' => array(
+			'buttons'        => array(
 				'label' => esc_html__( 'Buttons', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'pagination' => array(
+			'pagination'     => array(
 				'label' => esc_html__( 'Pagination', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
 			),
-			'spinner' => array(
+			'spinner'        => array(
 				'label' => esc_html__( 'Spinner', 'tkt-search-and-filter' ),
 				'type'  => 'queryable',
 				'inner' => false,
@@ -161,14 +160,14 @@ class Tkt_Search_And_Filter_Declarations {
 		);
 
 		$valid_comparison = array(
-			'eqv'   => esc_html__( 'Equal', 'tkt-search-and-filter' ),
-			'eqvt'  => esc_html__( 'Identical', 'tkt-search-and-filter' ),
-			'nev'   => esc_html__( 'Not equal', 'tkt-search-and-filter' ),
-			'nevt'  => esc_html__( 'Not identical', 'tkt-search-and-filter' ),
-			'lt'    => esc_html__( 'Lesss than', 'tkt-search-and-filter' ),
-			'gt'    => esc_html__( 'Greater than', 'tkt-search-and-filter' ),
-			'gte'   => esc_html__( 'Less than or equal to', 'tkt-search-and-filter' ),
-			'lte'   => esc_html__( 'Greater than or equal to', 'tkt-search-and-filter' ),
+			'eqv'  => esc_html__( 'Equal', 'tkt-search-and-filter' ),
+			'eqvt' => esc_html__( 'Identical', 'tkt-search-and-filter' ),
+			'nev'  => esc_html__( 'Not equal', 'tkt-search-and-filter' ),
+			'nevt' => esc_html__( 'Not identical', 'tkt-search-and-filter' ),
+			'lt'   => esc_html__( 'Lesss than', 'tkt-search-and-filter' ),
+			'gt'   => esc_html__( 'Greater than', 'tkt-search-and-filter' ),
+			'gte'  => esc_html__( 'Less than or equal to', 'tkt-search-and-filter' ),
+			'lte'  => esc_html__( 'Greater than or equal to', 'tkt-search-and-filter' ),
 		);
 
 		/**
@@ -189,175 +188,175 @@ class Tkt_Search_And_Filter_Declarations {
 		 * }
 		 */
 		$post_query_vars = array(
-			'author'            => array(
+			'author'              => array(
 				'label' => esc_html__( 'By Author ID', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'user',
 			),
-			'author_name'       => array(
+			'author_name'         => array(
 				'label' => esc_html__( 'By User NiceName', 'tkt-search-and-filter' ),
 				'field' => 'user_nicename',
 				'type'  => 'user',
 			),
-			'author__in'        => array(
+			'author__in'          => array(
 				'label' => esc_html__( 'By Authors in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'user',
 			),
-			'author__not_in'    => array(
+			'author__not_in'      => array(
 				'label' => esc_html__( 'By Authors no in these User IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'user',
 			),
-			'cat'               => array(
+			'cat'                 => array(
 				'label' => esc_html__( 'By Category ID', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'category',
 			),
-			'category_name'     => array(
+			'category_name'       => array(
 				'label' => esc_html__( 'By Category Slug', 'tkt-search-and-filter' ),
 				'field' => 'slug',
 				'type'  => 'category',
 			),
-			'category__and'     => array(
+			'category__and'       => array(
 				'label' => esc_html__( 'By Categories in all these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'category',
 			),
-			'category__in'      => array(
+			'category__in'        => array(
 				'label' => esc_html__( 'By Categories in these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'category',
 			),
-			'category__not_in'  => array(
+			'category__not_in'    => array(
 				'label' => esc_html__( 'By Categories not in any of these Category IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'category',
 			),
-			'tag'               => array(
+			'tag'                 => array(
 				'label' => esc_html__( 'By Tag Slug', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
 				'type'  => 'post_tag',
 			),
-			'tag_id'            => array(
+			'tag_id'              => array(
 				'label' => esc_html__( 'By Tag ID', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'post_tag',
 			),
-			'tag__and'          => array(
+			'tag__and'            => array(
 				'label' => esc_html__( 'By Tags in all these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'post_tag',
 			),
-			'tag__in'           => array(
+			'tag__in'             => array(
 				'label' => esc_html__( 'By Tags in these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'post_tag',
 			),
-			'tag__not_in'       => array(
+			'tag__not_in'         => array(
 				'label' => esc_html__( 'By Tags not in any of these Tag IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_id',
 				'type'  => 'post_tag',
 			),
-			'tag_slug__and'     => array(
+			'tag_slug__and'       => array(
 				'label' => esc_html__( 'By Tags in all these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
 				'type'  => 'post_tag',
 			),
-			'tag_slug__in'      => array(
+			'tag_slug__in'        => array(
 				'label' => esc_html__( 'By Tags in some of these Tag Slugs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'term_slug',
 				'type'  => 'post_tag',
 			),
-			'tax_query'      => array(
+			'tax_query'           => array(
 				'label' => esc_html__( 'By Custom Taxonomy', 'tkt-search-and-filter' ),
 				'field' => 'term_id', // This is changed in selectsearch ShortCode, if required.
 				'type'  => 'taxonomy',
 			),
-			's'                 => array(
+			's'                   => array(
 				'label' => esc_html__( 'By Search keyword', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'p'                 => array(
+			'p'                   => array(
 				'label' => esc_html__( 'By Post ID', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'name'              => array(
+			'name'                => array(
 				'label' => esc_html__( 'By Post Slug', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'page_id'           => array(
+			'page_id'             => array(
 				'label' => esc_html__( 'By Page ID', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'page',
 			),
-			'pagename'          => array(
+			'pagename'            => array(
 				'label' => esc_html__( 'By Page Slug', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'page',
 			),
-			'post_parent'       => array(
+			'post_parent'         => array(
 				'label' => esc_html__( 'By Parent Page ID (If set to 0 returns all Parent Pages)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'post_parent__in'   => array(
+			'post_parent__in'     => array(
 				'label' => esc_html__( 'By Parent Page in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'post_parent__not_in'   => array(
+			'post_parent__not_in' => array(
 				'label' => esc_html__( 'By Parent Page not in these IDs (Comma Delimited)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'post__in'          => array(
+			'post__in'            => array(
 				'label' => esc_html__( 'By these IDs (Use "ignore_sticky_posts" to remove sticky posts)', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'post__not_in'      => array(
+			'post__not_in'        => array(
 				'label' => esc_html__( 'Not By these IDs', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'post_name__in'     => array(
+			'post_name__in'       => array(
 				'label' => esc_html__( 'By these Slugs', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
 			),
-			'has_password'      => array(
+			'has_password'        => array(
 				'label' => esc_html__( 'By Password set or not (true for posts with passwords ; false for posts without passwords ; null for all posts with and without passwords)', 'tkt-search-and-filter' ),
 				'vals'  => array(
-					'true' => 'Yes',
+					'true'  => 'Yes',
 					'false' => 'No',
 				),
 				'type'  => 'post',
 			),
-			'post_password'     => array(
+			'post_password'       => array(
 				'label' => esc_html__( 'By Password', 'tkt-search-and-filter' ),
 				'field' => 'post_password',
 				'type'  => 'post',
 			),
-			'post_type'         => array(
+			'post_type'           => array(
 				'label' => esc_html__( 'By Post Type (For this to work you must include the post types in the loop)', 'tkt-search-and-filter' ),
 				'cback' => 'get_post_types',
 				'type'  => 'post',
 			),
-			'post_status'       => array(
+			'post_status'         => array(
 				'label' => esc_html__( 'By Post Status', 'tkt-search-and-filter' ),
 				'cback' => 'get_post_statuses',
 				'type'  => 'post',
 			),
-			'comment_count'     => array(
+			'comment_count'       => array(
 				'label' => esc_html__( 'The amount of comments your CPT has to have ( Search operator will do a ‘=’ operation', 'tkt-search-and-filter' ),
 				'field' => 'comment_count',
 				'type'  => 'post',
 			),
-			'comment_count'     => array(
+			'comment_count'       => array(
 				'label' => esc_html__( 'By Comment Count', 'tkt-search-and-filter' ),
 				'field' => 'ID',
 				'type'  => 'post',
@@ -370,16 +369,16 @@ class Tkt_Search_And_Filter_Declarations {
 		);
 
 		$select_types = array(
-			'single'        => esc_html__( 'Single Select Input', 'tkt-search-and-filter' ),
-			'multiple'      => esc_html__( 'Multiple Select Input', 'tkt-search-and-filter' ),
-			'singleS2'     => esc_html__( 'Single Select2 Input', 'tkt-search-and-filter' ),
-			'multipleS2'   => esc_html__( 'Multiple Select2 Input', 'tkt-search-and-filter' ),
+			'single'     => esc_html__( 'Single Select Input', 'tkt-search-and-filter' ),
+			'multiple'   => esc_html__( 'Multiple Select Input', 'tkt-search-and-filter' ),
+			'singleS2'   => esc_html__( 'Single Select2 Input', 'tkt-search-and-filter' ),
+			'multipleS2' => esc_html__( 'Multiple Select2 Input', 'tkt-search-and-filter' ),
 		);
 
 		$button_types = array(
-			'submit'    => esc_html__( 'Submit Button', 'tkt-search-and-filter' ),
-			'reset'     => esc_html__( 'Reset Button', 'tkt-search-and-filter' ),
-			'button'    => esc_html__( 'Button (Actionless)', 'tkt-search-and-filter' ),
+			'submit' => esc_html__( 'Submit Button', 'tkt-search-and-filter' ),
+			'reset'  => esc_html__( 'Reset Button', 'tkt-search-and-filter' ),
+			'button' => esc_html__( 'Button (Actionless)', 'tkt-search-and-filter' ),
 		);
 
 		return $$map;
@@ -404,96 +403,96 @@ class Tkt_Search_And_Filter_Declarations {
 	private function sanitize_options() {
 
 		$sanitization_options = array(
-			'none' => array(
-				'label'     => esc_html__( 'No Sanitization', 'tkt-search-and-filter' ),
+			'none'              => array(
+				'label' => esc_html__( 'No Sanitization', 'tkt-search-and-filter' ),
 			),
-			'email' => array(
-				'label'     => esc_html__( 'Sanitize Email', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_email',
+			'email'             => array(
+				'label'    => esc_html__( 'Sanitize Email', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_email',
 			),
-			'file_name' => array(
-				'label'     => esc_html__( 'File Name', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_file_name',
+			'file_name'         => array(
+				'label'    => esc_html__( 'File Name', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_file_name',
 			),
-			'html_class' => array(
-				'label'     => esc_html__( 'HTML Class', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_html_class',
+			'html_class'        => array(
+				'label'    => esc_html__( 'HTML Class', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_html_class',
 			),
-			'key' => array(
-				'label'     => esc_html__( 'Key', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_key',
+			'key'               => array(
+				'label'    => esc_html__( 'Key', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_key',
 			),
-			'meta' => array(
-				'label'     => esc_html__( 'Meta', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_meta',
+			'meta'              => array(
+				'label'    => esc_html__( 'Meta', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_meta',
 			),
-			'mime_type' => array(
-				'label'     => esc_html__( 'Mime Type', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_mime_type',
+			'mime_type'         => array(
+				'label'    => esc_html__( 'Mime Type', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_mime_type',
 			),
-			'option' => array(
-				'label'     => esc_html__( 'Option', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_option',
+			'option'            => array(
+				'label'    => esc_html__( 'Option', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_option',
 			),
-			'sql_orderby' => array(
-				'label'     => esc_html__( 'SQL Orderby', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_sql_orderby',
+			'sql_orderby'       => array(
+				'label'    => esc_html__( 'SQL Orderby', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_sql_orderby',
 			),
-			'text_field' => array(
-				'label'     => esc_html__( 'Text Field', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_text_field',
+			'text_field'        => array(
+				'label'    => esc_html__( 'Text Field', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_text_field',
 			),
-			'textarea_field' => array(
-				'label'     => esc_html__( 'Text Area', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_textarea_field',
+			'textarea_field'    => array(
+				'label'    => esc_html__( 'Text Area', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_textarea_field',
 			),
-			'title' => array(
-				'label'     => esc_html__( 'Title', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_title',
+			'title'             => array(
+				'label'    => esc_html__( 'Title', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_title',
 			),
-			'title_for_query' => array(
-				'label'     => esc_html__( 'Title for Query', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_title_for_query',
+			'title_for_query'   => array(
+				'label'    => esc_html__( 'Title for Query', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_title_for_query',
 			),
 			'title_with_dashes' => array(
-				'label'     => esc_html__( 'Title with Dashes', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_title_with_dashes',
+				'label'    => esc_html__( 'Title with Dashes', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_title_with_dashes',
 			),
-			'user' => array(
-				'label'     => esc_html__( 'User', 'tkt-search-and-filter' ),
-				'callback'  => 'sanitize_user',
+			'user'              => array(
+				'label'    => esc_html__( 'User', 'tkt-search-and-filter' ),
+				'callback' => 'sanitize_user',
 			),
-			'url_raw' => array(
-				'label'     => esc_html__( 'URL Raw', 'tkt-search-and-filter' ),
-				'callback'  => 'esc_url_raw',
+			'url_raw'           => array(
+				'label'    => esc_html__( 'URL Raw', 'tkt-search-and-filter' ),
+				'callback' => 'esc_url_raw',
 			),
-			'post_kses' => array(
-				'label'     => esc_html__( 'Post KSES', 'tkt-search-and-filter' ),
-				'callback'  => 'wp_filter_post_kses',
+			'post_kses'         => array(
+				'label'    => esc_html__( 'Post KSES', 'tkt-search-and-filter' ),
+				'callback' => 'wp_filter_post_kses',
 			),
-			'nohtml_kses' => array(
-				'label'     => esc_html__( 'NoHTML KSES', 'tkt-search-and-filter' ),
-				'callback'  => 'wp_filter_nohtml_kses',
+			'nohtml_kses'       => array(
+				'label'    => esc_html__( 'NoHTML KSES', 'tkt-search-and-filter' ),
+				'callback' => 'wp_filter_nohtml_kses',
 			),
-			'absint' => array(
-				'label'     => esc_html__( 'Integer', 'tkt-search-and-filter' ),
-				'callback'  => 'absint',
+			'absint'            => array(
+				'label'    => esc_html__( 'Integer', 'tkt-search-and-filter' ),
+				'callback' => 'absint',
 			),
-			'intval' => array(
-				'label'     => esc_html__( 'Integer', 'tkt-search-and-filter' ),
-				'callback'  => 'intval',
+			'intval'            => array(
+				'label'    => esc_html__( 'Integer', 'tkt-search-and-filter' ),
+				'callback' => 'intval',
 			),
-			'floatval' => array(
-				'label'     => esc_html__( 'Float', 'tkt-search-and-filter' ),
-				'callback'  => 'floatval',
+			'floatval'          => array(
+				'label'    => esc_html__( 'Float', 'tkt-search-and-filter' ),
+				'callback' => 'floatval',
 			),
-			'is_bool' => array(
-				'label'     => esc_html__( 'Is Boolean', 'tkt-search-and-filter' ),
-				'callback'  => 'is_bool',
+			'is_bool'           => array(
+				'label'    => esc_html__( 'Is Boolean', 'tkt-search-and-filter' ),
+				'callback' => 'is_bool',
 			),
-			'boolval' => array(
-				'label'     => esc_html__( 'Boolean Value', 'tkt-search-and-filter' ),
-				'callback'  => 'boolval',
+			'boolval'           => array(
+				'label'    => esc_html__( 'Boolean Value', 'tkt-search-and-filter' ),
+				'callback' => 'boolval',
 			),
 		);
 

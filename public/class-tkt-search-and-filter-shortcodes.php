@@ -5,16 +5,15 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
+ * @package    ShortCodes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
- * Defines all ShortCodes.
+ * Defines all ShortCodes of the TukuToi Search & Filter Plugin.
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/public
- * @author     Your Name <hello@tukutoi.com>
+ * @package    ShortCodes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Shortcodes {
 
@@ -58,13 +57,13 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 */
 	public function __construct( $plugin_prefix, $version, $declarations, $query, $sanitizer, $plugin_public ) {
 
-		$this->plugin_prefix    = $plugin_prefix;
-		$this->version          = $version;
-		$this->declarations     = $declarations;
+		$this->plugin_prefix = $plugin_prefix;
+		$this->version       = $version;
+		$this->declarations  = $declarations;
 
-		$this->sanitizer        = $sanitizer;
-		$this->query            = $query;
-		$this->plugin_public    = $plugin_public;
+		$this->sanitizer     = $sanitizer;
+		$this->query         = $query;
+		$this->plugin_public = $plugin_public;
 
 	}
 
@@ -97,10 +96,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		$atts = shortcode_atts(
 			array(
-				'instance'          => 'my_instance',
-				'type'              => 'reload', // ajax or reload.
-				'customid'          => '',
-				'customclasses'     => '',
+				'instance'      => 'my_instance',
+				'type'          => 'reload', // ajax or reload.
+				'customid'      => '',
+				'customclasses' => '',
 			),
 			$atts,
 			$tag
@@ -180,13 +179,13 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		$atts = shortcode_atts(
 			array(
-				'instance'      => 'my_instance',
-				'type'          => 'post',
-				'error'         => 'No Results Found',
-				'pag_arg'       => '',
+				'instance'       => 'my_instance',
+				'type'           => 'post',
+				'error'          => 'No Results Found',
+				'pag_arg'        => '',
 				'posts_per_page' => '',
-				'customclasses' => '',
-				'container'     => '',
+				'customclasses'  => '',
+				'container'      => '',
 			),
 			$atts,
 			$tag
@@ -332,8 +331,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'placeholder'   => 'Search...',
-				'urlparam'     => '_s',
-				'searchby'     => 's',
+				'urlparam'      => '_s',
+				'searchby'      => 's',
 				'customid'      => '',
 				'customclasses' => '',
 			),
@@ -357,10 +356,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 		$tkt_src_fltr['searchby'][ $atts['urlparam'] ] = $atts['searchby'];
 
 		// Build our Serach input.
-		$search = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
+		$search   = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
 		$src_type = $this->query->get_type();
 		$tkt_data = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
-		$search = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" ' . $tkt_data . ' class="' . $atts['customclasses'] . '">';
+		$search   = '<input type="text" id="' . $atts['customid'] . '" placeholder="' . $atts['placeholder'] . '" name="' . $atts['urlparam'] . '" ' . $tkt_data . ' class="' . $atts['customclasses'] . '">';
 
 		// Return our Search Input. Already Sanitized.
 		return $search;
@@ -444,8 +443,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 		if ( 'tax_query' === $atts['searchby'] ) {
 			$tkt_src_fltr['searchby']['tax_query'][] = array(
 				'url_param' => $atts['urlparam'],
-				'taxonomy' => $atts['custom_tax'],
-				'field' => $atts['tax_field'],
+				'taxonomy'  => $atts['custom_tax'],
+				'field'     => $atts['tax_field'],
 			);
 		}
 
@@ -455,37 +454,37 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * Use better_dropdown_users() for Users.
 		 *
 		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_users/
-		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 * @see better_dropdown_users()
 		 *
 		 * Use better_dropdown_categories() for all Taxonomies.
 		 *
 		 * @see https://docs.classicpress.net/reference/functions/wp_dropdown_categories/
-		 * @see {/includes/tkt-search-and-filter-fix-worcpress.php}
+		 * @see better_dropdown_categories()
 		 *
 		 * Use get_posts for Posts (because it is faster than WP_Query for non-paginated lists).
 		 *
 		 * @see https://docs.classicpress.net/reference/functions/get_posts/
-		 * @see example https://www.smashingmagazine.com/2016/03/advanced-wordpress-search-with-wp_query/
-		 * @see performance details https://wordpress.stackexchange.com/questions/1753/when-should-you-use-wp-query-vs-query-posts-vs-get-posts
+		 * @see https://www.smashingmagazine.com/2016/03/advanced-wordpress-search-with-wp_query/
+		 * @see https://wordpress.stackexchange.com/questions/1753/when-should-you-use-wp-query-vs-query-posts-vs-get-posts
 		 *
 		 * @since 2.0.0
 		 * @since 2.29.0 Added $value_field for tax_query
 		 */
 		$post_query_vars = $this->declarations->data_map( 'post_query_vars' );
-		$value_field    = isset( $post_query_vars[ $atts['searchby'] ]['field'] )
+		$value_field     = isset( $post_query_vars[ $atts['searchby'] ]['field'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['field'] )
 						: null;
-		$value_field    = 'tax_query' === $atts['searchby'] ? $atts['tax_field'] : $value_field;
-		$query_type     = isset( $post_query_vars[ $atts['searchby'] ]['type'] )
+		$value_field     = 'tax_query' === $atts['searchby'] ? $atts['tax_field'] : $value_field;
+		$query_type      = isset( $post_query_vars[ $atts['searchby'] ]['type'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['type'] )
 						: null;
-		$callback       = isset( $post_query_vars[ $atts['searchby'] ]['cback'] )
+		$callback        = isset( $post_query_vars[ $atts['searchby'] ]['cback'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['cback'] )
 						: null;
-		$values         = isset( $post_query_vars[ $atts['searchby'] ]['vals'] )
+		$values          = isset( $post_query_vars[ $atts['searchby'] ]['vals'] )
 						? $this->sanitizer->sanitize( 'text_field', $post_query_vars[ $atts['searchby'] ]['vals'] )
 						: null;
-		$usr_show_value = 'display_name';
+		$usr_show_value  = 'display_name';
 		/**
 		 * Filter `tkt_src_fltr_user_select_search_show` for the User Select Search "Show" Value.
 		 *
@@ -503,15 +502,15 @@ class Tkt_Search_And_Filter_Shortcodes {
 			case 'user':
 				$select_form = better_dropdown_users(
 					array(
-						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
-						'multi'             => $multiple_value,
-						'show'              => $usr_show_value,
-						'value_field'       => $value_field,
-						'echo'              => false,
-						'name'              => $atts['urlparam'],
-						'id'                => $atts['customid'],
-						'class'             => $atts['customclasses'],
-						'data_attr'         => $atts['searchby'],
+						'show_option_all' => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'multi'           => $multiple_value,
+						'show'            => $usr_show_value,
+						'value_field'     => $value_field,
+						'echo'            => false,
+						'name'            => $atts['urlparam'],
+						'id'              => $atts['customid'],
+						'class'           => $atts['customclasses'],
+						'data_attr'       => $atts['searchby'],
 					)
 				);
 				break;
@@ -519,35 +518,35 @@ class Tkt_Search_And_Filter_Shortcodes {
 			case 'post_tag':
 				$select_form = better_dropdown_categories(
 					array(
-						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
-						'show_count'        => true,
-						'echo'              => false,
-						'hierarchical'      => true,
-						'value_field'       => $value_field,
-						'taxonomy'          => $query_type,
-						'name'              => $atts['urlparam'],
-						'id'                => $atts['customid'],
-						'class'             => $atts['customclasses'],
-						'multi'             => $multiple_value,
-						'data_attr'         => $atts['searchby'],
+						'show_option_all' => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'show_count'      => true,
+						'echo'            => false,
+						'hierarchical'    => true,
+						'value_field'     => $value_field,
+						'taxonomy'        => $query_type,
+						'name'            => $atts['urlparam'],
+						'id'              => $atts['customid'],
+						'class'           => $atts['customclasses'],
+						'multi'           => $multiple_value,
+						'data_attr'       => $atts['searchby'],
 					)
 				);
 				break;
 			case 'taxonomy':
 				$select_form = better_dropdown_categories(
 					array(
-						'show_option_all'   => empty( $multiple_value ) ? $atts['placeholder'] : null,
-						'show_count'        => true,
-						'echo'              => false,
-						'hierarchical'      => true,
-						'value_field'       => $value_field,
-						'taxonomy'          => $atts['custom_tax'],
-						'name'              => $atts['urlparam'],
-						'id'                => $atts['customid'],
-						'class'             => $atts['customclasses'],
-						'multi'             => $multiple_value,
-						'data_attr'         => $atts['searchby'],
-						'custom_attr'       => $atts['custom_tax'],
+						'show_option_all' => empty( $multiple_value ) ? $atts['placeholder'] : null,
+						'show_count'      => true,
+						'echo'            => false,
+						'hierarchical'    => true,
+						'value_field'     => $value_field,
+						'taxonomy'        => $atts['custom_tax'],
+						'name'            => $atts['urlparam'],
+						'id'              => $atts['customid'],
+						'class'           => $atts['customclasses'],
+						'multi'           => $multiple_value,
+						'data_attr'       => $atts['searchby'],
+						'custom_attr'     => $atts['custom_tax'],
 					)
 				);
 				break;
@@ -592,8 +591,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 					}
 					$posts_data = get_posts(
 						array(
-							'numberposts'   => -1,
-							'post_type'     => $post_type,
+							'numberposts' => -1,
+							'post_type'   => $post_type,
 						)
 					);
 					foreach ( $posts_data as $key => $post_object ) {
@@ -609,10 +608,10 @@ class Tkt_Search_And_Filter_Shortcodes {
 						$options .= '<option value="' . esc_attr( $value ) . '">' . esc_html( $label ) . '</option>';
 					}
 				}
-				$select_form = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
-				$src_type = $this->query->get_type();
-				$tkt_data = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
-				$tkt_custom = 'ajax' === $src_type ? 'data-tkt-ajax-custom="' . $atts['custom_tax'] . '"' : '';
+				$select_form  = '<label for="' . $atts['customid'] . '">' . $atts['placeholder'] . '</label>';
+				$src_type     = $this->query->get_type();
+				$tkt_data     = 'ajax' === $src_type ? 'data-tkt-ajax-src="' . $atts['searchby'] . '"' : '';
+				$tkt_custom   = 'ajax' === $src_type ? 'data-tkt-ajax-custom="' . $atts['custom_tax'] . '"' : '';
 				$select_form .= '<select name="' . $atts['urlparam'] . $multiple_name . '" id="' . $atts['customid'] . '"' . $multiple_value . ' ' . $tkt_data . ' ' . $tkt_custom . '>';
 				$select_form .= $options;
 				$select_form .= '</select>';
@@ -640,7 +639,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 				'tkt_select2',
 				$atts['customid'],
 				$value = array(
-					'placeholder'   => $atts['placeholder'],
+					'placeholder' => $atts['placeholder'],
 				)
 			);
 		}
@@ -711,7 +710,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 */
 
 		// Build our button. All Inputs are sanitized.
-		$button = '<button';
+		$button  = '<button';
 		$button .= ! empty( $atts['autofocus'] ) ? ' autofocus="' . $atts['autofocus'] . '"' : '';
 		$button .= ! empty( $atts['form'] ) ? ' form="' . $atts['form'] . '"' : '';
 		$button .= ! empty( $atts['type'] ) ? ' type="' . $atts['type'] . '"' : '';
@@ -786,7 +785,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.0.0
 		 */
 
-		$spinner = ! empty( $atts['container'] ) ? '<' . $atts['container'] . ' id="' . $atts['customid'] . '" class="tkt_ajax_loader ' . $atts['customclasses'] . '">' : '';
+		$spinner  = ! empty( $atts['container'] ) ? '<' . $atts['container'] . ' id="' . $atts['customid'] . '" class="tkt_ajax_loader ' . $atts['customclasses'] . '">' : '';
 		$spinner .= ! empty( $atts['url'] ) ? '<img src="' . $atts['url'] . '">' : '';
 		$spinner .= ! empty( $atts['value'] ) ? $atts['value'] : '';
 		$spinner .= ! empty( $atts['container'] ) ? '</' . $atts['container'] . '>' : '';
@@ -834,26 +833,26 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		$atts = shortcode_atts(
 			array(
-				'aria_current'          => 'page',
-				'show_all'              => false,
-				'end_size'              => 1,
-				'mid_size'              => 2,
-				'prev_next'             => true,
-				'prev_text'             => 'Pre',
-				'next_text'             => 'Next',
-				'type'                  => 'plain',
-				'add_args'              => '',
-				'add_fragment'          => '',
-				'before_page_number'    => '',
-				'after_page_number'     => '',
-				'instance'              => '',
-				'pag_arg'               => 'item',
-				'container'             => '',
-				'containerclasses'      => '',
-				'li_classes'            => '',
-				'ul_classes'            => '',
-				'a_classes'             => '',
-				'current_classes'       => '',
+				'aria_current'       => 'page',
+				'show_all'           => false,
+				'end_size'           => 1,
+				'mid_size'           => 2,
+				'prev_next'          => true,
+				'prev_text'          => 'Pre',
+				'next_text'          => 'Next',
+				'type'               => 'plain',
+				'add_args'           => '',
+				'add_fragment'       => '',
+				'before_page_number' => '',
+				'after_page_number'  => '',
+				'instance'           => '',
+				'pag_arg'            => 'item',
+				'container'          => '',
+				'containerclasses'   => '',
+				'li_classes'         => '',
+				'ul_classes'         => '',
+				'a_classes'          => '',
+				'current_classes'    => '',
 			),
 			$atts,
 			$tag
@@ -866,18 +865,18 @@ class Tkt_Search_And_Filter_Shortcodes {
 			} elseif ( 'end_size' === $key || 'mid_size' === $key ) {
 				$atts[ $key ] = $this->sanitizer->sanitize( 'intval', $value );
 			} elseif ( 'add_args' === $key ) {
-				$value = $this->sanitizer->sanitize( 'text_field', $value );
+				$value    = $this->sanitizer->sanitize( 'text_field', $value );
 				$add_args = array();
 				if ( ! empty( $value ) ) {
 					// If several args are passed.
 					if ( strpos( $value, ',' ) !== false ) {
 						$args_pre = explode( ',', $value );
 						foreach ( $args_pre as $key => $arrval ) {
-							list( $k, $v ) = explode( ':', $arrval );
+							list( $k, $v )  = explode( ':', $arrval );
 							$add_args[ $k ] = $v;
 						}
 					} else {
-						list( $k, $v ) = explode( ':', $value );
+						list( $k, $v )  = explode( ':', $value );
 						$add_args[ $k ] = $v;
 					}
 				}
@@ -902,7 +901,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 */
 		$paged = $atts['pag_arg'];
 		$page = isset( $_GET[ $paged ] ) ? absint( $_GET[ $paged ] ) : 1;// @codingStandardsIgnoreLine
-		$max = $this->query->get_query_results()->max_num_pages;
+		$max   = $this->query->get_query_results()->max_num_pages;
 
 		/**
 		 * Add some wrapper for pagination.
@@ -911,7 +910,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 *
 		 * @since 2.13.0
 		 */
-		$pag = '<' . $atts['container'] . ' class="' . $atts['containerclasses'] . '" id="' . $atts['instance'] . '_pagination">';
+		$pag  = '<' . $atts['container'] . ' class="' . $atts['containerclasses'] . '" id="' . $atts['instance'] . '_pagination">';
 		$pag .= $this->paginate_helper( $atts, $page, $paged, $max, $add_args );
 		$pag .= '</' . $atts['container'] . '>';
 
@@ -977,25 +976,25 @@ class Tkt_Search_And_Filter_Shortcodes {
 		 * @since 2.19.0
 		 */
 		$pargs = array(
-			'format'                => '?' . $this->sanitizer->sanitize( 'key', $paged ) . '=%#%',
-			'total'                 => $this->sanitizer->sanitize( 'absint', $max ),
-			'current'               => $this->sanitizer->sanitize( 'absint', $page ),
-			'aria_current'          => $this->sanitizer->sanitize( 'key', $atts['aria_current'] ),
-			'show_all'              => $this->sanitizer->sanitize( 'boolval', $atts['show_all'] ),
-			'end_size'              => $this->sanitizer->sanitize( 'absint', $atts['end_size'] ),
-			'mid_size'              => $this->sanitizer->sanitize( 'absint', $atts['mid_size'] ),
-			'prev_next'             => $this->sanitizer->sanitize( 'boolval', $atts['prev_next'] ),
-			'prev_text'             => $this->sanitizer->sanitize( 'text_field', $atts['prev_text'] ),
-			'next_text'             => $this->sanitizer->sanitize( 'text_field', $atts['next_text'] ),
-			'type'                  => $this->sanitizer->sanitize( 'key', $atts['type'] ),
-			'add_args'              => array_map( 'sanitize_key', $add_args ),
-			'add_fragment'          => $this->sanitizer->sanitize( 'key', $atts['add_fragment'] ),
-			'before_page_number'    => $this->sanitizer->sanitize( 'text_field', $atts['before_page_number'] ),
-			'after_page_number'     => $this->sanitizer->sanitize( 'text_field', $atts['after_page_number'] ),
-			'li_classes'            => $this->sanitizer->sanitize( 'esc_attr', $atts['li_classes'] ),
-			'ul_classes'            => $this->sanitizer->sanitize( 'esc_attr', $atts['ul_classes'] ),
-			'a_classes'             => $this->sanitizer->sanitize( 'esc_attr', $atts['a_classes'] ),
-			'current_classes'       => $this->sanitizer->sanitize( 'esc_attr', $atts['current_classes'] ),
+			'format'             => '?' . $this->sanitizer->sanitize( 'key', $paged ) . '=%#%',
+			'total'              => $this->sanitizer->sanitize( 'absint', $max ),
+			'current'            => $this->sanitizer->sanitize( 'absint', $page ),
+			'aria_current'       => $this->sanitizer->sanitize( 'key', $atts['aria_current'] ),
+			'show_all'           => $this->sanitizer->sanitize( 'boolval', $atts['show_all'] ),
+			'end_size'           => $this->sanitizer->sanitize( 'absint', $atts['end_size'] ),
+			'mid_size'           => $this->sanitizer->sanitize( 'absint', $atts['mid_size'] ),
+			'prev_next'          => $this->sanitizer->sanitize( 'boolval', $atts['prev_next'] ),
+			'prev_text'          => $this->sanitizer->sanitize( 'text_field', $atts['prev_text'] ),
+			'next_text'          => $this->sanitizer->sanitize( 'text_field', $atts['next_text'] ),
+			'type'               => $this->sanitizer->sanitize( 'key', $atts['type'] ),
+			'add_args'           => array_map( 'sanitize_key', $add_args ),
+			'add_fragment'       => $this->sanitizer->sanitize( 'key', $atts['add_fragment'] ),
+			'before_page_number' => $this->sanitizer->sanitize( 'text_field', $atts['before_page_number'] ),
+			'after_page_number'  => $this->sanitizer->sanitize( 'text_field', $atts['after_page_number'] ),
+			'li_classes'         => $this->sanitizer->sanitize( 'esc_attr', $atts['li_classes'] ),
+			'ul_classes'         => $this->sanitizer->sanitize( 'esc_attr', $atts['ul_classes'] ),
+			'a_classes'          => $this->sanitizer->sanitize( 'esc_attr', $atts['a_classes'] ),
+			'current_classes'    => $this->sanitizer->sanitize( 'esc_attr', $atts['current_classes'] ),
 		);
 		if ( false !== $base ) {
 			$pargs['base'] = $this->sanitizer->sanitize( 'esc_url_raw', $base ) . '%_%';
@@ -1017,7 +1016,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 	 *
 	 * @since    2.19.0
 	 * @access public
-	 * @return void.
+	 * @return void
 	 */
 	public function tkt_ajax_pagination() {
 
@@ -1040,8 +1039,8 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		}
 
-		$action     = sanitize_text_field( wp_unslash( $_POST['action'] ) );
-		$is_ajax    = boolval( wp_unslash( $_POST['is_doing_ajax'] ) );
+		$action  = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		$is_ajax = boolval( wp_unslash( $_POST['is_doing_ajax'] ) );
 
 		if ( 'tkt_ajax_pagination' !== $action
 			|| ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tkt_ajax_nonce' )
@@ -1052,7 +1051,7 @@ class Tkt_Search_And_Filter_Shortcodes {
 
 		}
 
-		$instance   = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
+		$instance = sanitize_text_field( wp_unslash( $_POST['instance'] ) );
 		foreach ( $_POST as $post_key => $post_value ) {
 			if ( 'atts' === $post_key ) {
 				foreach ( $post_value as $key => $value ) {
@@ -1062,18 +1061,18 @@ class Tkt_Search_And_Filter_Shortcodes {
 					} elseif ( 'end_size' === $key || 'mid_size' === $key ) {
 						$atts[ $key ] = $this->sanitizer->sanitize( 'intval', $value );
 					} elseif ( 'add_args' === $key ) {
-						$value = $this->sanitizer->sanitize( 'text_field', $value );
+						$value    = $this->sanitizer->sanitize( 'text_field', $value );
 						$add_args = array();
 						if ( ! empty( $value ) ) {
 							// If several args are passed.
 							if ( strpos( $value, ',' ) !== false ) {
 								$args_pre = explode( ',', $value );
 								foreach ( $args_pre as $key => $arrval ) {
-									list( $k, $v ) = explode( ':', $arrval );
+									list( $k, $v )  = explode( ':', $arrval );
 									$add_args[ $k ] = $v;
 								}
 							} else {
-								list( $k, $v ) = explode( ':', $value );
+								list( $k, $v )  = explode( ':', $value );
 								$add_args[ $k ] = $v;
 							}
 						}
@@ -1084,13 +1083,13 @@ class Tkt_Search_And_Filter_Shortcodes {
 			}
 		}
 
-		$page       = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : 1;
-		$paged      = isset( $atts['pag_arg'] ) ? $atts['pag_arg'] : '';
-		$max        = isset( $_POST['max'] ) ? absint( wp_unslash( $_POST['max'] ) ) : -1;
-		$add_args   = isset( $atts['add_args'] ) ? $atts['add_args'] : array();
-		$base       = wp_doing_ajax() ? esc_url_raw( wp_get_referer() ) : '';
+		$page     = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : 1;
+		$paged    = isset( $atts['pag_arg'] ) ? $atts['pag_arg'] : '';
+		$max      = isset( $_POST['max'] ) ? absint( wp_unslash( $_POST['max'] ) ) : -1;
+		$add_args = isset( $atts['add_args'] ) ? $atts['add_args'] : array();
+		$base     = wp_doing_ajax() ? esc_url_raw( wp_get_referer() ) : '';
 
-		$pag        = $this->paginate_helper( $atts, $page, $paged, $max, $add_args, $base );
+		$pag = $this->paginate_helper( $atts, $page, $paged, $max, $add_args, $base );
 
 		if ( empty( $pag ) ) {
 			$pag = '';

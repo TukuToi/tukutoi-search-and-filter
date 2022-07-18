@@ -3,7 +3,8 @@
  * This file includes the ShortCodes GUI interfaces.
  *
  * @since 1.4.0
- * @package Tkt_Search_And_Filters/admin
+ * @package    Plugins\SearchAndFilter\Admin
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -17,9 +18,8 @@
  * The almost to all the same thing, unless one or two. Thus use arguments, not new methods.
  *
  * @since      1.4.0
- * @package    Tkt_Search_And_Filters
- * @subpackage Tkt_Search_And_Filters/admin
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Admin
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filters_Gui {
 
@@ -55,8 +55,8 @@ class Tkt_Search_And_Filters_Gui {
 	 */
 	public function alltypes_options() {
 
-		$taxonomies = get_taxonomies( array( 'public' => true ), 'objects' );
-		$post_types = get_post_types( array( 'public' => true ), 'objects' );
+		$taxonomies     = get_taxonomies( array( 'public' => true ), 'objects' );
+		$post_types     = get_post_types( array( 'public' => true ), 'objects' );
 		$editable_roles = array_reverse( get_editable_roles() );
 
 		/**
@@ -66,8 +66,8 @@ class Tkt_Search_And_Filters_Gui {
 		foreach ( $editable_roles as $role => $details ) {
 
 			$user_roles[] = (object) array(
-				'name'      => $role,
-				'labels'    => (object) array( 'menu_name' => translate_user_role( $details['name'] ) ),
+				'name'   => $role,
+				'labels' => (object) array( 'menu_name' => translate_user_role( $details['name'] ) ),
 			);
 
 		}
@@ -75,8 +75,8 @@ class Tkt_Search_And_Filters_Gui {
 		$alltypes = array_merge( $taxonomies, $post_types, $user_roles );
 
 		foreach ( $alltypes as $alltype => $object ) {
-			$label = $object->labels->menu_name;
-			$name  = $object->name;
+			$label    = $object->labels->menu_name;
+			$name     = $object->name;
 			$selected = 'post' === $alltype ? 'selected' : '';
 			printf( '<option value="%s" ' . esc_attr( $selected ) . '>%s</option>', esc_attr( $name ), esc_html( $label ) );
 		}
@@ -175,7 +175,7 @@ class Tkt_Search_And_Filters_Gui {
 
 		$pagination_types = array(
 			'plain' => 'Plain',
-			'list' => 'List',
+			'list'  => 'List',
 		);
 
 		foreach ( $pagination_types as $pagination_type => $label ) {
@@ -202,8 +202,8 @@ class Tkt_Search_And_Filters_Gui {
 	public function filtertype_options() {
 
 		$filtertype_options = array(
-			'reload'    => 'Full Page Reload',
-			'ajax'      => 'AJAX refresh',
+			'reload' => 'Full Page Reload',
+			'ajax'   => 'AJAX refresh',
 		);
 
 		foreach ( $filtertype_options as $filtertype_option => $label ) {

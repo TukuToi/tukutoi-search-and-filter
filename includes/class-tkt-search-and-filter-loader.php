@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +16,8 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Loader {
 
@@ -56,9 +55,9 @@ class Tkt_Search_And_Filter_Loader {
 	 */
 	public function __construct() {
 
-		$this->actions      = array();
-		$this->filters      = array();
-		$this->shortcodes   = array();
+		$this->actions    = array();
+		$this->filters    = array();
+		$this->shortcodes = array();
 
 	}
 
@@ -99,7 +98,7 @@ class Tkt_Search_And_Filter_Loader {
 	 * @param    string $method_to_remove Method name for the filter's callback.
 	 * @param    int    $priority         The priority of the method (default 10).
 	 *
-	 * @return   $removed bool Whether the function is removed.
+	 * @return   bool $removed Whether the function is removed.
 	 */
 	public function remove_filter( $tag, $class_name = '', $method_to_remove = '', $priority = 10 ) {
 
@@ -108,11 +107,11 @@ class Tkt_Search_And_Filter_Loader {
 
 		foreach ( $wp_filter[ $tag ]->callbacks as $filter_priority => $filters ) {
 
-			if ( $filter_priority == $priority ) {
+			if ( $filter_priority === $priority ) {
 
 				foreach ( $filters as $filter ) {
 
-					if ( $filter['function'][1] == $method_to_remove
+					if ( $filter['function'][1] === $method_to_remove
 						&& is_object( $filter['function'][0] ) // only WP 4.7 and above. This plugin is requiring at least WP 4.9.
 						&& $filter['function'][0] instanceof $class_name ) {
 						$removed = $wp_filter[ $tag ]->remove_filter( $tag, array( $filter['function'][0], $method_to_remove ), $priority );
@@ -134,7 +133,7 @@ class Tkt_Search_And_Filter_Loader {
 	 * @param    string $method_to_remove Method name for the filter's callback.
 	 * @param    int    $priority         The priority of the method (default 10).
 	 *
-	 * @return   $removed bool Whether the function is removed.
+	 * @return   bool $removed Whether the function is removed.
 	 */
 	public function remove_action( $tag, $class_name = '', $method_to_remove = '', $priority = 10 ) {
 		return $this->remove_filter( $tag, $class_name, $method_to_remove, $priority );
@@ -166,7 +165,7 @@ class Tkt_Search_And_Filter_Loader {
 	 * @param    string $callback         The name of the function definition on the $component.
 	 * @param    int    $priority         The priority at which the function should be fired.
 	 * @param    int    $accepted_args    The number of arguments that should be passed to the $callback.
-	 * @return   array                                  The collection of actions and filters registered with WordPress.
+	 * @return   array The collection of actions and filters registered with WordPress.
 	 */
 	private function add( $hooks, $hook, $component, $callback, $priority, $accepted_args ) {
 

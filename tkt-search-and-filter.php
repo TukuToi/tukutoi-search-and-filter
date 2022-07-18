@@ -9,7 +9,8 @@
  *
  * @link              https://www.tukutoi.com/
  * @since             1.0.0
- * @package           Tkt_Search_And_Filter
+ * @package           Plugins\SearchAndFilter
+ * @author            Beda Schmid <beda@tukutoi.com>
  *
  * @wordpress-plugin
  * Plugin Name:       TukuToi Search and Filter
@@ -31,16 +32,19 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Current plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
+ *
+ * Start at version 1.0.0 and use SemVer
  * Rename this for your plugin and update it as you release new versions.
+ *
+ * @link https://semver.org
+ * @var string $TKT_SEARCH_AND_FILTER_VERSION The version of this plugin.
  */
 define( 'TKT_SEARCH_AND_FILTER_VERSION', '2.29.1' );
 
 /**
  * The code that runs during plugin activation.
  *
- * This action is documented in includes/class-tkt-search-and-filter-activator.php
- * Full security checks are performed inside the class.
+ * @see Tkt_Search_And_Filter_Activator::activate()
  */
 function plugin_name_activate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-tkt-search-and-filter-activator.php';
@@ -50,8 +54,7 @@ function plugin_name_activate() {
 /**
  * The code that runs during plugin deactivation.
  *
- * This action is documented in includes/class-tkt-search-and-filter-deactivator.php
- * Full security checks are performed inside the class.
+ * @see Tkt_Search_And_Filter_Deactivator::deactivate()
  */
 function plugin_name_deactivate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-tkt-search-and-filter-deactivator.php';

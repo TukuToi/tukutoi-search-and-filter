@@ -11,8 +11,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Shortcodes
- * @subpackage Tkt_Shortcodes/public
+ * @package    Common\Plugins
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -20,9 +20,8 @@
  *
  * Define Common Constants, menus, version and scripts.
  *
- * @package    Tkt_Shortcodes
- * @subpackage Tkt_Shortcodes/common
- * @author     TukuToi <hello@tukutoi.com>
+ * @package    Common\Plugins
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Common {
 
@@ -78,10 +77,10 @@ class Tkt_Common {
 	 */
 	protected function __construct() {
 
-		$this->vendor_name      = 'TukuToi';
-		$this->common_name      = 'tkt_common';
-		$this->common_version   = '1.0.0';
-		$this->common_actions   = array();
+		$this->vendor_name    = 'TukuToi';
+		$this->common_name    = 'tkt_common';
+		$this->common_version = '1.0.0';
+		$this->common_actions = array();
 		$this->define_loaded();
 
 	}
@@ -94,6 +93,11 @@ class Tkt_Common {
 	 */
 	private function define_loaded() {
 		if ( ! defined( 'TKT_COMMON_LOADED' ) ) {
+			/**
+			 * Defines if the TukuToi Common Code is already loaded
+			 *
+			 * @var bool $TKT_COMMON_LOADED Whether the common code is loaded or not.
+			 */
 			define( 'TKT_COMMON_LOADED', true );
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'common/class-tkt-shortcodes-processor.php';
 		}

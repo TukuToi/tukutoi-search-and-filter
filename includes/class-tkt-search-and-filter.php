@@ -8,8 +8,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -22,9 +22,8 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter {
 
@@ -86,7 +85,7 @@ class Tkt_Search_And_Filter {
 
 		}
 
-		$this->plugin_name = 'tkt-search-and-filter';
+		$this->plugin_name   = 'tkt-search-and-filter';
 		$this->plugin_prefix = 'tkt_src_fltr_';
 
 		$this->load_dependencies();
@@ -165,7 +164,7 @@ class Tkt_Search_And_Filter {
 		 * NOTE: Loaded only once.
 		 */
 		if ( ! defined( 'TKT_COMMON_LOADED' ) ) {
-			require_once( plugin_dir_path( dirname( __FILE__ ) ) . '/common/class-tkt-common.php' );
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . '/common/class-tkt-common.php';
 		}
 		$this->common = Tkt_Common::get_instance();
 

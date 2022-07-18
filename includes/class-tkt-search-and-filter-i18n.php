@@ -8,8 +8,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -22,9 +22,8 @@
  *       This, if true, makes this class a total waste of code.
  *
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_I18n {
 

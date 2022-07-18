@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +16,8 @@
  *
  * @uses Tkt_Search_And_Filter_Declarations()
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Sanitizer {
 
@@ -78,12 +77,12 @@ class Tkt_Search_And_Filter_Sanitizer {
 	 */
 	public function __construct( $plugin_prefix, $version, $declarations ) {
 
-		$this->plugin_prefix    = $plugin_prefix;
-		$this->version          = $version;
-		$this->declarations     = $declarations;
+		$this->plugin_prefix = $plugin_prefix;
+		$this->version       = $version;
+		$this->declarations  = $declarations;
 
-		$this->debug            = false;
-		$this->debug_log        = false;
+		$this->debug     = false;
+		$this->debug_log = false;
 
 	}
 
@@ -302,7 +301,7 @@ class Tkt_Search_And_Filter_Sanitizer {
 			// An array validation is requested.
 			$value = $this->handle_array_validation( $value );
 
-		} elseif ( 'operation' == $type ) {
+		} elseif ( 'operation' === $type ) {
 
 			// An operation validation is requested.
 			$value = $this->handle_operator_validation( $value );
@@ -353,11 +352,11 @@ class Tkt_Search_And_Filter_Sanitizer {
 		$errors['display'] = esc_html__( 'Something wrong. Enable Debug mode and check again.', 'tkt-search-and-filter' );
 
 		if ( is_null( $result ) ) {
-			$errors['debug']  = 'The response was null in ' . $location;
+			$errors['debug'] = 'The response was null in ' . $location;
 		} elseif ( is_wp_error( $result ) ) {
-			$errors['debug']  = 'The response was an instance of wp_error: ' . $result->get_error_message() . ' in ' . $location;
+			$errors['debug'] = 'The response was an instance of wp_error: ' . $result->get_error_message() . ' in ' . $location;
 		} elseif ( false === $result ) {
-			$errors['debug']  = 'There was a failure in response in ' . $location;
+			$errors['debug'] = 'There was a failure in response in ' . $location;
 		} else {
 			$errors['debug'] = 'Unknown type of error occurred in' . $location;
 		}

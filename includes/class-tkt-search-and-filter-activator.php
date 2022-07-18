@@ -5,8 +5,8 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +16,8 @@
  *
  * @todo This should probably be in one class together with Deactivator Class.
  * @since      1.0.0
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/includes
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Includes
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Activator {
 
@@ -38,7 +37,7 @@ class Tkt_Search_And_Filter_Activator {
 	 * @access   private
 	 * @var      string    $plugin    The $_REQUEST['plugin'] value during plugin activation.
 	 */
-	private static $plugin  = 'tkt-search-and-filter/tkt-search-and-filter.php';
+	private static $plugin = 'tkt-search-and-filter/tkt-search-and-filter.php';
 
 	/**
 	 * The $_REQUEST['action'] during plugin activation.
@@ -47,7 +46,7 @@ class Tkt_Search_And_Filter_Activator {
 	 * @access   private
 	 * @var      array    $action    The $_REQUEST[action] value during plugin activation.
 	 */
-	private static $action  = 'activate';
+	private static $action = 'activate';
 
 	/**
 	 * Activate the plugin.
@@ -108,7 +107,7 @@ class Tkt_Search_And_Filter_Activator {
 			} elseif ( isset( $_REQUEST['checked'] ) ) {
 				if ( false !== wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bulk-plugins' ) ) {
 
-					self::$request['action'] = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
+					self::$request['action']  = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
 					self::$request['plugins'] = array_map( 'sanitize_text_field', wp_unslash( $_REQUEST['checked'] ) );
 
 					return self::$request;

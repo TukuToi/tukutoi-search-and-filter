@@ -4,9 +4,8 @@
  *
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
- *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/admin
+ * @package    Plugins\SearchAndFilter\Admin
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 
 /**
@@ -16,9 +15,8 @@
  * enqueue the admin-facing stylesheet and JavaScript.
  * As you add hooks and methods, update this description.
  *
- * @package    Tkt_Search_And_Filter
- * @subpackage Tkt_Search_And_Filter/admin
- * @author     Your Name <hello@tukutoi.com>
+ * @package    Plugins\SearchAndFilter\Admin
+ * @author     Beda Schmid <beda@tukutoi.com>
  */
 class Tkt_Search_And_Filter_Admin {
 
@@ -71,8 +69,8 @@ class Tkt_Search_And_Filter_Admin {
 
 		$this->plugin_name   = $plugin_name;
 		$this->plugin_prefix = $plugin_prefix;
-		$this->version = $version;
-		$this->declarations = $declarations;
+		$this->version       = $version;
+		$this->declarations  = $declarations;
 
 	}
 
